@@ -1,1 +1,14 @@
-<p>login works!</p>
+<div class="outer-wrapper">
+  <div class="inner-wrapper">
+    <label for="email" class="input-label">Email</label>
+    <input type="email" class="input-field" id="email" name="email" [(ngModel)]="inputData.email">
+  </div>
+  <div class="inner-wrapper">
+    <label for="password" class="input-label">Password</label>
+    <input type="password" class="input-field" id="password" name="password" [(ngModel)]="inputData.password">
+  </div>
+  <button class="login-button"
+          (click)="handleLogin([{id: '', firstname: '', lastname: '', email: '', password: ''}], inputData)">
+    Iniciar sesión
+  </button>
+</div>

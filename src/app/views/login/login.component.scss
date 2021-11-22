@@ -1,0 +1,43 @@
+.outer-wrapper {
+  width: max-content;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+
+  .inner-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .input-label {
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .input-field {
+      border: 2px solid hsl(195, 53%, 65%);
+
+      &:focus-visible, &:focus-visible {
+        border: 2px solid hsl(77, 43%, 68%);
+        outline: none;
+      }
+    }
+  }
+
+  .login-button {
+    align-self: flex-end;
+    font-weight: bold;
+    padding: 10px 15px;
+    margin-top: 20px;
+    border-radius: 6px;
+    background-color: hsl(0, 0%, 85%);
+
+    &:hover {
+      background-color: hsl(0, 0%, 94%);
+      color: hsl(195, 53%, 65%);
+    }
+  }
+
+}

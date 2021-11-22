@@ -10,6 +10,7 @@ import { SignupComponent } from './views/signup/signup.component';
 import { AddQuestionComponent } from './views/add-question/add-question.component';
 import { QuestionCardComponent } from './components/question-card/question-card.component';
 import { AnswerOptionComponent } from './components/answer-option/answer-option.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
             declarations: [
@@ -24,7 +25,8 @@ import { AnswerOptionComponent } from './components/answer-option/answer-option.
             ],
             imports: [
               BrowserModule,
-              AppRoutingModule
+              AppRoutingModule,
+              FormsModule
             ],
             providers: [],
             bootstrap: [AppComponent]

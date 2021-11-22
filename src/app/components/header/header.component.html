@@ -1,9 +1,9 @@
 <div class="wrapper">
   <nav class="navigation">
-    <a routerLink="/home" class="navigation-link" routerLinkActive="active">Home</a>
-    <a routerLink="/login" class="navigation-link" routerLinkActive="active">Login</a>
-    <a routerLink="/signup" class="navigation-link" routerLinkActive="active">Signup</a>
-    <a routerLink="/addQuestion" class="navigation-link" routerLinkActive="active">Agregar pregunta</a>
+    <a routerLink="/home" *ngIf="loggedInService.isLoggedIn$ | async" class="navigation-link" routerLinkActive="active">Home</a>
+    <a routerLink="/login" *ngIf="!(loggedInService.isLoggedIn$ | async)" class="navigation-link" routerLinkActive="active">Login</a>
+    <a routerLink="/signup" *ngIf="!(loggedInService.isLoggedIn$ | async)" class="navigation-link" routerLinkActive="active">Signup</a>
+    <a routerLink="/addQuestion" *ngIf="loggedInService.isLoggedIn$ | async" class="navigation-link" routerLinkActive="active">Agregar pregunta</a>
   </nav>
   <div class="image-wrapper">
     <img src="../../../assets/images/swoop.svg" alt="underlying image to allow for header styling" class="swoop-image">
