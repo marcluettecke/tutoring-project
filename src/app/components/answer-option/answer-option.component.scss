@@ -1,0 +1,26 @@
+.option-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+
+  & .answer {
+    text-align: left;
+    padding-left: 20px;
+    line-height: 1.2;
+  }
+}
+
+.wrong-answer {
+  outline: 2px solid red;
+}
+.correct-answer {
+  outline: 2px solid green;
+}
+
+input[type="radio" i]:disabled {
+  cursor: not-allowed;
+}
+
+.disabled {
+  cursor: not-allowed;
+}

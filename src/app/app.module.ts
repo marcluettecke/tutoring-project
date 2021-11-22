@@ -8,6 +8,8 @@ import { HomeComponent } from './views/home/home.component';
 import { LoginComponent } from './views/login/login.component';
 import { SignupComponent } from './views/signup/signup.component';
 import { AddQuestionComponent } from './views/add-question/add-question.component';
+import { QuestionCardComponent } from './components/question-card/question-card.component';
+import { AnswerOptionComponent } from './components/answer-option/answer-option.component';
 
 @NgModule({
             declarations: [
@@ -16,7 +18,9 @@ import { AddQuestionComponent } from './views/add-question/add-question.componen
               HomeComponent,
               LoginComponent,
               SignupComponent,
-              AddQuestionComponent
+              AddQuestionComponent,
+              QuestionCardComponent,
+              AnswerOptionComponent
             ],
             imports: [
               BrowserModule,

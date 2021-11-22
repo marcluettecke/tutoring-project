@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {Question} from '../../models/question'
+import {QuestionsService} from "../../services/questions.service";
 
 @Component({
   selector: 'app-home',
@@ -6,10 +8,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-
-  constructor() { }
+  questions: Question[]
+  constructor(private questionService: QuestionsService) { }
 
   ngOnInit(): void {
+    this.questions = this.questionService.questions
   }
 
 }

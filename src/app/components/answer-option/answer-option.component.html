@@ -1,0 +1,7 @@
+<div class="option-wrapper">
+  <input [name]="name" [disabled]="id !== selectedAnswer && clicked" type="radio"
+  (click)="clickAnswer()">
+  <label [for]="id" class="answer" [ngClass]="{'disabled': id !== selectedAnswer && clicked}">
+    {{answerOption}}
+  </label>
+</div>

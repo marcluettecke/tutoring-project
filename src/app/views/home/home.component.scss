@@ -1,0 +1,11 @@
+.wrapper {
+  width: 100%;
+  padding-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  .single-question {
+    width: 40%;
+  }
+}

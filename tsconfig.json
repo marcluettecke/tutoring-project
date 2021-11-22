@@ -6,6 +6,7 @@
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "strictPropertyInitialization": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
@@ -27,6 +28,7 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
+
   "exclude": [
     "typings/browser.d.ts",
     "typings/browser",

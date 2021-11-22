@@ -1,1 +1,4 @@
-<p>home works!</p>
+<div class="wrapper">
+    <app-question-card class="single-question" *ngFor="let question of questions; let i = index" [questionIndex]="i"
+                       [questionItem]="question"></app-question-card>
+</div>

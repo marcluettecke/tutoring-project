@@ -1,0 +1,43 @@
+.wrapper {
+  height: 100px;
+  position: relative;
+  margin-bottom: 30px;
+  background-color: hsl(77, 43%, 68%);
+
+  .navigation {
+    padding: 0 200px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 100px;
+
+    .navigation-link {
+      z-index: 2;
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+      padding: 10px 15px;
+      margin-top: 20px;
+      border-radius: 6px;
+      background-color: hsl(0, 0%, 85%);
+    }
+
+    .active {
+      background-color: hsl(0, 0%, 94%);
+      color: hsl(195, 53%, 65%);
+      border: none;
+    }
+  }
+
+  .image-wrapper {
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 100%;
+
+    .swoop-image {
+      object-fit: cover;
+      width: 100%;
+    }
+  }
+}
