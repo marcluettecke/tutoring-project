@@ -1,34 +1,40 @@
-import { Component, OnInit } from '@angular/core';
-import {Account} from "../../models/accounts";
+import {Component, OnInit} from '@angular/core';
+import {loginData} from "../../models/loginData";
 import {LoggedInService} from "../../services/logged-in.service";
+import {AccountsService} from "../../services/accounts.service";
+import {Account} from "../../models/accounts";
 
-interface inputData {
-  email: string,
-  password: string
-}
+
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
-})
+             selector: 'app-login',
+             templateUrl: './login.component.html',
+             styleUrls: ['./login.component.scss']
+           })
 
 
 export class LoginComponent implements OnInit {
-  inputData: inputData = {email: '', password: ''}
-  constructor(private loginService: LoggedInService) {}
+  inputData: loginData = {email: '', password: ''}
 
-  handleLogin(accounts: Account[], inputData: inputData ) {
-    const availableAccounts = accounts.map((el: Account) => ({
-        email: el.email,
-        password: el.password,
-      }));
-      const overlap = availableAccounts.filter((account: typeof availableAccounts[0]) => (
-        account.email === inputData.email && account.password === inputData.password));
-      if (overlap.length > 0) {
-        this.loginService.logIn();
-      }
+  constructor(private loginService: LoggedInService, private accountService: AccountsService) {
   }
+
+  handleLogin(inputData: loginData) {
+    this.accountService.getAccounts().subscribe((resp: Account[]) =>{
+      const availableAccounts = resp.map(el => {
+        return {email: el.email, password: el.password}
+      })
+      if(availableAccounts.some((singleAccount: loginData) => {
+        return singleAccount.email === inputData.email && singleAccount.password === inputData.password
+      })){
+        this.loginService.logIn()
+      }
+    })
+  }
+
+  // )
+  // @ts-ignore
+
 
   ngOnInit(): void {
   }

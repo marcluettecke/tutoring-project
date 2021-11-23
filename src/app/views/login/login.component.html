@@ -8,7 +8,7 @@
     <input type="password" class="input-field" id="password" name="password" [(ngModel)]="inputData.password">
   </div>
   <button class="login-button"
-          (click)="handleLogin([{id: '', firstname: '', lastname: '', email: '', password: ''}], inputData)">
+          (click)="handleLogin(inputData)">
     Iniciar sesión
   </button>
 </div>

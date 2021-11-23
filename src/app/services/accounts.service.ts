@@ -1,26 +1,17 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {AngularFirestore} from "@angular/fire/compat/firestore";
-import {Observable} from "rxjs";
-
-interface loginData {
-  email: string,
-  password: string
-}
+import {loginData} from "../models/loginData";
+import {find} from "rxjs/operators";
 
 @Injectable({
-  providedIn: 'root'
-})
+              providedIn: 'root'
+            })
 export class AccountsService {
 
-  constructor(private firestore: AngularFirestore) { }
-
-  getAccounts(): any  {
-    return this.firestore.collection('accounts').valueChanges()
+  constructor(private firestore: AngularFirestore) {
   }
 
-  checkAccount(value: {email: string, password: string}) {
-    this.getAccounts().subscribe((resp: {email: string, password: string}[]) => {
-      return resp.includes(value)
-    })
+  getAccounts(): any {
+    return this.firestore.collection('accounts').valueChanges()
   }
 }
