@@ -20,6 +20,10 @@
       margin-top: 20px;
       border-radius: 6px;
       background-color: hsl(0, 0%, 85%);
+
+      &:hover {
+        cursor: pointer;
+      }
     }
 
     .active {

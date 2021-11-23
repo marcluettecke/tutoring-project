@@ -17,7 +17,6 @@ export class LoginComponent implements OnInit {
 
   constructor(private loginService: LoggedInService, private accountService: AccountsService) {
   }
-
   handleLogin(inputData: loginData) {
     this.accountService.getAccounts().subscribe((resp: Account[]) => {
       const availableAccounts = resp.map(el => {

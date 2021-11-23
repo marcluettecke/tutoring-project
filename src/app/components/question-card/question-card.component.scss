@@ -28,9 +28,17 @@
 
     &-wrapper {
       padding: 30px 10px 0 10px;
+
+      &:hover {
+        cursor: pointer;
+      }
     }
 
     &-icon {
+      color: hsl(195, 53%, 65%);
+      display: flex;
+      justify-content: center;
+
       &:hover {
         cursor: pointer;
       }
@@ -38,28 +46,51 @@
 
     &-text {
       font-size: 1rem;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    &-collapsed {
+      animation: expand 500ms ease-in-out forwards;
+    }
+
+    &-expanded {
+      animation: collapse 300ms ease-out forwards;
+      animation-delay: 0ms;
     }
   }
-}
-
-// animations
-
-.expand-enter-active, .expand-leave-active {
-  opacity: 1;
-  max-height: 1200px;
-  overflow: hidden;
-}
-
-.expand-enter, .expand-leave-to {
-  transition: all .2s;
-  max-height: 0;
-  opacity: 0;
 }
 
 .wrong-answer-clicked {
   animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
 }
 
+
+// animations
+@keyframes expand {
+  from {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+  to {
+    max-height: 800px;
+    opacity: 1;
+  }
+}
+
+@keyframes collapse {
+  from {
+    max-height: 800px;
+    opacity: 1;
+
+  }
+  to {
+    max-height: 0;
+    overflow: hidden;
+  }
+}
 @keyframes shake {
   10%, 90% {
     transform: translate3d(-1px, 0, 0);

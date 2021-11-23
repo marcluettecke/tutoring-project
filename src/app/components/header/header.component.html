@@ -4,6 +4,7 @@
     <a routerLink="/login" *ngIf="!(loggedInService.isLoggedIn$ | async)" class="navigation-link" routerLinkActive="active">Login</a>
     <a routerLink="/signup" *ngIf="loggedInService.isAdmin$ | async" class="navigation-link" routerLinkActive="active">Signup</a>
     <a routerLink="/addQuestion" *ngIf="loggedInService.isLoggedIn$ | async" class="navigation-link" routerLinkActive="active">Agregar pregunta</a>
+    <a *ngIf="loggedInService.isLoggedIn$ | async" class="navigation-link" (click)="loggedInService.logOut()">Logout</a>
   </nav>
   <div class="image-wrapper">
     <img src="../../../assets/images/swoop.svg" alt="underlying image to allow for header styling" class="swoop-image">

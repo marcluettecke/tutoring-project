@@ -13,6 +13,7 @@ import { AnswerOptionComponent } from './components/answer-option/answer-option.
 import {FormsModule} from "@angular/forms";
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from '../environments/environment';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
             declarations: [
@@ -29,7 +30,8 @@ import { environment } from '../environments/environment';
               BrowserModule,
               AppRoutingModule,
               FormsModule,
-              AngularFireModule.initializeApp(environment.firebase)
+              AngularFireModule.initializeApp(environment.firebase),
+              FontAwesomeModule
             ],
             providers: [],
             bootstrap: [AppComponent]
