@@ -8,7 +8,6 @@ import {LoggedInService} from "../../services/logged-in.service";
 })
 export class HeaderComponent implements OnInit {
   constructor( public loggedInService: LoggedInService) { }
-
   ngOnInit(): void {
   }
 

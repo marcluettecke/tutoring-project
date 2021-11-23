@@ -5,7 +5,6 @@ import {AccountsService} from "../../services/accounts.service";
 import {Account} from "../../models/accounts";
 
 
-
 @Component({
              selector: 'app-login',
              templateUrl: './login.component.html',
@@ -20,14 +19,17 @@ export class LoginComponent implements OnInit {
   }
 
   handleLogin(inputData: loginData) {
-    this.accountService.getAccounts().subscribe((resp: Account[]) =>{
+    this.accountService.getAccounts().subscribe((resp: Account[]) => {
       const availableAccounts = resp.map(el => {
-        return {email: el.email, password: el.password}
+        return {email: el.email, password: el.password, isAdmin: el.isAdmin}
       })
-      if(availableAccounts.some((singleAccount: loginData) => {
+      if (availableAccounts.filter((singleAccount: loginData) => {
         return singleAccount.email === inputData.email && singleAccount.password === inputData.password
-      })){
+      }).length > 0) {
         this.loginService.logIn()
+        if (availableAccounts[0].isAdmin) {
+          this.loginService.changeAdminStatus(true)
+        }
       }
     })
   }

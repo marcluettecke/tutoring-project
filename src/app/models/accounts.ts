@@ -3,7 +3,8 @@ export interface Account {
   firstname: string,
   lastname: string,
   email: string,
-  password: string
+  password: string,
+  isAdmin: boolean
 }
 
 export interface Accounts {
