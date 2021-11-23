@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import {Question} from '../../models/question'
 import {QuestionsService} from "../../services/questions.service";
 
 @Component({
@@ -8,11 +7,12 @@ import {QuestionsService} from "../../services/questions.service";
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  questions: Question[]
+  questions: any;
   constructor(private questionService: QuestionsService) { }
 
+
   ngOnInit(): void {
-    this.questions = this.questionService.questions
+    this.questions = this.questionService.getQuestions()
   }
 
 }

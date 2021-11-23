@@ -11,6 +11,8 @@ import { AddQuestionComponent } from './views/add-question/add-question.componen
 import { QuestionCardComponent } from './components/question-card/question-card.component';
 import { AnswerOptionComponent } from './components/answer-option/answer-option.component';
 import {FormsModule} from "@angular/forms";
+import { AngularFireModule } from '@angular/fire/compat';
+import { environment } from '../environments/environment';
 
 @NgModule({
             declarations: [
@@ -26,7 +28,8 @@ import {FormsModule} from "@angular/forms";
             imports: [
               BrowserModule,
               AppRoutingModule,
-              FormsModule
+              FormsModule,
+              AngularFireModule.initializeApp(environment.firebase)
             ],
             providers: [],
             bootstrap: [AppComponent]
