@@ -10,8 +10,8 @@
     </app-answer-option>
   </div>
   <div *ngIf="clicked" class="card--explanation-wrapper" (click)="explanationShown = !explanationShown">
-    <fa-icon *ngIf="!explanationShown" [icon]="faAngleDoubleDown" class="card--explanation-icon"></fa-icon>
-    <fa-icon *ngIf="explanationShown" [icon]="faAngleDoubleUp" class="card--explanation-icon"></fa-icon>
+    <fa-icon *ngIf="explanationShown" [icon]="faAngleDoubleDown" class="card--explanation-icon"></fa-icon>
+    <fa-icon *ngIf="!explanationShown" [icon]="faAngleDoubleUp" class="card--explanation-icon"></fa-icon>
     <p class="card--explanation-text"
        [ngClass]="explanationShown? 'card--explanation-expanded': 'card--explanation-collapsed'"> {{questionItem.explanation}}</p>
   </div>

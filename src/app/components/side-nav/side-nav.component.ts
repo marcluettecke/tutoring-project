@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {faAngleDoubleLeft, faAngleDoubleRight} from "@fortawesome/free-solid-svg-icons";
+import {faAngleDoubleLeft} from "@fortawesome/free-solid-svg-icons";
 import {QuestionsService} from "../../services/questions.service";
-import {map} from "rxjs/operators";
 import {Question} from "../../models/question";
 
 @Component({
@@ -10,26 +9,33 @@ import {Question} from "../../models/question";
   styleUrls: ['./side-nav.component.scss']
 })
 export class SideNavComponent implements OnInit {
+  sections: { [id: string]: string[]} = {}
   mainSections: string[] = []
+  isExpanded: {[id: number] : boolean} = {}
   // mainSections = ['Administrativo', 'Medio ambiente', 'Costas', 'Aguas']
   faAngleDoubleLeft = faAngleDoubleLeft
-  faAngleDoubleRight = faAngleDoubleRight
   open = true;
   constructor(private questionService: QuestionsService) { }
 
   ngOnInit(): void {
     // create observable with list of questions
-    const sections$ = this.questionService.getQuestions()
+    const questions$ = this.questionService.getQuestions()
 
-    sections$.subscribe((sections: any) => {
-      sections.map((section: Question) => {
-        // find unique main sections - no duplicates
-        if(!this.mainSections.includes(section.mainSection)) {
-          this.mainSections.push(section.mainSection)
+    questions$.subscribe((questions: any) => {
+      questions.map((question: Question) => {
+        // if main section is not present create new one with main section as key and subsections as only array entry
+        if(!(question.mainSection in this.sections)) {
+          this.sections[question.mainSection] = [question.subSection]
+        } else {
+          // if main section exists as key we have to check whether subsection exists in value array or not
+          if(!this.sections[question.mainSection].includes(question.subSection)) {
+            this.sections[question.mainSection].push(question.subSection)
+          }
         }
       })
+      this.mainSections = Object.keys(this.sections)
+      this.mainSections.map((el, idx) => this.isExpanded[idx] = false)
     })
-    console.log(this.mainSections)
   }
 
 }

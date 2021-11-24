@@ -1,6 +1,13 @@
 <div class="side-nav" [ngClass]="open? 'side-nav--open': 'side-nav--closed'">
   <ul class="side-nav--items">
-    <li *ngFor="let section of mainSections, let i = index" class="side-nav--items--item">{{i + 1}}. {{section}}</li>
+    <li (click)="isExpanded[i] = !isExpanded[i]" *ngFor="let section of mainSections, let i = index" class="side-nav--items--item">
+      <p class="side-nav--items--item--text">{{i + 1}}. {{section}}</p>
+      <ul class="side-nav--items--item--sublist" [ngClass]="isExpanded[i]? 'side-nav--items--item--sublist--expanded': 'side-nav--items--item--sublist--collapsed'">
+        <li class="side-nav--items--item--sublist--item" *ngFor="let subsection of sections[section], let j = index">
+          {{i+1}}.{{j+1}}. {{subsection}}
+        </li>
+      </ul>
+    </li>
   </ul>
 </div>
 <fa-icon [icon]="faAngleDoubleLeft" (click)="open = !open" class="side-nav--icon"
