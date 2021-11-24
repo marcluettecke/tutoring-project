@@ -52,11 +52,11 @@
     }
 
     &-collapsed {
-      animation: expand 500ms ease-in-out forwards;
+      animation: expand 500ms ease-in-out both;
     }
 
     &-expanded {
-      animation: collapse 300ms ease-out forwards;
+      animation: collapse 300ms ease-out both;
       animation-delay: 0ms;
     }
   }
