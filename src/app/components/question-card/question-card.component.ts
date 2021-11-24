@@ -13,6 +13,7 @@ export class QuestionCardComponent implements OnInit {
   @Input() questionIndex: number
   @Input() mainSectionNumber: number
   @Input() subSectionNumber: number
+  @Input() sidebarExpanded: boolean
 
   faAngleDoubleDown = faAngleDoubleDown
   faAngleDoubleUp = faAngleDoubleUp

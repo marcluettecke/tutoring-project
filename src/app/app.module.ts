@@ -10,7 +10,7 @@ import { SignupComponent } from './views/signup/signup.component';
 import { AddQuestionComponent } from './views/add-question/add-question.component';
 import { QuestionCardComponent } from './components/question-card/question-card.component';
 import { AnswerOptionComponent } from './components/answer-option/answer-option.component';
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from '../environments/environment';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -33,7 +33,8 @@ import { SideNavComponent } from './components/side-nav/side-nav.component';
               AppRoutingModule,
               FormsModule,
               AngularFireModule.initializeApp(environment.firebase),
-              FontAwesomeModule
+              FontAwesomeModule,
+              ReactiveFormsModule
             ],
             providers: [],
             bootstrap: [AppComponent]

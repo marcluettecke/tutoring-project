@@ -1,1 +1,37 @@
-<p>add-question works!</p>
+<form class="outer-wrapper" [formGroup]="newQuestionForm" (ngSubmit)="onSubmit()">
+  <div class="inner-wrapper">
+    <label for="question" class="input-label">Pregunta</label>
+    <textarea rows="5" class="input-field" id="question" name="question" formControlName="questionText">
+    </textarea>
+  </div>
+  <div class="answers" formGroupName="answers">
+    <div class="inner-wrapper" *ngFor="let answerNumber of [1,2,3,4]">
+      <label [for]="'answer'+answerNumber" class="input-label answer-text">Respuesta {{answerNumber}}</label>
+      <textarea rows="3" class="input-field" [id]="'answer'+answerNumber" [name]="'answer'+answerNumber" [formControlName]="'answer'+answerNumber">
+      </textarea>
+    </div>
+  </div>
+  <div class="inner-wrapper">
+    <select name="correct-answer" id="correct-answer" class="answer-dropdown" formControlName="correctAnswer">
+      <option value="" disabled>Elige la respuesta correcta</option>
+      <option [ngValue]="answer" *ngFor="let answer of [1,2,3,4]">{{answer}}</option>
+    </select>
+  </div>
+  <div class="inner-wrapper">
+    <label for="explanation" class="input-label">Explicación</label>
+    <textarea rows="10" class="input-field" id="explanation" name="explanation" formControlName="explanation">
+    </textarea>
+  </div>
+  <div class="inner-wrapper">
+    <label for="mainSection" class="input-label">Sección principal</label>
+    <input type="text" class="input-field" id="mainSection" name="mainSection" formControlName="mainSection">
+  </div>
+  <div class="inner-wrapper">
+    <label for="subSection" class="input-label">Subsección</label>
+    <input type="text" class="input-field" id="subSection" name="subSection" formControlName="subSection">
+  </div>
+
+  <button type="submit" class="submit-button">
+    Agregar pregunta
+  </button>
+</form>

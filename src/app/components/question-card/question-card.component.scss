@@ -1,13 +1,13 @@
 .card {
-  display: grid;
-  place-content: center;
   padding: 30px 15px;
   border: 1px solid;
   font-size: 1.2rem;
   border-radius: 8px;
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  transition: transform 500ms ease-in-out;
 
   &--header {
+    width: 100%;
     display: flex;
     font-weight: bold;
     padding-bottom: 20px;
@@ -72,6 +72,10 @@
 
 .wrong-answer-clicked {
   animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+.sidebar-expanded {
+  transform: translateX(130px);
 }
 
 

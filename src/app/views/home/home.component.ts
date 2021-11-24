@@ -9,6 +9,7 @@ import {Question} from "../../models/question";
            })
 export class HomeComponent implements OnInit {
   questions: Question[];
+  sidebarExpanded = true;
   activeSection: { mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number } = {
     mainSection: 'administrativo',
     subSection: 'general',
@@ -22,6 +23,10 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.updateData()
+  }
+
+  toggleSidebarExpanded(value: boolean){
+    this.sidebarExpanded = value
   }
 
   updateData() {

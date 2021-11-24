@@ -14,8 +14,15 @@ export class SideNavComponent implements OnInit {
   isExpanded: { [id: number]: boolean } = {}
   faAngleDoubleLeft = faAngleDoubleLeft
   open = true;
+  sectionOrderEnum: {[key: string]: number} = {
+    'administrativo': 1,
+    'medio ambiente': 2,
+    'costas': 3,
+    'aguas': 4
+  }
   @Input() activeSection: { mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number }
   @Output() clickEmit: EventEmitter<{ mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number }> = new EventEmitter()
+  @Output() expandSidebarEmit: EventEmitter<boolean> = new EventEmitter<boolean>()
 
   constructor(private questionService: QuestionsService) {
   }
@@ -36,6 +43,10 @@ export class SideNavComponent implements OnInit {
         }
       })
       this.mainSections = Object.keys(this.sections)
+      // sort according to Jose's order
+      this.mainSections.sort((a, b) => {
+        return this.sectionOrderEnum[a] - this.sectionOrderEnum[b]
+      })
       // collapse all subheaders on init
       this.mainSections.map((el, idx) => {
         this.isExpanded[idx] = idx === 0;
@@ -51,6 +62,11 @@ export class SideNavComponent implements OnInit {
 
   clickHandlerSublist(mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number) {
     this.clickEmit.emit({mainSection, subSection, mainSectionNumber, subSectionNumber})
+  }
+
+  iconClickHandler(){
+    this.open = !this.open
+    this.expandSidebarEmit.emit(this.open)
   }
 
 }

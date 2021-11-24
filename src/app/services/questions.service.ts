@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from "rxjs";
 import {Question} from '../models/question'
-import {AngularFirestore} from "@angular/fire/compat/firestore";
+import {AngularFirestore, DocumentReference} from "@angular/fire/compat/firestore";
 
 // const QUESTIONS_DATA = [
 //   {
@@ -106,6 +106,7 @@ import {AngularFirestore} from "@angular/fire/compat/firestore";
               providedIn: 'root'
             })
 export class QuestionsService {
+  private userRef: DocumentReference
   private readonly _questions = new BehaviorSubject<any>([])
   readonly questions$ = this._questions.asObservable();
 
@@ -120,10 +121,12 @@ export class QuestionsService {
   }
 
   getQuestions(){
-    return this.firestore.collection('questions').valueChanges()
+    return this.firestore.collection<Question[]>('questions').valueChanges()
   }
 
-  addQuestions() {
+
+  addQuestion(newQuestion: Question) {
+    this.firestore.collection<Question>('questions').add(newQuestion).then(_ => alert('Question added'))
   }
 
 
