@@ -39,49 +39,54 @@
   }
 
   &--icon {
-    &--collapse {
-      position: fixed;
-      bottom: 10px;
-      left: 160px;
-      transition: transform 400ms ease-out;
-
-      &:hover {
-      transform: translateX(-8px);
-      color: hsl(195, 53%, 65%);
-    }
-    }
+    position: fixed;
+    bottom: 10px;
+    left: 160px;
 
     &--open {
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-
-      &:hover {
-      transform: translateX(8px);
-      color: hsl(195, 53%, 65%);
+      animation: flip-icon-left 400ms ease-out forwards;
     }
 
-
+    &--closed {
+      animation: flip-icon-right 400ms ease-in forwards;
     }
-
-
   }
 }
 
 @keyframes expand-sidenav {
-  from{
+  from {
     transform: translateX(-100%);
   }
-  to{
+  to {
     transform: translateX(0);
   }
 }
 
 @keyframes collapse-sidenav {
-  from{
+  from {
     transform: translateX(0);
   }
-  to{
+  to {
     transform: translateX(-100%);
   }
 }
+
+@keyframes flip-icon-left {
+  from {
+    transform: translateX(0) rotate(0);
+  }
+  to {
+    transform: translateX(-130px) rotate(-180deg);
+  }
+}
+
+@keyframes flip-icon-right {
+  from {
+    transform: translateX(-130px) rotate(-180deg);
+  }
+  to {
+    transform: translateX(0) rotate(0);
+  }
+}
+
+

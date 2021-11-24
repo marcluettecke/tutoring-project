@@ -18,10 +18,12 @@ export class SideNavComponent implements OnInit {
   constructor(private questionService: QuestionsService) { }
 
   ngOnInit(): void {
-    const sections$ = this.questionService.getQuestions().pipe()
-    map((el: Question) => el.mainSection)
+    // create observable with list of questions
+    const sections$ = this.questionService.getQuestions()
+
     sections$.subscribe((sections: any) => {
       sections.map((section: Question) => {
+        // find unique main sections - no duplicates
         if(!this.mainSections.includes(section.mainSection)) {
           this.mainSections.push(section.mainSection)
         }

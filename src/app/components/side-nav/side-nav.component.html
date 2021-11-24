@@ -3,5 +3,5 @@
     <li *ngFor="let section of mainSections, let i = index" class="side-nav--items--item">{{i + 1}}. {{section}}</li>
   </ul>
 </div>
-<fa-icon *ngIf="open" [icon]="faAngleDoubleLeft" (click)="open = false" class="side-nav--icon--collapse" size="3x"></fa-icon>
-<fa-icon *ngIf="!open" [icon]="faAngleDoubleRight" (click)="open = true" class="side-nav--icon--open" size="3x"></fa-icon>
+<fa-icon [icon]="faAngleDoubleLeft" (click)="open = !open" class="side-nav--icon"
+         [ngClass]="open? 'side-nav--icon--closed':'side-nav--icon--open'" size="3x"></fa-icon>
