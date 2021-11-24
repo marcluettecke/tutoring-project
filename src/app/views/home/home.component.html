@@ -1,5 +1,7 @@
-<app-side-nav></app-side-nav>
+<app-side-nav (clickEmit)="changeData($event)" [activeSection]="activeSection"></app-side-nav>
 <div class="wrapper">
-    <app-question-card class="single-question" *ngFor="let question of questions | async; let i = index" [questionIndex]="i"
+    <app-question-card class="single-question" *ngFor="let question of questions; let i = index"
+                       [mainSectionNumber]="activeSection.mainSectionNumber"
+                       [subSectionNumber]="activeSection.subSectionNumber" [questionIndex]="i"
                        [questionItem]="question"></app-question-card>
 </div>

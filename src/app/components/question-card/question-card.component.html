@@ -1,5 +1,9 @@
 <div class="card" [ngClass]="wrongAnswerClicked? 'wrong-answer-clicked' : ''">
-  <div class="card--header">Pregunta {{questionIndex + 1}}</div>
+  <div class="card--header">
+    <p class="card--header--side">Sección: {{mainSectionNumber}}-{{subSectionNumber}}</p>
+    <p class="card--header--question">Pregunta: {{questionIndex + 1}}</p>
+    <div class="card--header--side"></div>
+  </div>
   <div class="card--text">{{questionItem.questionText}}?</div>
   <div class="card--answer-wrapper">
     <app-answer-option *ngFor="let option of questionItem.answers" [id]="option.id" [answerOption]="option.text"

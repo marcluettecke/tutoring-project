@@ -11,6 +11,8 @@ import {faAngleDoubleDown, faAngleDoubleUp} from "@fortawesome/free-solid-svg-ic
 export class QuestionCardComponent implements OnInit {
   @Input() questionItem: Question
   @Input() questionIndex: number
+  @Input() mainSectionNumber: number
+  @Input() subSectionNumber: number
 
   faAngleDoubleDown = faAngleDoubleDown
   faAngleDoubleUp = faAngleDoubleUp

@@ -60,6 +60,11 @@
           list-style: none;
           text-transform: capitalize;
 
+          &--active {
+            font-weight: bold;
+            text-decoration: underline;
+          }
+
           &:hover {
             cursor: pointer;
             color: hsl(0, 0%, 34%);
