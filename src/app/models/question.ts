@@ -8,7 +8,9 @@ export interface Question {
   questionText: string,
   answers: Answer[],
   correctAnswer: string,
-  explanation: string
+  explanation: string,
+  mainSection: string,
+  subSection: string
 }
 
 export interface Questions {

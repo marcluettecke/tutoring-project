@@ -14,6 +14,7 @@ import {FormsModule} from "@angular/forms";
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from '../environments/environment';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { SideNavComponent } from './components/side-nav/side-nav.component';
 
 @NgModule({
             declarations: [
@@ -24,7 +25,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
               SignupComponent,
               AddQuestionComponent,
               QuestionCardComponent,
-              AnswerOptionComponent
+              AnswerOptionComponent,
+              SideNavComponent
             ],
             imports: [
               BrowserModule,

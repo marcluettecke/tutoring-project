@@ -1,0 +1,7 @@
+<div class="side-nav" [ngClass]="open? 'side-nav--open': 'side-nav--closed'">
+  <ul class="side-nav--items">
+    <li *ngFor="let section of mainSections, let i = index" class="side-nav--items--item">{{i + 1}}. {{section}}</li>
+  </ul>
+</div>
+<fa-icon *ngIf="open" [icon]="faAngleDoubleLeft" (click)="open = false" class="side-nav--icon--collapse" size="3x"></fa-icon>
+<fa-icon *ngIf="!open" [icon]="faAngleDoubleRight" (click)="open = true" class="side-nav--icon--open" size="3x"></fa-icon>
