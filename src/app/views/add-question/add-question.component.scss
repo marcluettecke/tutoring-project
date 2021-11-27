@@ -1,6 +1,6 @@
 .outer-wrapper {
   width: max-content;
-  margin: 0 auto;
+  margin: 30px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,6 +26,10 @@
       }
     }
 
+    .validation-message {
+      color: red;
+    }
+
     .answer-text {
       padding-top: 10px;
     }
@@ -46,10 +50,17 @@
     margin-top: 20px;
     border-radius: 6px;
     background-color: hsl(0, 0%, 85%);
+    border: none;
 
     &:hover {
-      background-color: hsl(0, 0%, 94%);
+      //background-color: hsl(0, 0%, 94%);
       color: hsl(195, 53%, 65%);
+    }
+
+    &:disabled:hover {
+      cursor: not-allowed;
+      background-color: hsl(0, 0%, 85%);
+      color: revert;
     }
   }
 

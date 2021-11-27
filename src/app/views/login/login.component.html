@@ -1,14 +1,26 @@
-<div class="outer-wrapper">
+<form class="outer-wrapper" [formGroup]="loginForm" (ngSubmit)="handleLogin()">
   <div class="inner-wrapper">
     <label for="email" class="input-label">Email</label>
-    <input type="email" class="input-field" id="email" name="email" [(ngModel)]="inputData.email">
+    <input type="email" class="input-field" id="email" name="email" formControlName="email">
+    <span
+      *ngIf="(email.dirty || email.touched) && email.invalid && email.errors?.required"
+      class="validation-message">Por favor, introduce una dirección de correo electrónico válida</span>
   </div>
   <div class="inner-wrapper">
     <label for="password" class="input-label">Password</label>
-    <input type="password" class="input-field" id="password" name="password" [(ngModel)]="inputData.password">
+    <input type="password" class="input-field" id="password" name="password" formControlName="password">
+    <span
+      *ngIf="(password.dirty || password.touched) && password.invalid && password.errors?.required"
+      class="validation-message">Porfavor ingrese una contraseña</span>
   </div>
   <button class="login-button"
-          (click)="handleLogin(inputData)">
+          [disabled]="!loginForm.valid"
+          type="submit"
+  >
     Iniciar sesión
   </button>
-</div>
+  <span
+    *ngIf="accountNotFound"
+    class="validation-message">No se encontró ninguna cuenta para el correo electrónico y la contraseña. Por favor revise su ortografía ...</span>
+</form>
+

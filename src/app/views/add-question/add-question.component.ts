@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {QuestionsService} from "../../services/questions.service";
-import {FormControl, FormGroup} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Question} from "../../models/question";
 
 @Component({
@@ -12,23 +12,42 @@ export class AddQuestionComponent implements OnInit {
   currentQuestionLength: number
   newQuestionForm =
     new FormGroup({
-                    questionText: new FormControl(''),
+                    questionText: new FormControl('', [Validators.required]),
                     answers: new FormGroup({
-                                             answer1: new FormControl(''),
-                                             answer2: new FormControl(''),
-                                             answer3: new FormControl(''),
-                                             answer4: new FormControl('')
+                                             answer1: new FormControl('', [Validators.required]),
+                                             answer2: new FormControl('', [Validators.required]),
+                                             answer3: new FormControl('', [Validators.required]),
+                                             answer4: new FormControl('', [Validators.required])
                                            }
                     ),
-                    explanation: new FormControl(''),
-                    correctAnswer: new FormControl(''),
-                    mainSection: new FormControl(''),
-                    subSection: new FormControl(''),
+                    explanation: new FormControl('', [Validators.required]),
+                    correctAnswer: new FormControl('', [Validators.required]),
+                    mainSection: new FormControl('', [Validators.required]),
+                    subSection: new FormControl('', [Validators.required]),
                   })
 
   constructor(private questionService: QuestionsService) {
   }
+  get question(): AbstractControl {
+    return this.newQuestionForm.get('questionText') as AbstractControl;
+  }
+  get correctAnswer(): AbstractControl {
+    return this.newQuestionForm.get('correctAnswer') as AbstractControl;
+  }
+  get explanation(): AbstractControl {
+    return this.newQuestionForm.get('explanation') as AbstractControl;
+  }
+  get mainSection(): AbstractControl {
+    return this.newQuestionForm.get('mainSection') as AbstractControl;
+  }
+  get subSection(): AbstractControl {
+    return this.newQuestionForm.get('subSection') as AbstractControl;
+  }
 
+
+  checkAnswerProperty(number: number) {
+    return this.newQuestionForm.get(['answers', `answer${number}`]) as AbstractControl;
+  }
   ngOnInit(): void {
     this.questionService.getQuestions().subscribe(questions => this.currentQuestionLength = questions.length)
   }
@@ -66,6 +85,7 @@ export class AddQuestionComponent implements OnInit {
 
     }
     this.questionService.addQuestion(newQuestion)
+    this.newQuestionForm.reset()
   }
 
 }

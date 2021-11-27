@@ -1,37 +1,56 @@
 <form class="outer-wrapper" [formGroup]="newQuestionForm" (ngSubmit)="onSubmit()">
   <div class="inner-wrapper">
-    <label for="question" class="input-label">Pregunta</label>
+    <label for="question" class="input-label">Pregunta*</label>
     <textarea rows="5" class="input-field" id="question" name="question" formControlName="questionText">
     </textarea>
+    <span
+      *ngIf="(question.dirty || question.touched) && question.invalid && question.errors?.required"
+      class="validation-message">Por favor ingrese una pregunta</span>
   </div>
   <div class="answers" formGroupName="answers">
     <div class="inner-wrapper" *ngFor="let answerNumber of [1,2,3,4]">
-      <label [for]="'answer'+answerNumber" class="input-label answer-text">Respuesta {{answerNumber}}</label>
-      <textarea rows="3" class="input-field" [id]="'answer'+answerNumber" [name]="'answer'+answerNumber" [formControlName]="'answer'+answerNumber">
+      <label [for]="'answer'+answerNumber" class="input-label answer-text">Respuesta {{answerNumber}}*</label>
+      <textarea rows="3" class="input-field" [id]="'answer'+answerNumber" [name]="'answer'+answerNumber"
+                [formControlName]="'answer'+answerNumber">
       </textarea>
+      <span
+        *ngIf="(checkAnswerProperty(answerNumber).dirty || checkAnswerProperty(answerNumber).touched) && checkAnswerProperty(answerNumber).invalid && checkAnswerProperty(answerNumber).errors?.required"
+        class="validation-message">Por favor ingrese un texto para la respuesta {{answerNumber}}</span>
     </div>
   </div>
   <div class="inner-wrapper">
     <select name="correct-answer" id="correct-answer" class="answer-dropdown" formControlName="correctAnswer">
-      <option value="" disabled>Elige la respuesta correcta</option>
+      <option value="" disabled>Elige la respuesta correcta*</option>
       <option [ngValue]="answer" *ngFor="let answer of [1,2,3,4]">{{answer}}</option>
     </select>
+    <span
+      *ngIf="(correctAnswer.dirty || correctAnswer.touched) && correctAnswer.invalid && correctAnswer.errors?.required"
+      class="validation-message">Ingrese el número de respuesta correcto</span>
   </div>
   <div class="inner-wrapper">
-    <label for="explanation" class="input-label">Explicación</label>
+    <label for="explanation" class="input-label">Explicación*</label>
     <textarea rows="10" class="input-field" id="explanation" name="explanation" formControlName="explanation">
     </textarea>
+    <span
+      *ngIf="(explanation.dirty || explanation.touched) && explanation.invalid && explanation.errors?.required"
+      class="validation-message">Por favor ingrese su explicación</span>
   </div>
   <div class="inner-wrapper">
-    <label for="mainSection" class="input-label">Sección principal</label>
+    <label for="mainSection" class="input-label">Sección principal*</label>
     <input type="text" class="input-field" id="mainSection" name="mainSection" formControlName="mainSection">
+    <span
+      *ngIf="(mainSection.dirty || mainSection.touched) && mainSection.invalid && mainSection.errors?.required"
+      class="validation-message">Por favor ingrese a la sección principal</span>
   </div>
   <div class="inner-wrapper">
-    <label for="subSection" class="input-label">Subsección</label>
+    <label for="subSection" class="input-label">Subsección*</label>
     <input type="text" class="input-field" id="subSection" name="subSection" formControlName="subSection">
+    <span
+      *ngIf="(subSection.dirty || subSection.touched) && subSection.invalid && subSection.errors?.required"
+      class="validation-message">Por favor ingrese a la subsección</span>
   </div>
 
-  <button type="submit" class="submit-button">
+  <button [disabled]="!newQuestionForm.valid" type="submit" class="submit-button">
     Agregar pregunta
   </button>
 </form>
