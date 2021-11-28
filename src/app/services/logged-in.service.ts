@@ -30,6 +30,7 @@ export class LoggedInService {
   }
   logOut(){
     this.isLoggedIn = false
+    this.changeAdminStatus(false)
   }
   changeAdminStatus(value: boolean){
     this.isAdmin = value

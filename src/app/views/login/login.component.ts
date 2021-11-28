@@ -43,9 +43,6 @@ export class LoginComponent implements OnInit {
       })
   }
 
-  // )
-  // @ts-ignore
-
 
   ngOnInit(): void {
   }

@@ -6,7 +6,3 @@ export interface Account {
   password: string,
   isAdmin: boolean
 }
-
-export interface Accounts {
-  accounts: Account[]
-}

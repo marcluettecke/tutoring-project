@@ -1,1 +1,42 @@
-<p>signup works!</p>
+<form class="outer-wrapper" [formGroup]="signupForm" (ngSubmit)="handleSignup()">
+  <div class="inner-wrapper">
+    <label for="firstname" class="input-label">Nombre</label>
+    <input type="text" class="input-field" id="firstname" name="firstname" formControlName="firstname">
+    <span
+      *ngIf="(firstname.dirty || firstname.touched) && firstname.invalid && firstname.errors?.required"
+      class="validation-message">Por favor, ingrese un nombre</span>
+  </div>
+  <div class="inner-wrapper">
+    <label for="lastname" class="input-label">Apellido</label>
+    <input type="text" class="input-field" id="lastname" name="lastname" formControlName="lastname">
+    <span
+      *ngIf="(lastname.dirty || lastname.touched) && lastname.invalid && lastname.errors?.required"
+      class="validation-message">Por favor, ingrese un apellido</span>
+  </div>
+  <div class="inner-wrapper">
+    <label for="email" class="input-label">Email</label>
+    <input type="email" class="input-field" id="email" name="email" formControlName="email">
+    <span
+      *ngIf="(email.dirty || email.touched) && email.invalid && email.errors?.required"
+      class="validation-message">Por favor, introduce una dirección de correo electrónico válida</span>
+  </div>
+  <div class="inner-wrapper">
+    <label for="password" class="input-label">Password</label>
+    <input type="password" class="input-field" id="password" name="password" formControlName="password">
+    <span
+      *ngIf="(password.dirty || password.touched) && password.invalid && password.errors?.required"
+      class="validation-message">Porfavor ingrese una contraseña</span>
+  </div>
+  <div class="inner-wrapper">
+    <label for="isAdmin" class="input-label">Es usuario administrador</label>
+    <input type="checkbox" class="input-field admin-checkbox" id="isAdmin" name="isAdmin" formControlName="isAdmin">
+  </div>
+
+  <button class="signup-button"
+          [disabled]="!signupForm.valid"
+          type="submit"
+  >
+    Registrarse nuevo usuario
+  </button>
+</form>
+
