@@ -9,7 +9,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    gap: 100px;
+    gap: 70px;
 
     .navigation-link {
       z-index: 2;
@@ -24,6 +24,14 @@
       &:hover {
         cursor: pointer;
       }
+
+
+    }
+
+    .log-button {
+      position: absolute;
+      top: 0;
+      right: 15px;
     }
 
     .active {

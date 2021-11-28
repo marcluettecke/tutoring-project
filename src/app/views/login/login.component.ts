@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {LoggedInService} from "../../services/logged-in.service";
 import {AccountsService} from "../../services/accounts.service";
 import {AbstractControl, FormControl, FormGroup, Validators} from "@angular/forms";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -18,7 +19,7 @@ export class LoginComponent implements OnInit {
                               password: new FormControl('', [Validators.required])
                             })
 
-  constructor(private loginService: LoggedInService, private accountService: AccountsService) {
+  constructor(private loginService: LoggedInService, private accountService: AccountsService, private router: Router) {
   }
 
   get email() {
@@ -34,6 +35,7 @@ export class LoginComponent implements OnInit {
       .subscribe(response => {
         if (response.length > 0) {
           this.loginService.logIn()
+          this.router.navigate(['/home'])
           if (response[0].isAdmin) {
             this.loginService.changeAdminStatus(true)
           }
