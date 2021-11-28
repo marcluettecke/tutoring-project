@@ -14,7 +14,7 @@ export class SideNavComponent implements OnInit {
   isExpanded: { [id: number]: boolean } = {}
   faAngleDoubleLeft = faAngleDoubleLeft
   open = true;
-  sectionOrderEnum: {[key: string]: number} = {
+  sectionOrderEnum: { [key: string]: number } = {
     'administrativo': 1,
     'medio ambiente': 2,
     'costas': 3,
@@ -64,7 +64,7 @@ export class SideNavComponent implements OnInit {
     this.clickEmit.emit({mainSection, subSection, mainSectionNumber, subSectionNumber})
   }
 
-  iconClickHandler(){
+  iconClickHandler() {
     this.open = !this.open
     this.expandSidebarEmit.emit(this.open)
   }

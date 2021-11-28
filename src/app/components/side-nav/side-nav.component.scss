@@ -1,11 +1,20 @@
 .side-nav {
   width: fit-content;
+  display: flex;
+  flex-direction: column;
   height: 100vh;
   background-color: hsl(77, 43%, 68%);
   position: fixed;
   top: 0;
   left: 0;
   border-right: 1px solid lightgrey;
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   &--open {
     animation: expand-sidenav 500ms ease-in forwards;
@@ -25,10 +34,10 @@
     gap: 30px;
 
     &--item {
-        text-decoration: none;
-        list-style: none;
+      text-decoration: none;
+      list-style: none;
 
-      &--text{
+      &--text {
         text-transform: capitalize;
         font-weight: bold;
         font-size: 1.5rem;
@@ -83,13 +92,19 @@
       color: hsl(195, 53%, 65%);
       cursor: pointer;
     }
+
     &--open {
       animation: flip-icon-left 400ms ease-out forwards;
 
     }
+
     &--closed {
       animation: flip-icon-right 400ms ease-in forwards;
     }
+  }
+  .bottom-spacer {
+    min-height: 75px;
+    width: 100%;
   }
 }
 
@@ -130,23 +145,23 @@
 }
 
 @keyframes expand-main-section {
-  from{
+  from {
     height: 0;
     opacity: 0;
     overflow: hidden;
   }
-  to{
+  to {
     height: auto;
     opacity: 1;
   }
 }
 
 @keyframes collapse-main-section {
-  from{
+  from {
     height: auto;
     opacity: 1;
   }
-  to{
+  to {
     height: 0;
     opacity: 0;
     overflow: hidden;

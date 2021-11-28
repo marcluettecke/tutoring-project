@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from "rxjs";
 import {Question} from '../models/question'
-import {AngularFirestore, DocumentReference} from "@angular/fire/compat/firestore";
+import {AngularFirestore, AngularFirestoreCollection, DocumentReference} from "@angular/fire/compat/firestore";
 
 // const QUESTIONS_DATA = [
 //   {
@@ -113,15 +113,24 @@ export class QuestionsService {
   constructor(private firestore: AngularFirestore) {
   }
 
-  private set questions(val: Question[]) {
-    this._questions.next(val)
-  }
   get questions(): Question[] {
     return this._questions.getValue()
   }
 
-  getQuestions(){
+  private set questions(val: Question[]) {
+    this._questions.next(val)
+  }
+
+  getQuestions() {
     return this.firestore.collection<Question[]>('questions').valueChanges()
+  }
+
+  getSpecificQuestions(mainSection: string, subSection: string): Observable<Question[]> {
+    const questionsRef: AngularFirestoreCollection<Question> = this.firestore
+      .collection('questions', ref =>
+        ref.where('mainSection', '==', mainSection)
+          .where('subSection', '==', subSection))
+    return questionsRef.valueChanges()
   }
 
 

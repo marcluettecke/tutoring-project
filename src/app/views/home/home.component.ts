@@ -30,10 +30,8 @@ export class HomeComponent implements OnInit {
   }
 
   updateData() {
-    this.questionService.getQuestions().subscribe((response: any) => {
-      this.questions = response.filter((el: Question) => {
-        return el.mainSection === this.activeSection.mainSection && el.subSection === this.activeSection.subSection
-      })
+    this.questionService.getSpecificQuestions(this.activeSection.mainSection, this.activeSection.subSection).subscribe(response => {
+      this.questions = response
     })
   }
 

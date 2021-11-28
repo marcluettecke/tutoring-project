@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {loginData} from "../../models/loginData";
 import {LoggedInService} from "../../services/logged-in.service";
 import {AccountsService} from "../../services/accounts.service";
-import {Account} from "../../models/accounts";
 import {AbstractControl, FormControl, FormGroup, Validators} from "@angular/forms";
 
 
@@ -32,22 +30,17 @@ export class LoginComponent implements OnInit {
   }
 
   handleLogin() {
-    this.accountService.getAccounts().subscribe((resp: Account[]) => {
-      const availableAccounts = resp.map(el => {
-        return {email: el.email, password: el.password, isAdmin: el.isAdmin}
-      })
-      if (availableAccounts.filter((singleAccount: loginData) => {
-        return singleAccount.email === this.loginForm.value.email && singleAccount.password === this.loginForm.value.password
-      }).length > 0) {
-        console.log('fail')
-        this.loginService.logIn()
-        if (availableAccounts[0].isAdmin) {
-          this.loginService.changeAdminStatus(true)
+    this.accountService.getAccounts(this.loginForm.value.email, this.loginForm.value.password)
+      .subscribe(response => {
+        if (response.length > 0) {
+          this.loginService.logIn()
+          if (response[0].isAdmin) {
+            this.loginService.changeAdminStatus(true)
+          }
+        } else {
+          this.accountNotFound = true
         }
-      } else {
-        this.accountNotFound = true
-      }
-    })
+      })
   }
 
   // )
