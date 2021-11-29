@@ -19,7 +19,7 @@
     </div>
   </div>
   <div class="inner-wrapper">
-    <select name="correct-answer" id="correct-answer" class="answer-dropdown" formControlName="correctAnswer">
+    <select name="correct-answer" id="correct-answer" class="dropdown" formControlName="correctAnswer">
       <option value="" disabled>Elige la respuesta correcta*</option>
       <option [ngValue]="answer" *ngFor="let answer of [1,2,3,4]">{{answer}}</option>
     </select>
@@ -36,8 +36,10 @@
       class="validation-message">Por favor ingrese su explicación</span>
   </div>
   <div class="inner-wrapper">
-    <label for="mainSection" class="input-label">Sección principal*</label>
-    <input type="text" class="input-field" id="mainSection" name="mainSection" formControlName="mainSection">
+    <select name="mainSection" id="mainSection" class="dropdown" formControlName="mainSection">
+      <option value="" disabled>Elige la sección principal*</option>
+      <option [ngValue]="mainSection" *ngFor="let mainSection of ['administrativo','medio ambiente','costas','aguas']">{{mainSection}}</option>
+    </select>
     <span
       *ngIf="(mainSection.dirty || mainSection.touched) && mainSection.invalid && mainSection.errors?.required"
       class="validation-message">Por favor ingrese a la sección principal</span>
