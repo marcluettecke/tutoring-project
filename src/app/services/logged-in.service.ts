@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject} from "rxjs";
+import {CookieService} from "ngx-cookie-service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoggedInService {
-  private readonly  _isLoggedIn = new BehaviorSubject<boolean>(false)
+  private readonly  _isLoggedIn = new BehaviorSubject<boolean>(this.cookieService.get('loggedinState') === 'true')
   readonly isLoggedIn$ = this._isLoggedIn.asObservable()
-  private readonly  _isAdmin = new BehaviorSubject<boolean>(false)
+  private readonly  _isAdmin = new BehaviorSubject<boolean>(this.cookieService.get('adminState') === 'true')
   readonly isAdmin$ = this._isAdmin.asObservable()
+
+  constructor(private cookieService: CookieService) {
+  }
 
   get isLoggedIn(): boolean {
     return this._isLoggedIn.getValue()
@@ -37,5 +41,4 @@ export class LoggedInService {
   }
 
 
-  constructor() { }
 }
