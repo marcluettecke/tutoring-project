@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {QuestionsService} from "../../services/questions.service";
 import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Question} from "../../models/question";
+import {MAINSECTIONS, SUBSECTIONS, SUBSECTIONINTERFACE} from "../../constants/sections";
 
 @Component({
              selector: 'app-add-question',
@@ -10,6 +11,9 @@ import {Question} from "../../models/question";
            })
 export class AddQuestionComponent implements OnInit {
   currentQuestionLength: number
+  mainSections: string[] = MAINSECTIONS
+  subsections: SUBSECTIONINTERFACE = SUBSECTIONS
+
   newQuestionForm =
     new FormGroup({
                     questionText: new FormControl('', [Validators.required]),
@@ -25,21 +29,27 @@ export class AddQuestionComponent implements OnInit {
                     mainSection: new FormControl('', [Validators.required]),
                     subSection: new FormControl('', [Validators.required]),
                   })
+  currentSubsection: {name: string, index: number}[] | null = null
 
   constructor(private questionService: QuestionsService) {
   }
+
   get question(): AbstractControl {
     return this.newQuestionForm.get('questionText') as AbstractControl;
   }
+
   get correctAnswer(): AbstractControl {
     return this.newQuestionForm.get('correctAnswer') as AbstractControl;
   }
+
   get explanation(): AbstractControl {
     return this.newQuestionForm.get('explanation') as AbstractControl;
   }
+
   get mainSection(): AbstractControl {
     return this.newQuestionForm.get('mainSection') as AbstractControl;
   }
+
   get subSection(): AbstractControl {
     return this.newQuestionForm.get('subSection') as AbstractControl;
   }
@@ -48,6 +58,7 @@ export class AddQuestionComponent implements OnInit {
   checkAnswerProperty(number: number) {
     return this.newQuestionForm.get(['answers', `answer${number}`]) as AbstractControl;
   }
+
   ngOnInit(): void {
     this.questionService.getQuestions().subscribe(questions => this.currentQuestionLength = questions.length)
   }
@@ -56,7 +67,13 @@ export class AddQuestionComponent implements OnInit {
     return `q${this.currentQuestionLength + 1}`
   }
 
+  subsectionChangeHandler(){
+    this.currentSubsection = this.subsections[<'administrativo' | 'costas' | 'medio ambiente' | 'aguas'>this.newQuestionForm.value.mainSection]
+    console.log(this.currentSubsection)
+  }
+
   onSubmit() {
+    const subSectionIndex = this.currentSubsection![this.newQuestionForm.value.subSection].index
     const newQuestion: Question = {
       id: this.findId(),
       questionText: this.newQuestionForm.value.questionText,
@@ -82,6 +99,7 @@ export class AddQuestionComponent implements OnInit {
       explanation: this.newQuestionForm.value.explanation,
       mainSection: this.newQuestionForm.value.mainSection,
       subSection: this.newQuestionForm.value.subSection,
+      subSectionIndex: subSectionIndex
 
     }
     this.questionService.addQuestion(newQuestion)

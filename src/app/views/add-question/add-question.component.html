@@ -36,17 +36,21 @@
       class="validation-message">Por favor ingrese su explicación</span>
   </div>
   <div class="inner-wrapper">
-    <select name="mainSection" id="mainSection" class="dropdown" formControlName="mainSection">
+    <select name="mainSection" id="mainSection" class="dropdown" formControlName="mainSection" (change)="subsectionChangeHandler()">
       <option value="" disabled>Elige la sección principal*</option>
-      <option [ngValue]="mainSection" *ngFor="let mainSection of ['administrativo','medio ambiente','costas','aguas']">{{mainSection}}</option>
+      <option [ngValue]="mainSection" *ngFor="let mainSection of mainSections">{{mainSection}}</option>
     </select>
     <span
       *ngIf="(mainSection.dirty || mainSection.touched) && mainSection.invalid && mainSection.errors?.required"
       class="validation-message">Por favor ingrese a la sección principal</span>
   </div>
   <div class="inner-wrapper">
-    <label for="subSection" class="input-label">Subsección*</label>
-    <input type="text" class="input-field" id="subSection" name="subSection" formControlName="subSection">
+    <select name="subSection" id="subSection" class="dropdown" formControlName="subSection" >
+      <option value="" disabled>Elige la subsección*</option>
+      <ng-container *ngFor="let subSection of currentSubsection">
+        <option *ngIf="currentSubsection !== null" [ngValue]="subSection.name" >{{subSection.name}}</option>
+      </ng-container>
+    </select>
     <span
       *ngIf="(subSection.dirty || subSection.touched) && subSection.invalid && subSection.errors?.required"
       class="validation-message">Por favor ingrese a la subsección</span>

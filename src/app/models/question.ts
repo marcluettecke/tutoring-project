@@ -10,7 +10,8 @@ export interface Question {
   correctAnswer: string,
   explanation: string,
   mainSection: string,
-  subSection: string
+  subSection: string,
+  subSectionIndex: number
 }
 
 export interface Questions {

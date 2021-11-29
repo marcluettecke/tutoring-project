@@ -9,7 +9,7 @@ import {Question} from "../../models/question";
              styleUrls: ['./side-nav.component.scss']
            })
 export class SideNavComponent implements OnInit {
-  sections: { [id: string]: string[] } = {}
+  sections: { [id: string]: {name: string, index: number}[]} = {}
   mainSections: string[] = []
   isExpanded: { [id: number]: boolean } = {}
   faAngleDoubleLeft = faAngleDoubleLeft
@@ -34,11 +34,12 @@ export class SideNavComponent implements OnInit {
       questions.map((question: Question) => {
         // if main section is not present create new one with main section as key and subsections as only array entry
         if (!(question.mainSection in this.sections)) {
-          this.sections[question.mainSection] = [question.subSection]
+          this.sections[question.mainSection] = [{name: question.subSection, index: question.subSectionIndex}]
         } else {
           // if main section exists as key we have to check whether subsection exists in value array or not
-          if (!this.sections[question.mainSection].includes(question.subSection)) {
-            this.sections[question.mainSection].push(question.subSection)
+            const names = this.sections[question.mainSection].map(el => el.name)
+          if (!names.includes(question.subSection)) {
+            this.sections[question.mainSection].push({name: question.subSection, index: question.subSectionIndex})
           }
         }
       })
@@ -46,6 +47,12 @@ export class SideNavComponent implements OnInit {
       // sort according to Jose's order
       this.mainSections.sort((a, b) => {
         return this.sectionOrderEnum[a] - this.sectionOrderEnum[b]
+      })
+      // sort subsections according to Jose's word document
+      Object.keys(this.sections).map(key => {
+        this.sections[key].sort((a: {name: string, index: number}, b: {name: string, index: number}) => {
+          return a.index - b.index
+        })
       })
       // collapse all subheaders on init
       this.mainSections.map((el, idx) => {
