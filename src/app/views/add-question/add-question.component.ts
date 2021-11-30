@@ -73,7 +73,9 @@ export class AddQuestionComponent implements OnInit {
   }
 
   onSubmit() {
-    const subSectionIndex = this.currentSubsection![this.newQuestionForm.value.subSection].index
+    const subSectionIndex = this.currentSubsection!.filter(el => {
+      return el.name === this.newQuestionForm.value.subSection
+    })[0].index
     const newQuestion: Question = {
       id: this.findId(),
       questionText: this.newQuestionForm.value.questionText,
