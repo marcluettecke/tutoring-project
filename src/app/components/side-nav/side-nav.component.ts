@@ -51,7 +51,7 @@ export class SideNavComponent implements OnInit {
       // sort subsections according to Jose's word document
       Object.keys(this.sections).map(key => {
         this.sections[key].sort((a: {name: string, index: number}, b: {name: string, index: number}) => {
-          return a.index - b.index
+          return b.index - a.index
         })
       })
       // collapse all subheaders on init
