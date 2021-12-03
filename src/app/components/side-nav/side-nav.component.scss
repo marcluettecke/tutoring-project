@@ -4,7 +4,6 @@
   flex-direction: column;
   height: 100vh;
   background-color: hsl(210,57%,91%);
-  //background-color: hsl(77, 43%, 68%);
   position: fixed;
   top: 0;
   left: 0;
@@ -29,7 +28,7 @@
     //margin reset
     margin: 0;
     // header height
-    padding: 130px 20px 0 20px;
+    padding: 180px 20px 0 20px;
     display: flex;
     flex-direction: column;
     gap: 30px;

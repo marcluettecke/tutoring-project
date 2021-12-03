@@ -6,11 +6,11 @@
   background-color: var(--primary-color);
 
   .logo-wrapper {
-    position: absolute;
-    top: 10px;
+    position: fixed;
+    top: 0;
     left: 10px;
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
     z-index: 99;
 
     .logo {
@@ -40,8 +40,6 @@
       &:hover {
         cursor: pointer;
       }
-
-
     }
 
     .log-button {
