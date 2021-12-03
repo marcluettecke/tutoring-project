@@ -3,7 +3,8 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: hsl(77, 43%, 68%);
+  background-color: hsl(210,57%,91%);
+  //background-color: hsl(77, 43%, 68%);
   position: fixed;
   top: 0;
   left: 0;
@@ -45,7 +46,7 @@
         padding-bottom: 5px;
 
         &:hover {
-          color: hsl(195, 53%, 65%);
+          color: var(--secondary-color);
           cursor: pointer;
         }
       }
@@ -89,7 +90,7 @@
     left: 270px;
 
     &:hover {
-      color: hsl(195, 53%, 65%);
+      color: var(--secondary-color);
       cursor: pointer;
     }
 

@@ -26,12 +26,12 @@
     }
 
     .input-field {
-      border: 2px solid hsl(195, 53%, 65%);
+      border: 2px solid var(--primary-color);
       width: var(--width);
 
 
       &:focus-visible, &:focus-visible {
-        border: 2px solid hsl(77, 43%, 68%);
+        border: 2px solid var(--secondary-color);
         outline: none;
       }
     }
@@ -54,7 +54,7 @@
 
     &:hover {
       background-color: hsl(0, 0%, 94%);
-      color: hsl(195, 53%, 65%);
+      color: var(--primary-color);
       cursor: pointer;
     }
 

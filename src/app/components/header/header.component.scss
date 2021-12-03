@@ -3,17 +3,18 @@
   height: 100px;
   position: relative;
   margin-bottom: 30px;
-  background-color: hsl(77, 43%, 68%);
+  background-color: var(--primary-color);
 
   .logo-wrapper {
     position: absolute;
     top: 10px;
     left: 10px;
-    width: 200px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     z-index: 99;
 
     .logo {
+      height: 100%;
       width: 100%;
     }
   }
@@ -51,7 +52,6 @@
 
     .active {
       background-color: hsl(0, 0%, 94%);
-      color: hsl(195, 53%, 65%);
       border: none;
     }
   }

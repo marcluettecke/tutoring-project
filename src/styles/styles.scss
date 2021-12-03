@@ -2,6 +2,8 @@
 @import '../../node_modules/normalize.css';
 
 html, body {
+  --primary-color: hsl(210,57%,91%);
+  --secondary-color: hsl(77, 43%, 68%);
   font-family: 'PT Sans', sans-serif;
 
   -ms-overflow-style: none; /* IE and Edge */
