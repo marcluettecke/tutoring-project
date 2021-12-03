@@ -86,7 +86,7 @@
   &--icon {
     position: fixed;
     bottom: 10px;
-    left: 140px;
+    left: 270px;
 
     &:hover {
       color: hsl(195, 53%, 65%);
@@ -131,13 +131,13 @@
     transform: translateX(0) rotate(0);
   }
   to {
-    transform: translateX(-130px) rotate(-180deg);
+    transform: translateX(-260px) rotate(-180deg);
   }
 }
 
 @keyframes flip-icon-right {
   from {
-    transform: translateX(-130px) rotate(-180deg);
+    transform: translateX(-260px) rotate(-180deg);
   }
   to {
     transform: translateX(0) rotate(0);

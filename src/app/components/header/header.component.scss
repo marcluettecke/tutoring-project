@@ -5,6 +5,19 @@
   margin-bottom: 30px;
   background-color: hsl(77, 43%, 68%);
 
+  .logo-wrapper {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 200px;
+    height: 100px;
+    z-index: 99;
+
+    .logo {
+      width: 100%;
+    }
+  }
+
   .navigation {
     padding: 0 200px;
     display: flex;
