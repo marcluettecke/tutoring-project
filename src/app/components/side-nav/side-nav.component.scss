@@ -86,7 +86,7 @@
 
           &:hover {
             cursor: pointer;
-            color: hsl(0, 0%, 34%);
+            color: var(--gray-400);
           }
         }
       }

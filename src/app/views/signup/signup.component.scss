@@ -49,18 +49,18 @@
     padding: 10px 15px;
     margin-top: 20px;
     border-radius: 6px;
-    background-color: hsl(0, 0%, 85%);
+    background-color: var(--gray-200);
     border: none;
 
     &:hover {
-      background-color: hsl(0, 0%, 94%);
-      color: var(--primary-color-base);
+      background-color: var(--gray-100);
+      color: var(--secondary-color-lighter);
       cursor: pointer;
     }
 
     &:disabled:hover {
       cursor: not-allowed;
-      background-color: hsl(0, 0%, 85%);
+      background-color: var(--gray-200);
       color: revert;
     }
   }

@@ -2,15 +2,25 @@
 @import '../../node_modules/normalize.css';
 
 html, body {
-  --primary-color-base: hsl(207deg 89% 86%);
   --primary-color-light: hsl(207deg 89% 90% );
+  --primary-color-base: hsl(207deg 89% 86%);
   --primary-color-dark: hsl(207deg 89% 76%);
   --primary-color-darker: hsl(207deg 89% 66%);
-  --secondary-color-base: hsl(204deg 85% 23%);
-  --secondary-color-light: hsl(204deg 85% 28%);
+  --secondary-color-lightest: hsl(204deg 85% 43%);
   --secondary-color-lighter: hsl(204deg 85% 33%);
+  --secondary-color-light: hsl(204deg 85% 28%);
+  --secondary-color-base: hsl(204deg 85% 23%);
   --secondary-color-dark: hsl(204deg 85% 18%);
   --secondary-color-darker: hsl(204deg 85% 13%);
+  --gray-900: hsl(0, 0%, 10%);
+  --gray-800: hsl(0, 0%, 20%);
+  --gray-700: hsl(0, 0%, 30%);
+  --gray-600: hsl(0, 0%, 40%);
+  --gray-500: hsl(0, 0%, 50%);
+  --gray-400: hsl(0, 0%, 60%);
+  --gray-300: hsl(0, 0%, 70%);
+  --gray-200: hsl(0, 0%, 80%);
+  --gray-100: hsl(0, 0%, 90%);
   font-family: 'PT Sans', sans-serif;
 
   -ms-overflow-style: none; /* IE and Edge */
