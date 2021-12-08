@@ -38,7 +38,7 @@
   }
 
   &--text {
-    text-align: center;
+    text-align: left;
   }
 
   &--answer-wrapper {
@@ -59,7 +59,7 @@
     }
 
     &-icon {
-      color: var(--primary-color);
+      color: var(--primary-color-base);
       display: flex;
       justify-content: center;
 

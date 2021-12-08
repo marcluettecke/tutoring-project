@@ -2,8 +2,15 @@
 @import '../../node_modules/normalize.css';
 
 html, body {
-  --primary-color: hsl(210,57%,91%);
-  --secondary-color: hsl(77, 43%, 68%);
+  --primary-color-base: hsl(207deg 89% 86%);
+  --primary-color-light: hsl(207deg 89% 90% );
+  --primary-color-dark: hsl(207deg 89% 76%);
+  --primary-color-darker: hsl(207deg 89% 66%);
+  --secondary-color-base: hsl(204deg 85% 23%);
+  --secondary-color-light: hsl(204deg 85% 28%);
+  --secondary-color-lighter: hsl(204deg 85% 33%);
+  --secondary-color-dark: hsl(204deg 85% 18%);
+  --secondary-color-darker: hsl(204deg 85% 13%);
   font-family: 'PT Sans', sans-serif;
 
   -ms-overflow-style: none; /* IE and Edge */

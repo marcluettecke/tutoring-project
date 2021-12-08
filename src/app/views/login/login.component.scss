@@ -20,11 +20,11 @@
     }
 
     .input-field {
-      border: 2px solid var(--primary-color);
+      border: 2px solid var(--primary-color-base);
       width: var(--width);
 
       &:focus-visible, &:focus-visible {
-        border: 2px solid var(--secondary-color);
+        border: 2px solid var(--secondary-color-base);
         outline: none;
       }
     }
@@ -48,7 +48,7 @@
 
     &:hover {
       background-color: hsl(0, 0%, 94%);
-      color: var(--primary-color);
+      color: var(--primary-color-base);
     }
 
     &:disabled:hover {

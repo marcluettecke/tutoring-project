@@ -5,7 +5,7 @@
   <nav class="navigation">
     <a routerLink="/home" *ngIf="loggedInService.isLoggedIn$ | async" class="navigation-link" routerLinkActive="active">Home</a>
     <a routerLink="/signup" *ngIf="loggedInService.isAdmin$ | async" class="navigation-link" routerLinkActive="active">Signup</a>
-    <a routerLink="/addQuestion" *ngIf="loggedInService.isLoggedIn$ | async" class="navigation-link" routerLinkActive="active">Agregar pregunta</a>
+    <a routerLink="/addQuestion" *ngIf="loggedInService.isAdmin$  | async" class="navigation-link" routerLinkActive="active">Agregar pregunta</a>
     <a routerLink="/login" *ngIf="!(loggedInService.isLoggedIn$ | async)" class="navigation-link" routerLinkActive="active">Login</a>
     <a *ngIf="loggedInService.isLoggedIn$ | async" class="navigation-link log-button" (click)="logout()" >Logout</a>
   </nav>

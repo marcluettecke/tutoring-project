@@ -1,8 +1,7 @@
 <app-side-nav (clickEmit)="changeData($event)" (expandSidebarEmit)="toggleSidebarExpanded($event)" [activeSection]="activeSection"></app-side-nav>
 <div class="wrapper">
     <app-question-card class="single-question" *ngFor="let question of questions; let i = index"
-                       [mainSectionNumber]="activeSection.mainSectionNumber"
-                       [subSectionNumber]="activeSection.subSectionNumber" [questionIndex]="i"
+                       [subSectionName]="activeSection.subSection" [questionIndex]="i"
                        [questionItem]="question"
                         [sidebarExpanded]="sidebarExpanded"
     ></app-question-card>
