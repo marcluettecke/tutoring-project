@@ -9,6 +9,7 @@ import {Question} from "../../models/question";
            })
 export class HomeComponent implements OnInit {
   questions: Question[];
+  tempQuestions: Question [];
   sidebarExpanded = true;
   activeSection: { mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number } = {
     mainSection: 'administrativo',
@@ -25,13 +26,13 @@ export class HomeComponent implements OnInit {
     this.updateData()
   }
 
-  toggleSidebarExpanded(value: boolean){
+  toggleSidebarExpanded(value: boolean) {
     this.sidebarExpanded = value
   }
 
   updateData() {
     this.questionService.getSpecificQuestions(this.activeSection.mainSection, this.activeSection.subSection).subscribe(response => {
-      this.questions = response
+      this.questions = response.sort((a: Question, b: Question) => a.questionIndex - b.questionIndex)
     })
   }
 

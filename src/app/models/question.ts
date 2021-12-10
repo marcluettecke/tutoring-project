@@ -6,6 +6,7 @@ interface Answer {
 export interface Question {
   id: string,
   questionText: string,
+  questionIndex: number,
   answers: Answer[],
   correctAnswer: string,
   explanation: string,

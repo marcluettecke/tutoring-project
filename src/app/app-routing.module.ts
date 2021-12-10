@@ -8,11 +8,12 @@ import {AdminGuard} from "./guards/admin-guard.guard";
 import {LoggedinGuard} from "./guards/loggedin.guard";
 
 const routes: Routes = [
-  {path: 'home', component: HomeComponent, canActivate: [LoggedinGuard]},
+  // {path: 'home', component: HomeComponent, canActivate: [LoggedinGuard]},
+  {path: 'home', component: HomeComponent},
   {path: 'login', component: LoginComponent},
   {path: 'signup', component: SignupComponent, canActivate: [AdminGuard]},
   {path: 'addQuestion', component: AddQuestionComponent, canActivate: [AdminGuard]},
-  {path: '', redirectTo: 'login', pathMatch: 'full'},
+  {path: '', redirectTo: 'home', pathMatch: 'full'},
 ];
 
 @NgModule({

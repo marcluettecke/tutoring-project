@@ -23,7 +23,7 @@ export class QuestionsService {
   }
 
   getQuestions() {
-    return this.firestore.collection<Question[]>('questions').valueChanges()
+    return this.firestore.collection<Question>('questions').valueChanges()
   }
 
   getSpecificQuestions(mainSection: string, subSection: string): Observable<Question[]> {
@@ -36,8 +36,6 @@ export class QuestionsService {
 
 
   addQuestion(newQuestion: Question) {
-    this.firestore.collection<Question>('questions').add(newQuestion).then(_ => alert('Question added'))
+    this.firestore.collection<Question>('questions').add(newQuestion).then(_ => console.log('Question added'))
   }
-
-
-}
+  }
