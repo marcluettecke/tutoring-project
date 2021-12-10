@@ -13,13 +13,25 @@
       cursor: pointer;
     }
   }
+
+  .answer-icon {
+    padding-left: 16px;
+    font-weight: bold;
+
+    &.wrong {
+      color: var(--wrong-solid);
+    }
+    &.correct {
+      color: var(--correct-solid)
+    }
+  }
 }
 
 .wrong-answer {
-  background-color: hsl(0, 100%, 90%);
+  background-color: var(--wrong-background);
 }
 .correct-answer {
-  background-color: 	hsla(120, 100%, 25%, 0.2) ;
+  background-color: 	var(--correct-background) ;
   //outline: 2px solid green;
 }
 

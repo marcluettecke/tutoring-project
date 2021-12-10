@@ -34,6 +34,14 @@
       // squeeze the question in the middle with two greedy side elements
       flex: 1;
       text-align: left;
+      display: grid;
+      place-content: center;
+
+      &.wrong-answer-symbol {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--wrong-solid);
+      }
     }
   }
 
@@ -88,12 +96,12 @@
 
 // dont change the order of the two classes because they overwrite each other - clicked: green, wrong: red
 .right-answer-clicked {
-  border: 2px solid green;
+  border: 2px solid var(--correct-solid);
 }
 
 
 .wrong-answer-clicked {
-  border: 2px solid red;
+  border: 2px solid var(--wrong-solid);
 }
 
 

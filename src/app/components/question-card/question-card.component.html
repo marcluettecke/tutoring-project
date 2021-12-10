@@ -2,7 +2,8 @@
   <div class="card--header">
     <p class="card--header--side">Sección: {{subSectionName}}</p>
     <p class="card--header--question">Pregunta: {{questionIndex + 1}}</p>
-    <div class="card--header--side"></div>
+    <div class="card--header--side wrong-answer-symbol" *ngIf="clicked && wrongAnswerClicked">!</div>
+    <div class="card--header--side" *ngIf="!wrongAnswerClicked"></div>
   </div>
   <div class="card--text">{{questionItem.questionText}}</div>
   <div class="card--answer-wrapper">

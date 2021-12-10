@@ -21,6 +21,10 @@ html, body {
   --gray-300: hsl(0, 0%, 70%);
   --gray-200: hsl(0, 0%, 80%);
   --gray-100: hsl(0, 0%, 90%);
+  --wrong-solid: red;
+  --wrong-background: hsl(0, 100%, 90%);
+  --correct-solid: green;
+  --correct-background: hsla(120, 100%, 25%, 0.2);
   font-family: 'PT Sans', sans-serif;
 
   -ms-overflow-style: none; /* IE and Edge */
