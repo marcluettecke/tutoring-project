@@ -66,6 +66,10 @@ export class AddQuestionComponent implements OnInit {
   findId() {
     return `q${this.currentQuestionLength + 1}`
   }
+  findIdNumeric() {
+    return this.currentQuestionLength + 1
+  }
+
 
   subsectionChangeHandler(){
     this.currentSubsection = this.subsections[<'administrativo' | 'costas' | 'medio ambiente' | 'aguas'>this.newQuestionForm.value.mainSection]
