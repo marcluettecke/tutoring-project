@@ -1,7 +1,8 @@
 <div class="option-wrapper" (click)="clickAnswer()"
-     [ngClass]="clicked? isCorrect? 'correct-answer' : 'wrong-answer': ''">
-  <input [name]="name" [disabled]="id !== selectedAnswer && clicked" type="radio" [id]="id">
-  <label [for]="id" class="answer" [ngClass]="{'disabled': id !== selectedAnswer && clicked}">
+     [ngClass]="{'correct-answer': clicked && isCorrect, 'wrong-answer': clicked && !isCorrect}">
+<!--     [ngClass]="clicked? isCorrect? 'correct-answer' : 'wrong-answer': ''">-->
+  <input [name]="name" [readOnly]="clicked" type="radio" [id]="id">
+  <label [for]="id" class="answer" [ngClass]="{'disabled': clicked}">
     {{answerOption}}
   </label>
   <span class="answer-icon wrong" *ngIf="clicked && !isCorrect">X</span>

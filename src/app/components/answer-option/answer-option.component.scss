@@ -12,6 +12,10 @@
     &:hover {
       cursor: pointer;
     }
+
+    &.disabled:hover {
+      cursor: not-allowed;
+    }
   }
 
   .answer-icon {
@@ -21,6 +25,7 @@
     &.wrong {
       color: var(--wrong-solid);
     }
+
     &.correct {
       color: var(--correct-solid)
     }
@@ -30,9 +35,9 @@
 .wrong-answer {
   background-color: var(--wrong-background);
 }
+
 .correct-answer {
-  background-color: 	var(--correct-background) ;
-  //outline: 2px solid green;
+  background-color: var(--correct-background);
 }
 
 input[type="radio" i]:disabled {
