@@ -23,7 +23,7 @@ export class QuestionsService {
   }
 
   getQuestions() {
-    return this.firestore.collection<Question>('questions_new').valueChanges()
+    return this.firestore.collection<Question>('questions').valueChanges();
   }
 
   getSpecificQuestions(mainSection: string, subSection: string): Observable<Question[]> {

@@ -77,6 +77,9 @@ export class AddQuestionComponent implements OnInit {
   }
 
   onSubmit() {
+    // find the number of questions in DB to create a new index + 1 for ordering
+    this.questionService.getQuestions().subscribe(questions => this.currentQuestionLength = questions.length)
+
     const subSectionIndex = this.currentSubsection!.filter(el => {
       return el.name === this.newQuestionForm.value.subSection
     })[0].index
