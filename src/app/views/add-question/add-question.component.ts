@@ -83,7 +83,7 @@ export class AddQuestionComponent implements OnInit {
     const newQuestion: Question = {
       id: this.findId(),
       questionText: this.newQuestionForm.value.questionText,
-      questionIndex: +this.findId(),
+      questionIndex: +this.findIdNumeric(),
       answers: [
         {
           id: `${this.findId()}-a1`,
