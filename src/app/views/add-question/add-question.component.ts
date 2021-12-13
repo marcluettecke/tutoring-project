@@ -73,7 +73,6 @@ export class AddQuestionComponent implements OnInit {
 
   subsectionChangeHandler(){
     this.currentSubsection = this.subsections[<'administrativo' | 'costas' | 'medio ambiente' | 'aguas'>this.newQuestionForm.value.mainSection]
-    console.log(this.currentSubsection)
   }
 
   onSubmit() {
