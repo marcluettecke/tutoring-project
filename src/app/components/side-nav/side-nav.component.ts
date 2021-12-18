@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {faAngleDoubleLeft} from "@fortawesome/free-solid-svg-icons";
 import {QuestionsService} from "../../services/questions.service";
-import {Question} from "../../models/question";
+import {Question} from "../../models/question.model";
 
 @Component({
              selector: 'app-side-nav',

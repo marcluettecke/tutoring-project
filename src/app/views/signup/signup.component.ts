@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AccountsService} from "../../services/accounts.service";
-import {Account} from "../../models/accounts";
+import {Account} from "../../models/User.model";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
              selector: 'app-signup',
@@ -18,7 +19,7 @@ export class SignupComponent implements OnInit {
                                isAdmin: new FormControl(''),
                              })
 
-  constructor(private accountService: AccountsService) {
+  constructor(private accountService: AccountsService, private auth: AuthService) {
   }
 
   get firstname() {
@@ -51,6 +52,7 @@ export class SignupComponent implements OnInit {
       isAdmin: this.signupForm.value.isAdmin
     }
     this.accountService.addAccount(newUser)
+    this.auth.signUp(this.email.value, this.password.value, this.firstname.value)
     this.signupForm.reset()
   }
 

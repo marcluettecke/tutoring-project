@@ -9,9 +9,9 @@ import {LoggedinGuard} from "./guards/loggedin.guard";
 
 const routes: Routes = [
   {path: 'home', component: HomeComponent, canActivate: [LoggedinGuard]},
-  // {path: 'home', component: HomeComponent},
   {path: 'login', component: LoginComponent},
-  {path: 'signup', component: SignupComponent, canActivate: [AdminGuard]},
+  // {path: 'signup', component: SignupComponent, canActivate: [AdminGuard]},
+  {path: 'signup', component: SignupComponent},
   {path: 'addQuestion', component: AddQuestionComponent, canActivate: [AdminGuard]},
   {path: '', redirectTo: 'login', pathMatch: 'full'},
 ];

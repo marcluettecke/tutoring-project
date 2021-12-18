@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {QuestionsService} from "../../services/questions.service";
 import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
-import {Question} from "../../models/question";
+import {Question} from "../../models/question.model";
 import {MAINSECTIONS, SUBSECTIONS, SUBSECTIONINTERFACE} from "../../constants/sections";
 
 @Component({
