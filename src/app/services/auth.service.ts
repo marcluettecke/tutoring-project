@@ -1,34 +1,54 @@
 import {Injectable} from '@angular/core';
 import {AngularFireAuth} from "@angular/fire/compat/auth";
 import {Router} from "@angular/router";
-import {from, Subject} from "rxjs";
-import {getAuth} from "firebase/auth";
-import firebase from "firebase/compat";
+import {BehaviorSubject, from} from "rxjs";
+import {browserSessionPersistence, getAuth, setPersistence} from "firebase/auth";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 import UserInfo = firebase.UserInfo;
+import Error = firebase.auth.Error;
+import {CookieService} from "ngx-cookie-service";
 
 @Injectable({
               providedIn: 'root'
             })
 export class AuthService {
-  loginChanged = new Subject<UserInfo | null>()
+  loginChanged = new BehaviorSubject<boolean | null>(this.cookieService.get('loggedinState') === 'true')
 
-  constructor(private afAuth: AngularFireAuth, private router: Router) {
+  constructor(private afAuth: AngularFireAuth, private router: Router, private cookieService: CookieService) {
   }
 
-  login(email: string, password: string) {
-    const loginObservable = from(this.afAuth.signInWithEmailAndPassword(email, password))
-    loginObservable.subscribe(
-      value => {
-        const user = getAuth().currentUser
-        if (user !== null) {
-          console.log('success login :', user)
-          this.loginChanged.next(user)
-        }
-        this.router.navigate(['/home']).then()
-      },
-      err => {
-        console.log('Error')
-      })
+  handleLogin(value: firebase.auth.UserCredential) {
+    const user = getAuth().currentUser
+    if (user !== null) {
+      const expirationTime = (new Date())
+      expirationTime.setHours(expirationTime.getHours() + 1)
+      this.cookieService.set('loggedinState', 'true', {expires: expirationTime})
+
+      console.log('success login :', user)
+      this.loginChanged.next(!!user)
+    }
+    this.router.navigate(['/home']).then()
+  }
+
+  handleError(error: Error) {
+    console.log('Error: ', error)
+  }
+
+  googleLogin() {
+    const auth = getAuth();
+    setPersistence(auth, browserSessionPersistence).then(() => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      const googleLoginObservable = from(this.oAuthLogin(provider))
+      googleLoginObservable
+        .subscribe(value => {
+                     this.handleLogin(value)
+                   }, err => {
+                     this.handleError(err)
+                   }
+        );
+    })
   }
 
   logOut() {
@@ -36,17 +56,7 @@ export class AuthService {
     this.loginChanged.next(null)
   }
 
-  signUp(email: string, password: string, username: string) {
-    this.afAuth.createUserWithEmailAndPassword(email, password).then(
-      user => {
-        console.log(user)
-        user.user?.updateProfile({
-                                   displayName: username
-                                 })
-        this.router.navigate(['/home']).then()
-      }
-    ).catch(error => {
-      console.log(error)
-    })
+  private oAuthLogin(provider: firebase.auth.GoogleAuthProvider) {
+    return this.afAuth.signInWithPopup(provider);
   }
 }

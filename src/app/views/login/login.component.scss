@@ -1,4 +1,4 @@
-.outer-wrapper {
+.wrapper {
   width: max-content;
   margin: 0 auto;
   display: flex;
@@ -8,28 +8,9 @@
   --width: 500px;
   max-width: var(--width);
 
-  .inner-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: var(--width);
-
-    .input-label {
-      text-align: left;
-      font-weight: bold;
-    }
-
-    .input-field {
-      border: 2px solid var(--primary-color-base);
-      width: var(--width);
-
-      &:focus-visible, &:focus-visible {
-        border: 2px solid var(--secondary-color-base);
-        outline: none;
-      }
-    }
-
-
+  .icon-wrapper {
+    width: 50px;
+    height: 50px;
   }
 
   .validation-message {

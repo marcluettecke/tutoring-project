@@ -6,7 +6,6 @@ import {AppComponent} from './app.component';
 import {HeaderComponent} from './components/header/header.component';
 import { HomeComponent } from './views/home/home.component';
 import { LoginComponent } from './views/login/login.component';
-import { SignupComponent } from './views/signup/signup.component';
 import { AddQuestionComponent } from './views/add-question/add-question.component';
 import { QuestionCardComponent } from './components/question-card/question-card.component';
 import { AnswerOptionComponent } from './components/answer-option/answer-option.component';
@@ -15,6 +14,7 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from '../environments/environment';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SideNavComponent } from './components/side-nav/side-nav.component';
+import { AngularFireAuthGuardModule} from "@angular/fire/compat/auth-guard";
 
 @NgModule({
             declarations: [
@@ -22,7 +22,6 @@ import { SideNavComponent } from './components/side-nav/side-nav.component';
               HeaderComponent,
               HomeComponent,
               LoginComponent,
-              SignupComponent,
               AddQuestionComponent,
               QuestionCardComponent,
               AnswerOptionComponent,
@@ -34,7 +33,8 @@ import { SideNavComponent } from './components/side-nav/side-nav.component';
               FormsModule,
               AngularFireModule.initializeApp(environment.firebase),
               FontAwesomeModule,
-              ReactiveFormsModule
+              ReactiveFormsModule,
+              AngularFireAuthGuardModule
             ],
             providers: [],
             bootstrap: [AppComponent]
