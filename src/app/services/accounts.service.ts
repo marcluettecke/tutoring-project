@@ -10,7 +10,7 @@ import {getAuth} from "firebase/auth";
               providedIn: 'root'
             })
 export class AccountsService {
-  isAdmin = new BehaviorSubject<boolean>(this.cookieService.get('isAdmin') === 'true')
+  isAdmin = new BehaviorSubject<boolean>(this.cookieService.get('adminState') === 'true')
 
   constructor(private firestore: AngularFirestore, private cookieService: CookieService, private authService: AuthService) {
     this.authService.loginChanged

@@ -13,7 +13,6 @@ import {AccountsService} from "../../services/accounts.service";
 export class HeaderComponent implements OnInit, OnDestroy {
   isLoggedIn = false
   isAdmin = false
-  username: string | null = ''
   authSubs: Subscription
   adminSubs: Subscription
 
@@ -27,7 +26,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
                      this.isLoggedIn = true
                    } else {
                      this.isLoggedIn = false
-                     this.username = ''
                    }
                  }
       )

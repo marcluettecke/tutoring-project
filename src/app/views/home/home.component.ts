@@ -14,7 +14,7 @@ export class HomeComponent implements OnInit {
   errorMessage = ''
   activeSection: { mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number } = {
     mainSection: 'administrativo',
-    subSection: 'general',
+    subSection: 'Constitución Española',
     mainSectionNumber: 1,
     subSectionNumber: 1
   }
