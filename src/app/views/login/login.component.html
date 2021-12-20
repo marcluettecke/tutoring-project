@@ -15,5 +15,6 @@
                 fill="#34A853" /></svg>
   </div>
   <button class="login-button" type="button" (click)="handleGoogleLogin()">Sign up / Login with Google account</button>
+  <app-error-snackbar [errorText]="errorMessage" *ngIf="errorMessage"></app-error-snackbar>
 </div>
 

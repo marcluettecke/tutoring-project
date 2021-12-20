@@ -1,12 +1,11 @@
 import {Injectable} from '@angular/core';
 import {AngularFireAuth} from "@angular/fire/compat/auth";
 import {Router} from "@angular/router";
-import {BehaviorSubject, from} from "rxjs";
+import {BehaviorSubject, from, Subject} from "rxjs";
 import {browserSessionPersistence, getAuth, setPersistence} from "firebase/auth";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import UserInfo = firebase.UserInfo;
 import Error = firebase.auth.Error;
 import {CookieService} from "ngx-cookie-service";
 
@@ -15,6 +14,7 @@ import {CookieService} from "ngx-cookie-service";
             })
 export class AuthService {
   loginChanged = new BehaviorSubject<boolean | null>(this.cookieService.get('loggedinState') === 'true')
+  errorStatusChanged = new Subject<Error>()
 
   constructor(private afAuth: AngularFireAuth, private router: Router, private cookieService: CookieService) {
   }
@@ -22,6 +22,7 @@ export class AuthService {
   handleLogin(value: firebase.auth.UserCredential) {
     const user = getAuth().currentUser
     if (user !== null) {
+      // cookie
       const expirationTime = (new Date())
       expirationTime.setHours(expirationTime.getHours() + 1)
       this.cookieService.set('loggedinState', 'true', {expires: expirationTime})
@@ -33,7 +34,7 @@ export class AuthService {
   }
 
   handleError(error: Error) {
-    console.log('Error: ', error)
+    this.errorStatusChanged.next(error)
   }
 
   googleLogin() {

@@ -15,6 +15,7 @@ import { environment } from '../environments/environment';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SideNavComponent } from './components/side-nav/side-nav.component';
 import { AngularFireAuthGuardModule} from "@angular/fire/compat/auth-guard";
+import { ErrorSnackbarComponent } from './components/error-snackbar/error-snackbar.component';
 
 @NgModule({
             declarations: [
@@ -25,7 +26,8 @@ import { AngularFireAuthGuardModule} from "@angular/fire/compat/auth-guard";
               AddQuestionComponent,
               QuestionCardComponent,
               AnswerOptionComponent,
-              SideNavComponent
+              SideNavComponent,
+              ErrorSnackbarComponent
             ],
             imports: [
               BrowserModule,

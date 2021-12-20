@@ -1,9 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {AccountsService} from "../../services/accounts.service";
-import {Router} from "@angular/router";
-import {CookieService} from "ngx-cookie-service";
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
-import {getAuth} from "firebase/auth";
+import {Subscription} from "rxjs";
 
 
 @Component({
@@ -13,38 +10,26 @@ import {getAuth} from "firebase/auth";
            })
 
 
-export class LoginComponent implements OnInit {
-  accountNotFound = false
+export class LoginComponent implements OnInit, OnDestroy {
+  errorMessage = ''
+  errorSub: Subscription
 
-  constructor(private accountService: AccountsService,
-              private router: Router,
-              private cookieService: CookieService, private auth: AuthService) {
-  }
-
-  handleEmailLogin() {
-    // stay logged in for 1 hours
-
-    // this.accountService.getAccounts(this.loginForm.value.email, this.loginForm.value.password)
-    //   .subscribe(response => {
-    //     if (response.length > 0) {
-    //       this.loginService.logIn()
-    //       this.router.navigate(['/home'])
-    //       if (response[0].isAdmin) {
-    //         this.loginService.changeAdminStatus(true)
-    //         this.cookieService.set('adminState', 'true', {expires: expirationTime})
-    //       }
-    //     } else {
-    //       this.accountNotFound = true
-    //     }
-    //   })
+  constructor(private auth: AuthService) {
   }
 
   handleGoogleLogin() {
     this.auth.googleLogin()
   }
 
-
-  ngOnInit(): void {
+  ngOnInit() {
+    this.errorSub = this.auth.errorStatusChanged.subscribe(event => {
+      this.errorMessage = event.message
+    })
   }
+
+  ngOnDestroy() {
+    this.errorSub.unsubscribe()
+  }
+
 
 }
