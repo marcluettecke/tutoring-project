@@ -22,11 +22,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authSubs = this.authService.loginChanged
       .subscribe(loggedIn => {
-                   if (loggedIn) {
-                     this.isLoggedIn = true
-                   } else {
-                     this.isLoggedIn = false
-                   }
+                   this.isLoggedIn = !!loggedIn;
                  }
       )
     this.adminSubs = this.accountsService.isAdmin.subscribe(isAdmin => {
