@@ -1,9 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {LoggedInService} from "../../services/logged-in.service";
-import {AccountsService} from "../../services/accounts.service";
-import {AbstractControl, FormControl, FormGroup, Validators} from "@angular/forms";
-import {Router} from "@angular/router";
-import {CookieService} from "ngx-cookie-service";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AuthService} from "../../services/auth.service";
+import {Subscription} from "rxjs";
 
 
 @Component({
@@ -13,49 +10,26 @@ import {CookieService} from "ngx-cookie-service";
            })
 
 
-export class LoginComponent implements OnInit {
-  accountNotFound = false
-  loginForm = new FormGroup({
-                              email: new FormControl('', [Validators.required]),
-                              password: new FormControl('', [Validators.required])
-                            })
+export class LoginComponent implements OnInit, OnDestroy {
+  errorMessage = ''
+  errorSub: Subscription
 
-  constructor(private loginService: LoggedInService,
-              private accountService: AccountsService,
-              private router: Router,
-              private cookieService: CookieService) {
+  constructor(private auth: AuthService) {
   }
 
-  get email() {
-    return this.loginForm.get('email') as AbstractControl
+  handleGoogleLogin() {
+    this.auth.googleLogin()
   }
 
-  get password() {
-    return this.loginForm.get('password') as AbstractControl
+  ngOnInit() {
+    this.errorSub = this.auth.errorStatusChanged.subscribe(event => {
+      this.errorMessage = event.message
+    })
   }
 
-  handleLogin() {
-    // stay logged in for 1 hours
-    const expirationTime = (new Date())
-    expirationTime.setHours(expirationTime.getHours() + 1)
-    this.accountService.getAccounts(this.loginForm.value.email, this.loginForm.value.password)
-      .subscribe(response => {
-        if (response.length > 0) {
-          this.loginService.logIn()
-          this.cookieService.set('loggedinState', 'true', {expires: expirationTime})
-          this.router.navigate(['/home'])
-          if (response[0].isAdmin) {
-            this.loginService.changeAdminStatus(true)
-            this.cookieService.set('adminState', 'true', {expires: expirationTime})
-          }
-        } else {
-          this.accountNotFound = true
-        }
-      })
+  ngOnDestroy() {
+    this.errorSub.unsubscribe()
   }
 
-
-  ngOnInit(): void {
-  }
 
 }

@@ -1,0 +1,17 @@
+.wrapper {
+  position: fixed;
+  bottom: 30px;
+  left: 60px;
+  right: 60px;
+  height: 100px;
+  background: var(--wrong-background);
+  display: grid;
+  place-content: center;
+  border-radius: 4px;
+
+  .error-text {
+    width: 100%;
+    text-align: center;
+    font-size: 24px;
+  }
+}

@@ -1,26 +1,16 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from "rxjs";
-import {Question} from '../models/question'
-import {AngularFirestore, AngularFirestoreCollection, DocumentReference} from "@angular/fire/compat/firestore";
+import {Observable} from "rxjs";
+import {Question} from '../models/question.model'
+import {AngularFirestore, AngularFirestoreCollection} from "@angular/fire/compat/firestore";
 
 @Injectable({
               providedIn: 'root'
             })
 export class QuestionsService {
-  private userRef: DocumentReference
-  private readonly _questions = new BehaviorSubject<any>([])
-  readonly questions$ = this._questions.asObservable();
 
   constructor(private firestore: AngularFirestore) {
   }
 
-  get questions(): Question[] {
-    return this._questions.getValue()
-  }
-
-  private set questions(val: Question[]) {
-    this._questions.next(val)
-  }
 
   getQuestions() {
     return this.firestore.collection<Question>('questions').valueChanges();

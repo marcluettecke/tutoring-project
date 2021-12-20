@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Question} from "../../models/question";
+import {Question} from "../../models/question.model";
 import {faAngleDoubleDown, faAngleDoubleUp} from "@fortawesome/free-solid-svg-icons";
 
 @Component({

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {QuestionsService} from "../../services/questions.service";
-import {Question} from "../../models/question";
+import {Question} from "../../models/question.model";
 
 @Component({
              selector: 'app-home',
@@ -11,9 +11,10 @@ export class HomeComponent implements OnInit {
   questions: Question[];
   tempQuestions: Question [];
   sidebarExpanded = true;
+  errorMessage = ''
   activeSection: { mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number } = {
     mainSection: 'administrativo',
-    subSection: 'general',
+    subSection: 'Constitución Española',
     mainSectionNumber: 1,
     subSectionNumber: 1
   }
@@ -31,9 +32,13 @@ export class HomeComponent implements OnInit {
   }
 
   updateData() {
-    this.questionService.getSpecificQuestions(this.activeSection.mainSection, this.activeSection.subSection).subscribe(response => {
-      this.questions = response.sort((a: Question, b: Question) => a.questionIndex - b.questionIndex)
-    })
+    this.questionService.getSpecificQuestions(this.activeSection.mainSection, this.activeSection.subSection)
+      .subscribe(
+        response => {
+          this.questions = response.sort((a: Question, b: Question) => a.questionIndex - b.questionIndex)
+        }, error => {
+          this.errorMessage = error
+        })
   }
 
   changeData(event: { mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number }) {
