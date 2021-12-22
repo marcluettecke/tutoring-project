@@ -6,8 +6,8 @@ export interface Account {
 
 export interface UserInfo {
   uid: string,
-  email: string,
-  phoneNumber: string,
-  isEmailVerified: boolean,
-  displayName: string
+  email: string | null,
+  phoneNumber: string | null,
+  isEmailVerified?: boolean,
+  displayName: string | null
 }

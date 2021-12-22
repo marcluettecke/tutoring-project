@@ -4,7 +4,6 @@ import {Account} from "../models/User.model";
 import {BehaviorSubject, Observable} from "rxjs";
 import {CookieService} from "ngx-cookie-service";
 import {AuthService} from "./auth.service";
-import {getAuth} from "firebase/auth";
 
 @Injectable({
               providedIn: 'root'
@@ -14,10 +13,9 @@ export class AccountsService {
 
   constructor(private firestore: AngularFirestore, private cookieService: CookieService, private authService: AuthService) {
     this.authService.loginChanged
-      .subscribe(loggedIn => {
-        if (loggedIn) {
-          const user = getAuth().currentUser
-          this.checkIfAdmin(user?.email as string)
+      .subscribe(user => {
+        if (!!user) {
+          this.checkIfAdmin(user.email as string)
         }
       })
   }
