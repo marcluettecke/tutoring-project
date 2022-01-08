@@ -59,4 +59,5 @@
   <button [disabled]="!newQuestionForm.valid" type="submit" class="submit-button">
     Agregar pregunta
   </button>
+  <app-info-snackbar *ngIf="showInfoBar" [infoText]="'Question successfully added!'"></app-info-snackbar>
 </form>

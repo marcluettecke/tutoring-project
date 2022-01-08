@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {QuestionsService} from "../../services/questions.service";
 import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Question} from "../../models/question.model";
-import {MAINSECTIONS, SUBSECTIONS, SUBSECTIONINTERFACE} from "../../constants/sections";
+import {MAINSECTIONS, SUBSECTIONINTERFACE, SUBSECTIONS} from "../../constants/sections";
 
 @Component({
              selector: 'app-add-question',
@@ -13,6 +13,7 @@ export class AddQuestionComponent implements OnInit {
   currentQuestionLength: number
   mainSections: string[] = MAINSECTIONS
   subsections: SUBSECTIONINTERFACE = SUBSECTIONS
+  showInfoBar = false
 
   newQuestionForm =
     new FormGroup({
@@ -29,7 +30,7 @@ export class AddQuestionComponent implements OnInit {
                     mainSection: new FormControl('', [Validators.required]),
                     subSection: new FormControl('', [Validators.required]),
                   })
-  currentSubsection: {name: string, index: number}[] | null = null
+  currentSubsection: { name: string, index: number }[] | null = null
 
   constructor(private questionService: QuestionsService) {
   }
@@ -61,17 +62,19 @@ export class AddQuestionComponent implements OnInit {
 
   ngOnInit(): void {
     this.questionService.getQuestions().subscribe(questions => this.currentQuestionLength = questions.length)
+
   }
 
   findId() {
     return `q${this.currentQuestionLength + 1}`
   }
+
   findIdNumeric() {
     return this.currentQuestionLength + 1
   }
 
 
-  subsectionChangeHandler(){
+  subsectionChangeHandler() {
     this.currentSubsection = this.subsections[<'administrativo' | 'costas' | 'medio ambiente' | 'aguas'>this.newQuestionForm.value.mainSection]
   }
 
@@ -112,7 +115,11 @@ export class AddQuestionComponent implements OnInit {
 
     }
     this.questionService.addQuestion(newQuestion)
+    this.showInfoBar = true
     this.newQuestionForm.reset()
+    setTimeout(() => {
+      this.showInfoBar = false
+    }, 2000)
   }
 
 }

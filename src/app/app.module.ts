@@ -16,6 +16,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SideNavComponent } from './components/side-nav/side-nav.component';
 import { AngularFireAuthGuardModule} from "@angular/fire/compat/auth-guard";
 import { ErrorSnackbarComponent } from './components/error-snackbar/error-snackbar.component';
+import { InfoSnackbarComponent } from './components/info-snackbar/info-snackbar.component';
 
 @NgModule({
             declarations: [
@@ -27,7 +28,8 @@ import { ErrorSnackbarComponent } from './components/error-snackbar/error-snackb
               QuestionCardComponent,
               AnswerOptionComponent,
               SideNavComponent,
-              ErrorSnackbarComponent
+              ErrorSnackbarComponent,
+              InfoSnackbarComponent
             ],
             imports: [
               BrowserModule,

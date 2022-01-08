@@ -26,7 +26,7 @@ export class QuestionsService {
 
 
   addQuestion(newQuestion: Question) {
-    this.firestore.collection<Question>('questions').add(newQuestion).then(_ => alert('Question added'))
+    this.firestore.collection<Question>('questions').add(newQuestion).then()
   }
 
   }
