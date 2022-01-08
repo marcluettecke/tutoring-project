@@ -1,0 +1,11 @@
+<div class="card">
+  <div class="card--header">
+    <p class="card--header--question">Pregunta: {{questionIndex + 1}}</p>
+  </div>
+  <div class="card--text">{{questionItem.questionText}}</div>
+  <div class="card--answer-wrapper">
+    <app-answer-option *ngFor="let option of questionItem.answers" [id]="option.id" [answerOption]="option.text"
+                       [name]="questionIndex">
+    </app-answer-option>
+  </div>
+</div>
