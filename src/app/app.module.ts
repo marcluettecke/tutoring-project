@@ -19,6 +19,7 @@ import { ErrorSnackbarComponent } from './components/error-snackbar/error-snackb
 import { InfoSnackbarComponent } from './components/info-snackbar/info-snackbar.component';
 import { TestComponent } from './views/test/test.component';
 import { TestCardComponent } from './components/test-card/test-card.component';
+import { TimerComponent } from './components/timer/timer.component';
 
 @NgModule({
             declarations: [
@@ -33,7 +34,8 @@ import { TestCardComponent } from './components/test-card/test-card.component';
               ErrorSnackbarComponent,
               InfoSnackbarComponent,
               TestComponent,
-              TestCardComponent
+              TestCardComponent,
+              TimerComponent
             ],
             imports: [
               BrowserModule,
