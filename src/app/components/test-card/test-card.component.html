@@ -5,7 +5,7 @@
   <div class="card--text">{{questionItem.questionText}}</div>
   <div class="card--answer-wrapper">
     <app-answer-option *ngFor="let option of questionItem.answers" [id]="option.id" [answerOption]="option.text"
-                       [name]="questionIndex">
+                       [name]="questionIndex" (click)="handleClick(questionItem ,option.id)" [disabled]="testStatus !== 'started'">
     </app-answer-option>
   </div>
 </div>

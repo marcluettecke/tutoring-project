@@ -1,28 +1,36 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {QuestionsService} from "../../services/questions.service";
 import {Question} from "../../models/question.model";
+import {TestService} from "../../services/test.service";
+import {Subscription} from "rxjs";
 
 @Component({
              selector: 'app-test',
              templateUrl: './test.component.html',
              styleUrls: ['./test.component.scss']
            })
-export class TestComponent implements OnInit {
+export class TestComponent implements OnInit, OnDestroy {
   questions: Question[] = []
+  testStatus: string
   filteredQuestions: Question[] = []
   errorMessage = ''
+  questionSubscription: Subscription
+  testStatusSubscription: Subscription
 
-  constructor(private questionsService: QuestionsService) {
+  constructor(private questionsService: QuestionsService, private testService: TestService) {
   }
 
   ngOnInit(): void {
-    this.questionsService.getQuestions().subscribe(questions => {
-                                                     this.questions = questions
-                                                     this.filterQuestions()
-                                                   },
-                                                   error => {
-                                                     this.errorMessage = error
-                                                   })
+    this.questionSubscription = this.questionsService.getQuestions().subscribe(questions => {
+                                                                                 this.questions = questions
+                                                                                 this.filterQuestions()
+                                                                               },
+                                                                               error => {
+                                                                                 this.errorMessage = error
+                                                                               })
+    this.testStatusSubscription = this.testService.testStatus.subscribe(status => {
+      this.testStatus = status
+    })
   }
 
   filterQuestions() {
@@ -39,6 +47,11 @@ export class TestComponent implements OnInit {
     }
     // shuffle the resulting questions
     this.filteredQuestions.sort(() => Math.random() - 0.5)
+  }
+
+  ngOnDestroy() {
+    this.questionSubscription.unsubscribe()
+    this.testStatusSubscription.unsubscribe()
   }
 
 }

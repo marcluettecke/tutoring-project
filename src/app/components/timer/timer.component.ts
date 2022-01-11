@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable, Subscription, timer} from "rxjs";
 import {TestService} from "../../services/test.service";
 
@@ -9,18 +9,19 @@ const TEST_TIME = 30 * 60
              templateUrl: './timer.component.html',
              styleUrls: ['./timer.component.scss']
            })
-export class TimerComponent implements OnInit {
+export class TimerComponent implements OnInit, OnDestroy {
   testStatus = ''
   remainingTime: number = TEST_TIME
   displayTime: string
   obsTimer: Observable<number> = timer(1000, 1000)
   timerSubscription: Subscription
+  testStatusSubscription: Subscription
 
   constructor(private testService: TestService) {
   }
 
   ngOnInit(): void {
-    this.testService.testStatus.subscribe(status => {
+    this.testStatusSubscription = this.testService.testStatus.subscribe(status => {
       this.testStatus = status
     })
   }
@@ -47,6 +48,11 @@ export class TimerComponent implements OnInit {
     const minutes = Math.floor(value / 60)
     const seconds = value % 60
     return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`
+  }
+
+  ngOnDestroy() {
+    this.timerSubscription.unsubscribe()
+    this.testStatusSubscription.unsubscribe()
   }
 
 }

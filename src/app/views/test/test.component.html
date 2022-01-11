@@ -2,6 +2,7 @@
     <app-test-card class="single-question" *ngFor="let question of filteredQuestions; let i = index"
                        [questionItem]="question"
                        [questionIndex]="i"
+                        [testStatus]="testStatus"
     ></app-test-card>
 </div>
 <app-timer></app-timer>
