@@ -1,0 +1,14 @@
+<div class="backdrop" (click)="handleCloseClick()"> </div>
+<div class="wrapper">
+  <h2 class="result-header">Los resultados de tu prueba</h2>
+  <p class="result-row">Total: <span
+    [class]=" correctAnswers.total < 50? 'bad-result' : correctAnswers.total < 80? 'medium-result' : 'good-result'">{{correctAnswers.total}} </span> / 100 </p>
+  <p class="result-row">Administrativo: <span
+    [class]=" correctAnswers.administrativo < 10? 'bad-result' : correctAnswers.administrativo < 20? 'medium-result' : 'good-result'">{{correctAnswers.administrativo}} </span> / 25 </p>
+  <p class="result-row">Medio Ambiente: <span
+    [class]=" correctAnswers.medioAmbiente < 10? 'bad-result' : correctAnswers.medioAmbiente < 20? 'medium-result' : 'good-result'">{{correctAnswers.medioAmbiente}} </span> / 25 </p>
+  <p class="result-row">Aguas: <span
+    [class]=" correctAnswers.aguas < 10? 'bad-result' : correctAnswers.aguas < 20? 'medium-result' : 'good-result'">{{correctAnswers.aguas}} </span> / 25 </p>
+  <p class="result-row">Costas: <span
+    [class]=" correctAnswers.costas < 10? 'bad-result' : correctAnswers.costas < 20? 'medium-result' : 'good-result'">{{correctAnswers.costas}} </span> / 25 </p>
+</div>

@@ -10,12 +10,14 @@ import {Subscription} from "rxjs";
              styleUrls: ['./test.component.scss']
            })
 export class TestComponent implements OnInit, OnDestroy {
+  modalOpen = false;
   questions: Question[] = []
   testStatus: string
   filteredQuestions: Question[] = []
   errorMessage = ''
   questionSubscription: Subscription
   testStatusSubscription: Subscription
+
 
   constructor(private questionsService: QuestionsService, private testService: TestService) {
   }
@@ -30,6 +32,7 @@ export class TestComponent implements OnInit, OnDestroy {
                                                                                })
     this.testStatusSubscription = this.testService.testStatus.subscribe(status => {
       this.testStatus = status
+      this.modalOpen = status === 'ended'
     })
   }
 
@@ -47,6 +50,12 @@ export class TestComponent implements OnInit, OnDestroy {
     }
     // shuffle the resulting questions
     this.filteredQuestions.sort(() => Math.random() - 0.5)
+  }
+
+  closeModal() {
+    this.modalOpen = false;
+    console.log('close event')
+    console.log(this.modalOpen)
   }
 
   ngOnDestroy() {
