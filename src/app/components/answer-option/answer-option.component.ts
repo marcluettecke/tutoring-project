@@ -11,6 +11,7 @@ export class AnswerOptionComponent implements OnInit {
   @Input() id: string;
   @Input() isCorrect: boolean;
   @Input() clicked: boolean;
+  @Input() testFinished: boolean;
   @Input() selectedAnswer: string;
   @Input() disabled: boolean;
 

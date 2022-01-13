@@ -8,8 +8,12 @@
   </div>
   <div class="card--text">{{questionItem.questionText}}</div>
   <div class="card--answer-wrapper">
-    <app-answer-option *ngFor="let option of questionItem.answers" [id]="option.id" [answerOption]="option.text"
-                       [clicked]="clicked" [isCorrect]="questionItem.correctAnswer === option.id" [name]="questionIndex"
+    <app-answer-option *ngFor="let option of questionItem.answers"
+                       [id]="option.id"
+                       [answerOption]="option.text"
+                       [clicked]="clicked"
+                       [isCorrect]="questionItem.correctAnswer === option.id"
+                       [name]="questionIndex"
                        [selectedAnswer]="selectedAnswer"
                        (answerWasclickedEvent)="clickHandler(questionItem.correctAnswer === option.id, option.id)"
                        [disabled]="false">

@@ -1,4 +1,4 @@
-import {Component, Input,} from '@angular/core';
+import {Component, Input, OnInit,} from '@angular/core';
 import {Question} from "../../models/question.model";
 import {TestService} from "../../services/test.service";
 
@@ -17,4 +17,5 @@ export class TestCardComponent {
   handleClick(questionItem: Question, clickedAnswer: string) {
     this.testService.addClickedAnswer(questionItem, clickedAnswer)
   }
+
 }
