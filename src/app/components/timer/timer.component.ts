@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable, Subscription, timer} from "rxjs";
 import {TestService} from "../../services/test.service";
 
-const TEST_TIME = 30 * 60
+const TEST_TIME = 120 * 60
 
 @Component({
              selector: 'app-timer',

@@ -12,10 +12,49 @@
   border-radius: 8px;
   border: 1px solid;
   background: white;
-  padding: 20px 0;
+  padding: 20px;
 
   .result-header {
   }
+
+  table.blueTable {
+    border: 1px solid;
+    width: 100%;
+    height: 300px;
+    border-collapse: collapse;
+    text-align: center;
+
+    & td, table.blueTable th {
+      border: 1px solid;
+      padding: 3px 2px;
+
+      &:not(:first-child) {
+        border-left: none
+      }
+    }
+    & tbody tr td:first-child {
+      font-weight: bold;
+    }
+    & tbody td {
+      font-size: 13px;
+    }
+
+    & thead {
+      //border-bottom: 2px solid #444444;
+
+      & th {
+        font-size: 15px;
+        font-weight: bold;
+        text-align: center;
+        border: 1px solid;
+
+        //&:first-child {
+        //  border-left: none;
+        //}
+      }
+    }
+  }
+
 
   .result-row {
     font-weight: bold;

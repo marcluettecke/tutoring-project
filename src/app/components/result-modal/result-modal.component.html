@@ -1,14 +1,69 @@
+<!--  <p class="result-row">Total: <span-->
+<!--    [class]=" correctAnswers.total < 50? 'bad-result' : correctAnswers.total < 80? 'medium-result' : 'good-result'">{{correctAnswers.total}} </span> / 100 </p>-->
+<!--  <p class="result-row">Administrativo: <span-->
+<!--    [class]=" correctAnswers.administrativo < 10? 'bad-result' : correctAnswers.administrativo < 20? 'medium-result' : 'good-result'">{{correctAnswers.administrativo}} </span> / 25 </p>-->
+<!--  <p class="result-row">Medio Ambiente: <span-->
+<!--    [class]=" correctAnswers.medioAmbiente < 10? 'bad-result' : correctAnswers.medioAmbiente < 20? 'medium-result' : 'good-result'">{{correctAnswers.medioAmbiente}} </span> / 25 </p>-->
+<!--  <p class="result-row">Aguas: <span-->
+<!--    [class]=" correctAnswers.aguas < 10? 'bad-result' : correctAnswers.aguas < 20? 'medium-result' : 'good-result'">{{correctAnswers.aguas}} </span> / 25 </p>-->
+<!--  <p class="result-row">Costas: <span-->
+<!--    [class]=" correctAnswers.costas < 10? 'bad-result' : correctAnswers.costas < 20? 'medium-result' : 'good-result'">{{correctAnswers.costas}} </span> / 25 </p>-->
+<!--</div>-->
 <div class="backdrop" (click)="handleCloseClick()"> </div>
 <div class="wrapper">
   <h2 class="result-header">Los resultados de tu prueba</h2>
-  <p class="result-row">Total: <span
-    [class]=" correctAnswers.total < 50? 'bad-result' : correctAnswers.total < 80? 'medium-result' : 'good-result'">{{correctAnswers.total}} </span> / 100 </p>
-  <p class="result-row">Administrativo: <span
-    [class]=" correctAnswers.administrativo < 10? 'bad-result' : correctAnswers.administrativo < 20? 'medium-result' : 'good-result'">{{correctAnswers.administrativo}} </span> / 25 </p>
-  <p class="result-row">Medio Ambiente: <span
-    [class]=" correctAnswers.medioAmbiente < 10? 'bad-result' : correctAnswers.medioAmbiente < 20? 'medium-result' : 'good-result'">{{correctAnswers.medioAmbiente}} </span> / 25 </p>
-  <p class="result-row">Aguas: <span
-    [class]=" correctAnswers.aguas < 10? 'bad-result' : correctAnswers.aguas < 20? 'medium-result' : 'good-result'">{{correctAnswers.aguas}} </span> / 25 </p>
-  <p class="result-row">Costas: <span
-    [class]=" correctAnswers.costas < 10? 'bad-result' : correctAnswers.costas < 20? 'medium-result' : 'good-result'">{{correctAnswers.costas}} </span> / 25 </p>
+  <table class="blueTable">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Questions</th>
+        <th>Correct</th>
+        <th>Wrong</th>
+        <th>Blank</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Administrativo</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Medio Ambiente</td>
+        <td>cell2_2</td>
+        <td>cell3_2</td>
+        <td>cell4_2</td>
+        <td>cell5_2</td>
+        <td>cell6_2</td>
+      </tr>
+      <tr>
+        <td>Costas</td>
+        <td>cell2_3</td>
+        <td>cell3_3</td>
+        <td>cell4_3</td>
+        <td>cell5_3</td>
+        <td>cell6_3</td>
+      </tr>
+      <tr>
+        <td>Aguas</td>
+        <td>cell2_4</td>
+        <td>cell3_4</td>
+        <td>cell4_4</td>
+        <td>cell5_4</td>
+        <td>cell6_4</td>
+      </tr>
+      <tr>
+        <td>Total</td>
+        <td>cell2_5</td>
+        <td>cell3_5</td>
+        <td>cell4_5</td>
+        <td>cell5_5</td>
+        <td>cell6_5</td>
+      </tr>
+    </tbody>
+  </table>
 </div>

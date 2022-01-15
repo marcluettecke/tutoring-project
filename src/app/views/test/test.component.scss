@@ -4,3 +4,20 @@
   flex-direction: column;
   gap: 20px;
 }
+
+.button {
+  position: absolute;
+  left: 50px;
+  bottom: 50px;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  background-color: var(--gray-100);
+  font-weight: bold;
+  padding: 10px;
+
+  &:hover {
+    cursor: pointer;
+    color: var(--primary-color-darker);
+  }
+}
