@@ -32,7 +32,7 @@
         <td>{{correctAnswers.administrativo.blank}}</td>
         <td>
           <span
-            [ngClass]="correctAnswers.administrativo.correct - (0.33 * correctAnswers.administrativo.incorrect) > 14 ? 'good-result' : correctAnswers.administrativo.correct - (0.33 * correctAnswers.administrativo.incorrect) > 10 ? 'average-result' : 'bad-result'">{{correctAnswers.administrativo.correct - (0.33 * correctAnswers.administrativo.incorrect)}}</span>
+            [ngClass]="correctAnswers.administrativo.correct - (0.33 * correctAnswers.administrativo.incorrect) > 14 ? 'good-result' : correctAnswers.administrativo.correct - (0.33 * correctAnswers.administrativo.incorrect) > 10 ? 'average-result' : 'bad-result'">{{(correctAnswers.administrativo.correct - (0.33 * correctAnswers.administrativo.incorrect)).toFixed(2)}}</span>
         </td>
       </tr>
       <tr>
@@ -43,7 +43,7 @@
         <td>{{correctAnswers['medio ambiente'].blank}}</td>
         <td>
           <span
-            [ngClass]="correctAnswers['medio ambiente'].correct - (0.33 * correctAnswers['medio ambiente'].incorrect) > 18 ? 'good-result' : correctAnswers['medio ambiente'].correct - (0.33 * correctAnswers['medio ambiente'].incorrect) > 13 ? 'average-result' : 'bad-result'">{{correctAnswers['medio ambiente'].correct - (0.33 * correctAnswers['medio ambiente'].incorrect)}}</span>
+            [ngClass]="correctAnswers['medio ambiente'].correct - (0.33 * correctAnswers['medio ambiente'].incorrect) > 18 ? 'good-result' : correctAnswers['medio ambiente'].correct - (0.33 * correctAnswers['medio ambiente'].incorrect) > 13 ? 'average-result' : 'bad-result'">{{(correctAnswers['medio ambiente'].correct - (0.33 * correctAnswers['medio ambiente'].incorrect)).toFixed(2)}}</span>
         </td>
       </tr>
       <tr>
@@ -54,7 +54,7 @@
         <td>{{correctAnswers.costas.blank}}</td>
         <td>
           <span
-            [ngClass]="correctAnswers.costas.correct - (0.33 * correctAnswers.costas.incorrect) > 14 ? 'good-result' : correctAnswers.costas.correct - (0.33 * correctAnswers.costas.incorrect) > 10 ? 'average-result' : 'bad-result'">{{correctAnswers.costas.correct - (0.33 * correctAnswers.costas.incorrect)}}</span>
+            [ngClass]="correctAnswers.costas.correct - (0.33 * correctAnswers.costas.incorrect) > 14 ? 'good-result' : correctAnswers.costas.correct - (0.33 * correctAnswers.costas.incorrect) > 10 ? 'average-result' : 'bad-result'">{{(correctAnswers.costas.correct - (0.33 * correctAnswers.costas.incorrect)).toFixed(2)}}</span>
         </td>
       </tr>
       <tr>
@@ -65,7 +65,7 @@
         <td>{{correctAnswers.aguas.blank}}</td>
         <td>
           <span
-            [ngClass]="correctAnswers.aguas.correct - (0.33 * correctAnswers.aguas.incorrect) > 24 ? 'good-result' : correctAnswers.aguas.correct - (0.33 * correctAnswers.aguas.incorrect) > 18 ? 'average-result' : 'bad-result'">{{correctAnswers.aguas.correct - (0.33 * correctAnswers.aguas.incorrect)}} </span>
+            [ngClass]="correctAnswers.aguas.correct - (0.33 * correctAnswers.aguas.incorrect) > 24 ? 'good-result' : correctAnswers.aguas.correct - (0.33 * correctAnswers.aguas.incorrect) > 18 ? 'average-result' : 'bad-result'">{{(correctAnswers.aguas.correct - (0.33 * correctAnswers.aguas.incorrect)).toFixed(2)}} </span>
         </td>
       </tr>
       <tr>
@@ -76,7 +76,7 @@
         <td>{{correctAnswers.total.blank}}</td>
         <td>
           <span
-            [ngClass]="correctAnswers.total.correct - (0.33 * correctAnswers.total.incorrect) > 70 ? 'good-result' : correctAnswers.total.correct - (0.33 * correctAnswers.total.incorrect) > 50 ? 'average-result' : 'bad-result'">{{correctAnswers.total.correct - (0.33 * correctAnswers.total.incorrect)}}</span>
+            [ngClass]="correctAnswers.total.correct - (0.33 * correctAnswers.total.incorrect) > 70 ? 'good-result' : correctAnswers.total.correct - (0.33 * correctAnswers.total.incorrect) > 50 ? 'average-result' : 'bad-result'">{{(correctAnswers.total.correct - (0.33 * correctAnswers.total.incorrect)).toFixed(2)}}</span>
         </td>
       </tr>
     </tbody>
