@@ -1,0 +1,84 @@
+<!--  <p class="result-row">Total: <span-->
+<!--    [class]=" correctAnswers.total < 50? 'bad-result' : correctAnswers.total < 80? 'medium-result' : 'good-result'">{{correctAnswers.total}} </span> / 100 </p>-->
+<!--  <p class="result-row">Administrativo: <span-->
+<!--    [class]=" correctAnswers.administrativo < 10? 'bad-result' : correctAnswers.administrativo < 20? 'medium-result' : 'good-result'">{{correctAnswers.administrativo}} </span> / 25 </p>-->
+<!--  <p class="result-row">Medio Ambiente: <span-->
+<!--    [class]=" correctAnswers.medioAmbiente < 10? 'bad-result' : correctAnswers.medioAmbiente < 20? 'medium-result' : 'good-result'">{{correctAnswers.medioAmbiente}} </span> / 25 </p>-->
+<!--  <p class="result-row">Aguas: <span-->
+<!--    [class]=" correctAnswers.aguas < 10? 'bad-result' : correctAnswers.aguas < 20? 'medium-result' : 'good-result'">{{correctAnswers.aguas}} </span> / 25 </p>-->
+<!--  <p class="result-row">Costas: <span-->
+<!--    [class]=" correctAnswers.costas < 10? 'bad-result' : correctAnswers.costas < 20? 'medium-result' : 'good-result'">{{correctAnswers.costas}} </span> / 25 </p>-->
+<!--</div>-->
+<div class="backdrop" (click)="handleCloseClick()"> </div>
+<div class="wrapper">
+  <h2 class="result-header">Los resultados de tu prueba</h2>
+  <table class="blueTable">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Questions</th>
+        <th>Correct</th>
+        <th>Wrong</th>
+        <th>Blank</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Administrativo</td>
+        <td>{{correctAnswers.administrativo.blank + correctAnswers.administrativo.correct + correctAnswers.administrativo.incorrect}}</td>
+        <td>{{correctAnswers.administrativo.correct}}</td>
+        <td>{{correctAnswers.administrativo.incorrect}}</td>
+        <td>{{correctAnswers.administrativo.blank}}</td>
+        <td>
+          <span
+            [ngClass]="correctAnswers.administrativo.correct - (0.33 * correctAnswers.administrativo.incorrect) > 14 ? 'good-result' : correctAnswers.administrativo.correct - (0.33 * correctAnswers.administrativo.incorrect) > 10 ? 'average-result' : 'bad-result'">{{correctAnswers.administrativo.correct - (0.33 * correctAnswers.administrativo.incorrect)}}</span>
+        </td>
+      </tr>
+      <tr>
+        <td>Medio Ambiente</td>
+        <td>{{correctAnswers['medio ambiente'].blank + correctAnswers['medio ambiente'].correct + correctAnswers['medio ambiente'].incorrect}}</td>
+        <td>{{correctAnswers['medio ambiente'].correct}}</td>
+        <td>{{correctAnswers['medio ambiente'].incorrect}}</td>
+        <td>{{correctAnswers['medio ambiente'].blank}}</td>
+        <td>
+          <span
+            [ngClass]="correctAnswers['medio ambiente'].correct - (0.33 * correctAnswers['medio ambiente'].incorrect) > 18 ? 'good-result' : correctAnswers['medio ambiente'].correct - (0.33 * correctAnswers['medio ambiente'].incorrect) > 13 ? 'average-result' : 'bad-result'">{{correctAnswers['medio ambiente'].correct - (0.33 * correctAnswers['medio ambiente'].incorrect)}}</span>
+        </td>
+      </tr>
+      <tr>
+        <td>Costas</td>
+        <td>{{correctAnswers.costas.blank + correctAnswers.costas.correct + correctAnswers.costas.incorrect}}</td>
+        <td>{{correctAnswers.costas.correct}}</td>
+        <td>{{correctAnswers.costas.incorrect}}</td>
+        <td>{{correctAnswers.costas.blank}}</td>
+        <td>
+          <span
+            [ngClass]="correctAnswers.costas.correct - (0.33 * correctAnswers.costas.incorrect) > 14 ? 'good-result' : correctAnswers.costas.correct - (0.33 * correctAnswers.costas.incorrect) > 10 ? 'average-result' : 'bad-result'">{{correctAnswers.costas.correct - (0.33 * correctAnswers.costas.incorrect)}}</span>
+        </td>
+      </tr>
+      <tr>
+        <td>Aguas</td>
+        <td>{{correctAnswers.aguas.blank + correctAnswers.aguas.correct + correctAnswers.aguas.incorrect}}</td>
+        <td>{{correctAnswers.aguas.correct}}</td>
+        <td>{{correctAnswers.aguas.incorrect}}</td>
+        <td>{{correctAnswers.aguas.blank}}</td>
+        <td>
+          <span
+            [ngClass]="correctAnswers.aguas.correct - (0.33 * correctAnswers.aguas.incorrect) > 24 ? 'good-result' : correctAnswers.aguas.correct - (0.33 * correctAnswers.aguas.incorrect) > 18 ? 'average-result' : 'bad-result'">{{correctAnswers.aguas.correct - (0.33 * correctAnswers.aguas.incorrect)}} </span>
+        </td>
+      </tr>
+      <tr>
+        <td>Total</td>
+        <td>{{correctAnswers.total.blank + correctAnswers.total.correct + correctAnswers.total.incorrect}}</td>
+        <td>{{correctAnswers.total.correct}}</td>
+        <td>{{correctAnswers.total.incorrect}}</td>
+        <td>{{correctAnswers.total.blank}}</td>
+        <td>
+          <span
+            [ngClass]="correctAnswers.total.correct - (0.33 * correctAnswers.total.incorrect) > 70 ? 'good-result' : correctAnswers.total.correct - (0.33 * correctAnswers.total.incorrect) > 50 ? 'average-result' : 'bad-result'">{{correctAnswers.total.correct - (0.33 * correctAnswers.total.incorrect)}}</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

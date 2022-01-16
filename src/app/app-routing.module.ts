@@ -5,6 +5,7 @@ import {LoginComponent} from "./views/login/login.component";
 import {AddQuestionComponent} from "./views/add-question/add-question.component";
 import {AdminGuard} from "./guards/admin-guard.guard";
 import {AngularFireAuthGuard, redirectUnauthorizedTo} from '@angular/fire/compat/auth-guard';
+import {TestComponent} from "./views/test/test.component";
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
 
@@ -15,6 +16,7 @@ const routes: Routes = [
     canActivate: [AngularFireAuthGuard],
     data: {authGuardPipe: redirectUnauthorizedToLogin}
   },
+  {path: 'test', component: TestComponent},
   {path: 'login', component: LoginComponent},
   {
     path: 'addQuestion',

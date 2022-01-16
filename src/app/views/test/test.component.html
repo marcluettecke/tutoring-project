@@ -1,0 +1,17 @@
+<app-result-modal *ngIf="modalOpen" (onCloseClick)="modalOpen=false"></app-result-modal>
+<div class="wrapper">
+    <app-test-card class="single-question" *ngFor="let question of filteredQuestions; let i = index"
+                   [questionItem]="question"
+                   [questionIndex]="i"
+                   [testStatus]="testStatus"
+    ></app-test-card>
+</div>
+  <button
+    type="button"
+    *ngIf="testStatus==='ended'"
+    class="button"
+    (click)="openModal()">
+    Resultado abierto
+  </button>
+<app-timer></app-timer>
+<app-error-snackbar [errorText]="errorMessage" *ngIf="errorMessage"></app-error-snackbar>

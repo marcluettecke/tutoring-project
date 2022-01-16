@@ -4,6 +4,7 @@
   </div>
   <nav class="navigation">
     <a routerLink="/home" *ngIf="isLoggedIn" class="navigation-link" routerLinkActive="active">Home</a>
+    <a routerLink="/test" *ngIf="isLoggedIn" class="navigation-link" routerLinkActive="active">Examen de práctica</a>
     <a routerLink="/addQuestion" *ngIf="isLoggedIn && isAdmin" class="navigation-link" routerLinkActive="active">Agregar pregunta</a>
     <a *ngIf="isLoggedIn" class="navigation-link log-button" (click)="logout()" >Logout</a>
   </nav>

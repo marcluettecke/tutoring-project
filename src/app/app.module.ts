@@ -17,6 +17,10 @@ import { SideNavComponent } from './components/side-nav/side-nav.component';
 import { AngularFireAuthGuardModule} from "@angular/fire/compat/auth-guard";
 import { ErrorSnackbarComponent } from './components/error-snackbar/error-snackbar.component';
 import { InfoSnackbarComponent } from './components/info-snackbar/info-snackbar.component';
+import { TestComponent } from './views/test/test.component';
+import { TestCardComponent } from './components/test-card/test-card.component';
+import { TimerComponent } from './components/timer/timer.component';
+import { ResultModalComponent } from './components/result-modal/result-modal.component';
 
 @NgModule({
             declarations: [
@@ -29,7 +33,11 @@ import { InfoSnackbarComponent } from './components/info-snackbar/info-snackbar.
               AnswerOptionComponent,
               SideNavComponent,
               ErrorSnackbarComponent,
-              InfoSnackbarComponent
+              InfoSnackbarComponent,
+              TestComponent,
+              TestCardComponent,
+              TimerComponent,
+              ResultModalComponent
             ],
             imports: [
               BrowserModule,
