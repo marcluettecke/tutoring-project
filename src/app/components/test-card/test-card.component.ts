@@ -11,11 +11,15 @@ export class TestCardComponent {
   @Input() questionItem: Question
   @Input() questionIndex: number
   @Input() testStatus: string
+  firstTimeClicked = true
+  previousAnswerWasWrong = false
 
   constructor(private testService: TestService) {}
 
   handleClick(questionItem: Question, clickedAnswer: string) {
-    this.testService.addClickedAnswer(questionItem, clickedAnswer)
+    this.testService.addClickedAnswer(questionItem, clickedAnswer, this.firstTimeClicked, this.previousAnswerWasWrong)
+    this.previousAnswerWasWrong = questionItem.correctAnswer !== clickedAnswer
+    this.firstTimeClicked = false
   }
 
 }

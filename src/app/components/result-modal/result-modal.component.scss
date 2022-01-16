@@ -32,9 +32,11 @@
         border-left: none
       }
     }
+
     & tbody tr td:first-child {
       font-weight: bold;
     }
+
     & tbody td {
       font-size: 13px;
     }
@@ -57,19 +59,7 @@
 
 
   .result-row {
-    font-weight: bold;
 
-    .good-result {
-      color: var(--correct-solid)
-    }
-
-    .medium-result {
-      color: orange;
-    }
-
-    .bad-result {
-      color: var(--wrong-solid)
-    }
 
   }
 }
@@ -81,4 +71,16 @@
   right: 0;
   bottom: 0;
   background: var(--gray-500-transparent);
+}
+
+.good-result {
+  color: var(--correct-solid)
+}
+
+.average-result {
+  color: orange;
+}
+
+.bad-result {
+  color: var(--wrong-solid)
 }

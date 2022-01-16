@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Question} from "../models/question.model";
 import {Subject} from "rxjs";
+import {QUESTIONWEIGHTS} from "../views/test/constants";
 
 interface ClickedAnswers {
   [key: string]: ClickedAnswer
@@ -18,22 +19,73 @@ interface ClickedAnswer {
             })
 export class TestService {
   testStatus: Subject<string> = new Subject<string>()
-  clickedAnswers: ClickedAnswers = {}
-  correctAnswers = {
-    total: 0,
-    administrativo: 0,
-    medioAmbiente: 0,
-    costas: 0,
-    aguas: 0
+  correctAnswers: { [key: string]: { blank: number, correct: number, incorrect: number } } = {
+    total: {
+      blank: 100,
+      correct: 0,
+      incorrect: 0
+    },
+    'administrativo': {
+      blank: QUESTIONWEIGHTS['administrativo'],
+      correct: 0,
+      incorrect: 0
+    },
+    'medio ambiente': {
+      blank: QUESTIONWEIGHTS['medio ambiente'],
+      correct: 0,
+      incorrect: 0
+    },
+    'costas': {
+      blank: QUESTIONWEIGHTS['costas'],
+      correct: 0,
+      incorrect: 0
+    },
+    'aguas': {
+      blank: QUESTIONWEIGHTS['aguas'],
+      correct: 0,
+      incorrect: 0
+    },
+
   }
 
-  addClickedAnswer(questionItem: Question, clickedAnswer: string) {
-    const newItem: ClickedAnswer = {}
-    newItem.correctAnswer = questionItem.correctAnswer
-    newItem.clickedAnswer = clickedAnswer
-    newItem.mainSection = questionItem.mainSection
-    newItem.correct = questionItem.correctAnswer === clickedAnswer
-    this.clickedAnswers[questionItem.id] = newItem
+
+  addClickedAnswer(questionItem: Question, clickedAnswer: string, firstTimeClicked: boolean, previousAnswerWasWrong: boolean) {
+    // handle the first click
+    console.log(questionItem.correctAnswer)
+    if (firstTimeClicked) {
+      this.correctAnswers.total.blank--
+      this.correctAnswers[questionItem.mainSection].blank--
+
+      if (questionItem.correctAnswer === clickedAnswer) {
+        this.correctAnswers.total.correct++
+        this.correctAnswers[questionItem.mainSection].correct++
+      } else {
+        this.correctAnswers.total.incorrect++
+        this.correctAnswers[questionItem.mainSection].incorrect++
+      }
+    } else {
+      // handle subsequent clicks
+      if (previousAnswerWasWrong && questionItem.correctAnswer === clickedAnswer) {
+        this.correctAnswers.total.correct++
+        this.correctAnswers[questionItem.mainSection].correct++
+        this.correctAnswers.total.incorrect--
+        this.correctAnswers[questionItem.mainSection].incorrect--
+      }
+      if (previousAnswerWasWrong && questionItem.correctAnswer !== clickedAnswer) {
+        console.log(this.correctAnswers)
+        return
+      }
+      if (!previousAnswerWasWrong && questionItem.correctAnswer === clickedAnswer) {
+        console.log(this.correctAnswers)
+        return
+      }
+      if (!previousAnswerWasWrong && questionItem.correctAnswer !== clickedAnswer) {
+        this.correctAnswers.total.incorrect++
+        this.correctAnswers[questionItem.mainSection].incorrect++
+        this.correctAnswers.total.correct--
+        this.correctAnswers[questionItem.mainSection].correct--
+      }
+    }
   }
 
   handleTestStart() {
@@ -42,19 +94,5 @@ export class TestService {
 
   handleTestEnd() {
     this.testStatus.next('ended')
-
-    Object.values(this.clickedAnswers).map((el) => {
-      if (el.correct) {
-        this.correctAnswers.total++
-      }
-      if (el.mainSection === 'medio ambiente' && el.correct) {
-        this.correctAnswers.medioAmbiente++
-      }
-      if (el.mainSection !== 'medio ambiente' && el.correct) {
-        const section = <'administrativo' | 'aguas' | 'costas'>el.mainSection
-        this.correctAnswers[section]++
-      }
-    })
-    console.log(this.correctAnswers);
   }
 }

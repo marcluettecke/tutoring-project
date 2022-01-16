@@ -8,7 +8,7 @@
                        [id]="option.id"
                        [answerOption]="option.text"
                        [name]="questionIndex"
-                       (click)="handleClick(questionItem ,option.id)"
+                       (mousedown)="handleClick(questionItem ,option.id)"
                        [testFinished]="testStatus==='ended'"
                        [isCorrect]="questionItem.correctAnswer === option.id"
                        [disabled]="testStatus !== 'started'">

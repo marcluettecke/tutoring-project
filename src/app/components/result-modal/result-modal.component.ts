@@ -8,13 +8,7 @@ import {TestService} from "../../services/test.service";
            })
 export class ResultModalComponent implements OnInit {
   @Output() onCloseClick: EventEmitter<any> = new EventEmitter()
-  correctAnswers: {
-    total: number,
-    administrativo: number,
-    medioAmbiente: number,
-    costas: number,
-    aguas: number
-  }
+  correctAnswers: { [key: string]: { blank: number, correct: number, incorrect: number } }
 
   constructor(private testService: TestService) {
   }

@@ -3,6 +3,7 @@ import {QuestionsService} from "../../services/questions.service";
 import {Question} from "../../models/question.model";
 import {TestService} from "../../services/test.service";
 import {Subscription} from "rxjs";
+import {QUESTIONWEIGHTS} from './constants'
 
 @Component({
              selector: 'app-test',
@@ -37,24 +38,16 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   filterQuestions() {
-    const questionWeights: { [key: string]: number } = {
-      'administrativo': 20,
-      'medio ambiente': 25,
-      'costas': 20,
-      'aguas': 35
-    }
+
     for (const mainSection of ['administrativo', 'medio ambiente', 'costas', 'aguas']) {
       const questionPerSection = this.questions.filter(el => el.mainSection === mainSection)
-      console.log(questionPerSection)
       // find how many questions per mainSection exist
       const maxFilter = questionPerSection.length
       const indices = Array(maxFilter).fill(1).map((_, index) => index + 1);
       indices.sort(() => Math.random() - 0.5);
 
 
-      for (const index of indices.slice(0, questionWeights[mainSection])) {
-        console.log(mainSection)
-        console.log(indices)
+      for (const index of indices.slice(0, QUESTIONWEIGHTS[mainSection])) {
         // console.log(indices.slice(0, questionWeights[mainSection]))
         this.filteredQuestions.push(questionPerSection[index])
       }
