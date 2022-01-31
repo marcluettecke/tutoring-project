@@ -14,4 +14,8 @@
                        [disabled]="testStatus !== 'started'">
     </app-answer-option>
   </div>
+  <div *ngIf="testStatus ==='ended' " class="card--explanation-wrapper" >
+    <fa-icon [icon]="faAngleDoubleDown" class="card--explanation-icon"></fa-icon>
+    <p class="card--explanation-text"> {{questionItem.explanation}}</p>
+  </div>
 </div>

@@ -48,4 +48,20 @@
     flex-direction: column;
     gap: 10px;
   }
+
+  &--explanation {
+
+    &-wrapper {
+      padding: 30px 10px 0 10px;
+    }
+    &-icon {
+      color: var(--primary-color-base);
+      display: flex;
+      justify-content: center;
+    }
+    &-text {
+      font-size: 1rem;
+      overflow: hidden;
+    }
+  }
 }

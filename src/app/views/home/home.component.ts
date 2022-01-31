@@ -13,10 +13,10 @@ export class HomeComponent implements OnInit {
   sidebarExpanded = true;
   errorMessage = ''
   activeSection: { mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number } = {
-    mainSection: 'administrativo',
-    subSection: 'Constitución Española',
-    mainSectionNumber: 1,
-    subSectionNumber: 1
+    mainSection: '',
+    subSection: '',
+    mainSectionNumber: 0,
+    subSectionNumber: 0
   }
 
   constructor(private questionService: QuestionsService) {
@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.updateData()
+    // this.updateData()
   }
 
   toggleSidebarExpanded(value: boolean) {

@@ -1,6 +1,7 @@
 import {Component, Input, OnInit,} from '@angular/core';
 import {Question} from "../../models/question.model";
 import {TestService} from "../../services/test.service";
+import {faAngleDoubleDown, faAngleDoubleUp} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
              selector: 'app-test-card',
@@ -13,6 +14,10 @@ export class TestCardComponent {
   @Input() testStatus: string
   firstTimeClicked = true
   previousAnswerWasWrong = false
+
+
+    faAngleDoubleDown = faAngleDoubleDown
+
 
   constructor(private testService: TestService) {}
 
