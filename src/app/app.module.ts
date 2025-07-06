@@ -24,6 +24,15 @@ import { ResultModalComponent } from './components/result-modal/result-modal.com
 
 @NgModule({
             declarations: [
+            ],
+            imports: [
+              BrowserModule,
+              AppRoutingModule,
+              FormsModule,
+              AngularFireModule.initializeApp(environment.firebase),
+              FontAwesomeModule,
+              ReactiveFormsModule,
+              AngularFireAuthGuardModule,
               AppComponent,
               HeaderComponent,
               HomeComponent,
@@ -38,15 +47,6 @@ import { ResultModalComponent } from './components/result-modal/result-modal.com
               TestCardComponent,
               TimerComponent,
               ResultModalComponent
-            ],
-            imports: [
-              BrowserModule,
-              AppRoutingModule,
-              FormsModule,
-              AngularFireModule.initializeApp(environment.firebase),
-              FontAwesomeModule,
-              ReactiveFormsModule,
-              AngularFireAuthGuardModule
             ],
             providers: [],
             bootstrap: [AppComponent]
