@@ -62,8 +62,12 @@
 
 
 ### Built With
-* [Angular](https://angular.io/)
-* [Firebase](https://firebase.google.com/)
+* [Angular 20+](https://angular.io/) - Modern standalone components architecture
+* [Firebase v9+ Modular SDK](https://firebase.google.com/) - Authentication and Firestore database
+* [TypeScript 5.4+](https://www.typescriptlang.org/) - Type-safe development
+* [RxJS](https://rxjs.dev/) - Reactive programming
+* [Font Awesome](https://fontawesome.com/) - Icons
+* [SCSS](https://sass-lang.com/) - Styling
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -81,10 +85,19 @@ cd tutoring-project
 
 ### Prerequisites
 
-Make sure to have the lastest version of the Node Package Manager, and [Node](https://nodejs.org/en/) while you're at it, installed:
-  ```sh
-  npm install npm@latest -g
-  ```
+This project requires Node.js v20.19+ or v22.12+ for Angular 20 compatibility:
+* [Node.js](https://nodejs.org/en/) - v20.19+ or v22.12+
+* npm (comes with Node.js)
+
+You can use nvm to manage Node versions:
+```sh
+# Install nvm (if not already installed)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Install and use the correct Node version
+nvm install 24.3.0
+nvm use 24.3.0
+```
 
 ### Installation
 
@@ -119,7 +132,29 @@ Make sure to have the lastest version of the Node Package Manager, and [Node](ht
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-This project can be adjusted to your own tutoring needs, or wherever you need some question service for multiple choice  questions, a cloud backend to manage user and questions and a simple, yet intuitive interface for your users.
+Start the development server:
+```sh
+npm start
+```
+
+The application will be available at `http://localhost:4200`
+
+### Development Commands
+```sh
+npm start          # Start development server
+npm run build      # Build for production
+npm test           # Run unit tests
+```
+
+### Project Features
+* **Question Practice**: Study with filtered questions by section and subsection
+* **Randomized Tests**: Take timed practice exams with weighted question selection
+* **Google Authentication**: Secure login with Google OAuth
+* **Admin Panel**: Manage questions and content (admin users only)
+* **Responsive Design**: Works on desktop and mobile devices
+* **Real-time Scoring**: Immediate feedback with detailed explanations
+
+This project can be adjusted to your own tutoring needs, or wherever you need some question service for multiple choice questions, a cloud backend to manage user and questions and a simple, yet intuitive interface for your users.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
