@@ -1,5 +1,11 @@
 import {Injectable} from '@angular/core';
-import {AngularFirestore, AngularFirestoreCollection} from "@angular/fire/compat/firestore";
+import {
+  Firestore,
+  collection,
+  collectionData,
+  query,
+  where
+} from '@angular/fire/firestore';
 import {Account} from "../models/User.model";
 import {BehaviorSubject, Observable} from "rxjs";
 import {CookieService} from "ngx-cookie-service";
@@ -11,7 +17,7 @@ import {AuthService} from "./auth.service";
 export class AccountsService {
   isAdmin = new BehaviorSubject<boolean>(this.cookieService.get('adminState') === 'true')
 
-  constructor(private firestore: AngularFirestore, private cookieService: CookieService, private authService: AuthService) {
+  constructor(private firestore: Firestore, private cookieService: CookieService, private authService: AuthService) {
     this.authService.loginChanged
       .subscribe(user => {
         if (!!user) {
@@ -22,10 +28,9 @@ export class AccountsService {
 
 
   getAccounts(email: string): Observable<Account[]> {
-    const accountsRef: AngularFirestoreCollection<Account> = this.firestore
-      .collection('accounts', ref =>
-        ref.where('email', '==', email))
-    return accountsRef.valueChanges()
+    const accountsCollection = collection(this.firestore, 'accounts');
+    const q = query(accountsCollection, where('email', '==', email));
+    return collectionData(q, { idField: 'id' }) as Observable<Account[]>;
   }
 
   checkIfAdmin(email: string) {

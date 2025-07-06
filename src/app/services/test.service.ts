@@ -51,7 +51,6 @@ export class TestService {
 
   addClickedAnswer(questionItem: Question, clickedAnswer: string, firstTimeClicked: boolean, previousAnswerWasWrong: boolean) {
     // handle the first click
-    console.log(questionItem.correctAnswer)
     if (firstTimeClicked) {
       this.correctAnswers.total.blank--
       this.correctAnswers[questionItem.mainSection].blank--
@@ -72,11 +71,9 @@ export class TestService {
         this.correctAnswers[questionItem.mainSection].incorrect--
       }
       if (previousAnswerWasWrong && questionItem.correctAnswer !== clickedAnswer) {
-        console.log(this.correctAnswers)
         return
       }
       if (!previousAnswerWasWrong && questionItem.correctAnswer === clickedAnswer) {
-        console.log(this.correctAnswers)
         return
       }
       if (!previousAnswerWasWrong && questionItem.correctAnswer !== clickedAnswer) {

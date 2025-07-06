@@ -1,18 +1,27 @@
 import {Injectable} from '@angular/core';
 import {Observable} from "rxjs";
-import {Question} from '../models/question.model'
-import {AngularFirestore, AngularFirestoreCollection} from "@angular/fire/compat/firestore";
+import {Question} from '../models/question.model';
+import {
+  Firestore,
+  collection,
+  collectionData,
+  addDoc,
+  query,
+  where,
+  QueryConstraint
+} from '@angular/fire/firestore';
 
 @Injectable({
               providedIn: 'root'
             })
 export class QuestionsService {
 
-  constructor(private firestore: AngularFirestore) {
+  constructor(private firestore: Firestore) {
   }
 
   getQuestions(): Observable<Question[]> {
-    return this.firestore.collection<Question>('questions').valueChanges();
+    const questionsCollection = collection(this.firestore, 'questions');
+    return collectionData(questionsCollection, { idField: 'id' }) as Observable<Question[]>;
   }
 
   // getQuestionsTest(): Question[] | void {
@@ -33,16 +42,19 @@ export class QuestionsService {
 
 
   getSpecificQuestions(mainSection: string, subSection: string): Observable<Question[]> {
-    const questionsRef: AngularFirestoreCollection<Question> = this.firestore
-      .collection('questions', ref =>
-        ref.where('mainSection', '==', mainSection)
-          .where('subSection', '==', subSection))
-    return questionsRef.valueChanges()
+    const questionsCollection = collection(this.firestore, 'questions');
+    const q = query(
+      questionsCollection,
+      where('mainSection', '==', mainSection),
+      where('subSection', '==', subSection)
+    );
+    return collectionData(q, { idField: 'id' }) as Observable<Question[]>;
   }
 
 
   addQuestion(newQuestion: Question) {
-    this.firestore.collection<Question>('questions').add(newQuestion).then()
+    const questionsCollection = collection(this.firestore, 'questions');
+    return addDoc(questionsCollection, newQuestion);
   }
 
 }
