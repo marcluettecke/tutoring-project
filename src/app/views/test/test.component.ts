@@ -3,10 +3,16 @@ import {QuestionsService} from "../../services/questions.service";
 import {Question} from "../../models/question.model";
 import {TestService} from "../../services/test.service";
 import {Subscription} from "rxjs";
-import {QUESTIONWEIGHTS} from './constants'
+import {QUESTIONWEIGHTS} from './constants';
+import {ResultModalComponent} from '../../components/result-modal/result-modal.component';
+import {TestCardComponent} from '../../components/test-card/test-card.component';
+import {TimerComponent} from '../../components/timer/timer.component';
+import {ErrorSnackbarComponent} from '../../components/error-snackbar/error-snackbar.component';
 
 @Component({
              selector: 'app-test',
+             standalone: true,
+             imports: [ResultModalComponent, TestCardComponent, TimerComponent, ErrorSnackbarComponent],
              templateUrl: './test.component.html',
              styleUrls: ['./test.component.scss']
            })

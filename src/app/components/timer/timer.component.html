@@ -1,22 +1,22 @@
-<button
-  type="button"
-  class="button start-button"
-  *ngIf="testStatus===''"
-  (click)="startTest()">
-  Iniciar prueba
-</button>
-<div
-  class="timer-wrapper"
-  *ngIf="testStatus==='started' || testStatus==='ended'">
+@if (testStatus === '') {
   <button
     type="button"
-    class="button"
-    (click)="submitTest()"
-    [ngClass]="testStatus==='ended'? 'button-finished': ''">
-    Terminar prueba
+    class="button start-button"
+    (click)="startTest()">
+    Iniciar prueba
   </button>
-  <p
-    [ngClass]="testStatus==='ended'? 'timer-finished': ''">
-    {{transform(this.remainingTime)}}
-  </p>
-</div>
+}
+@if (testStatus === 'started' || testStatus === 'ended') {
+  <div class="timer-wrapper">
+    <button
+      type="button"
+      class="button"
+      (click)="submitTest()"
+      [ngClass]="testStatus === 'ended' ? 'button-finished': ''">
+      Terminar prueba
+    </button>
+    <p [ngClass]="testStatus === 'ended' ? 'timer-finished': ''">
+      {{transform(this.remainingTime)}}
+    </p>
+  </div>
+}

@@ -1,11 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable, Subscription, timer} from "rxjs";
 import {TestService} from "../../services/test.service";
+import {NgClass} from "@angular/common";
 
 const TEST_TIME = 120 * 60
 
 @Component({
              selector: 'app-timer',
+             standalone: true,
+             imports: [NgClass],
              templateUrl: './timer.component.html',
              styleUrls: ['./timer.component.scss']
            })
@@ -54,7 +57,9 @@ export class TimerComponent implements OnInit, OnDestroy {
     if(this.timerSubscription) {
       this.timerSubscription.unsubscribe()
     }
-    this.testStatusSubscription.unsubscribe()
+    if(this.testStatusSubscription) {
+      this.testStatusSubscription.unsubscribe()
+    }
   }
 
 }

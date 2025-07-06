@@ -1,8 +1,11 @@
 import {Component, Output, OnInit, EventEmitter} from '@angular/core';
 import {TestService} from "../../services/test.service";
+import {NgClass} from "@angular/common";
 
 @Component({
              selector: 'app-result-modal',
+             standalone: true,
+             imports: [NgClass],
              templateUrl: './result-modal.component.html',
              styleUrls: ['./result-modal.component.scss']
            })

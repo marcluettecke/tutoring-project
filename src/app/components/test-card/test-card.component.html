@@ -4,18 +4,22 @@
   </div>
   <div class="card--text">{{questionItem && questionItem.questionText}}</div>
   <div class="card--answer-wrapper">
-    <app-answer-option *ngFor="let option of questionItem.answers"
-                       [id]="option.id"
-                       [answerOption]="option.text"
-                       [name]="questionIndex"
-                       (mousedown)="handleClick(questionItem ,option.id)"
-                       [testFinished]="testStatus==='ended'"
-                       [isCorrect]="questionItem.correctAnswer === option.id"
-                       [disabled]="testStatus !== 'started'">
-    </app-answer-option>
+    @for (option of questionItem.answers; track option.id) {
+      <app-answer-option
+        [id]="option.id"
+        [answerOption]="option.text"
+        [name]="questionIndex"
+        (mousedown)="handleClick(questionItem ,option.id)"
+        [testFinished]="testStatus==='ended'"
+        [isCorrect]="questionItem.correctAnswer === option.id"
+        [disabled]="testStatus !== 'started'">
+      </app-answer-option>
+    }
   </div>
-  <div *ngIf="testStatus ==='ended' " class="card--explanation-wrapper" >
-    <fa-icon [icon]="faAngleDoubleDown" class="card--explanation-icon"></fa-icon>
-    <p class="card--explanation-text"> {{questionItem.explanation}}</p>
-  </div>
+  @if (testStatus === 'ended') {
+    <div class="card--explanation-wrapper">
+      <fa-icon [icon]="faAngleDoubleDown" class="card--explanation-icon"></fa-icon>
+      <p class="card--explanation-text"> {{questionItem.explanation}}</p>
+    </div>
+  }
 </div>

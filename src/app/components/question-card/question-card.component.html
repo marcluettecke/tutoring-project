@@ -3,28 +3,39 @@
   <div class="card--header">
     <p class="card--header--side">{{subSectionName}}</p>
     <p class="card--header--question">Pregunta: {{questionIndex + 1}}</p>
-    <div class="card--header--side wrong-answer-symbol" *ngIf="clicked && wrongAnswerClicked">!</div>
-    <div class="card--header--side" *ngIf="!wrongAnswerClicked"></div>
+    @if (clicked && wrongAnswerClicked) {
+      <div class="card--header--side wrong-answer-symbol">!</div>
+    }
+    @if (!wrongAnswerClicked) {
+      <div class="card--header--side"></div>
+    }
   </div>
   <div class="card--text">{{questionItem.questionText}}</div>
   <div class="card--answer-wrapper">
-    <app-answer-option *ngFor="let option of questionItem.answers"
-                       [id]="option.id"
-                       [answerOption]="option.text"
-                       [clicked]="clicked"
-                       [isCorrect]="questionItem.correctAnswer === option.id"
-                       [name]="questionIndex"
-                       [selectedAnswer]="selectedAnswer"
-                       (answerWasclickedEvent)="clickHandler(questionItem.correctAnswer === option.id, option.id)"
-                       [disabled]="false">
-
-    </app-answer-option>
+    @for (option of questionItem.answers; track option.id) {
+      <app-answer-option
+        [id]="option.id"
+        [answerOption]="option.text"
+        [clicked]="clicked"
+        [isCorrect]="questionItem.correctAnswer === option.id"
+        [name]="questionIndex"
+        [selectedAnswer]="selectedAnswer"
+        (answerWasclickedEvent)="clickHandler(questionItem.correctAnswer === option.id, option.id)"
+        [disabled]="false">
+      </app-answer-option>
+    }
   </div>
-  <div *ngIf="clicked" class="card--explanation-wrapper" (click)="explanationShown = !explanationShown">
-    <fa-icon *ngIf="explanationShown" [icon]="faAngleDoubleDown" class="card--explanation-icon"></fa-icon>
-    <fa-icon *ngIf="!explanationShown" [icon]="faAngleDoubleUp" class="card--explanation-icon"></fa-icon>
-    <p class="card--explanation-text"
-       [ngClass]="explanationShown? 'card--explanation-expanded': 'card--explanation-collapsed'"> {{questionItem.explanation}}</p>
-  </div>
+  @if (clicked) {
+    <div class="card--explanation-wrapper" (click)="explanationShown = !explanationShown">
+      @if (explanationShown) {
+        <fa-icon [icon]="faAngleDoubleDown" class="card--explanation-icon"></fa-icon>
+      }
+      @if (!explanationShown) {
+        <fa-icon [icon]="faAngleDoubleUp" class="card--explanation-icon"></fa-icon>
+      }
+      <p class="card--explanation-text"
+         [ngClass]="explanationShown? 'card--explanation-expanded': 'card--explanation-collapsed'"> {{questionItem.explanation}}</p>
+    </div>
+  }
 
 </div>

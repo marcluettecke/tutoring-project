@@ -3,10 +3,18 @@
     <img src="../../../assets/logo_horizontal.png" alt="logo showing waterdrops on book" class="logo">
   </div>
   <nav class="navigation">
-    <a routerLink="/home" *ngIf="isLoggedIn" class="navigation-link" routerLinkActive="active">Home</a>
-    <a routerLink="/test" *ngIf="isLoggedIn" class="navigation-link" routerLinkActive="active">Examen de práctica</a>
-    <a routerLink="/addQuestion" *ngIf="isLoggedIn && isAdmin" class="navigation-link" routerLinkActive="active">Agregar pregunta</a>
-    <a *ngIf="isLoggedIn" class="navigation-link log-button" (click)="logout()" >Logout</a>
+    @if (isLoggedIn) {
+      <a routerLink="/home" class="navigation-link" routerLinkActive="active">Home</a>
+    }
+    @if (isLoggedIn) {
+      <a routerLink="/test" class="navigation-link" routerLinkActive="active">Examen de práctica</a>
+    }
+    @if (isLoggedIn && isAdmin) {
+      <a routerLink="/addQuestion" class="navigation-link" routerLinkActive="active">Agregar pregunta</a>
+    }
+    @if (isLoggedIn) {
+      <a class="navigation-link log-button" (click)="logout()">Logout</a>
+    }
   </nav>
   <div class="image-wrapper">
     <img src="../../../assets/images/swoop.svg" alt="underlying image to allow for header styling" class="swoop-image">

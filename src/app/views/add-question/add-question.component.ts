@@ -1,15 +1,20 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {QuestionsService} from "../../services/questions.service";
-import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Question} from "../../models/question.model";
 import {MAINSECTIONS, SUBSECTIONINTERFACE, SUBSECTIONS} from "../../constants/sections";
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+import {InfoSnackbarComponent} from '../../components/info-snackbar/info-snackbar.component';
 
 @Component({
              selector: 'app-add-question',
+             standalone: true,
+             imports: [ReactiveFormsModule, InfoSnackbarComponent],
              templateUrl: './add-question.component.html',
              styleUrls: ['./add-question.component.scss']
            })
-export class AddQuestionComponent implements OnInit {
+export class AddQuestionComponent implements OnInit, OnDestroy {
   currentQuestionLength: number
   mainSections: string[] = MAINSECTIONS
   subsections: SUBSECTIONINTERFACE = SUBSECTIONS
@@ -31,6 +36,8 @@ export class AddQuestionComponent implements OnInit {
                     subSection: new FormControl('', [Validators.required]),
                   })
   currentSubsection: { name: string, index: number }[] | null = null
+  
+  private destroy$ = new Subject<void>();
 
   constructor(private questionService: QuestionsService) {
   }
@@ -61,8 +68,9 @@ export class AddQuestionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.questionService.getQuestions().subscribe(questions => this.currentQuestionLength = questions.length)
-
+    this.questionService.getQuestions()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(questions => this.currentQuestionLength = questions.length)
   }
 
   findId() {
@@ -80,37 +88,39 @@ export class AddQuestionComponent implements OnInit {
 
   onSubmit() {
     // find the number of questions in DB to create a new index + 1 for ordering
-    this.questionService.getQuestions().subscribe(questions => this.currentQuestionLength = questions.length)
+    this.questionService.getQuestions()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(questions => this.currentQuestionLength = questions.length)
 
     const subSectionIndex = this.currentSubsection!.filter(el => {
       return el.name === this.newQuestionForm.value.subSection
     })[0].index
     const newQuestion: Question = {
       id: this.findId(),
-      questionText: this.newQuestionForm.value.questionText,
+      questionText: this.newQuestionForm.value.questionText || '',
       questionIndex: +this.findIdNumeric(),
       answers: [
         {
           id: `${this.findId()}-a1`,
-          text: this.newQuestionForm.get(['answers', 'answer1'])?.value
+          text: this.newQuestionForm.get(['answers', 'answer1'])?.value || ''
         },
         {
           id: `${this.findId()}-a2`,
-          text: this.newQuestionForm.get(['answers', 'answer2'])?.value
+          text: this.newQuestionForm.get(['answers', 'answer2'])?.value || ''
         },
         {
           id: `${this.findId()}-a3`,
-          text: this.newQuestionForm.get(['answers', 'answer3'])?.value
+          text: this.newQuestionForm.get(['answers', 'answer3'])?.value || ''
         },
         {
           id: `${this.findId()}-a4`,
-          text: this.newQuestionForm.get(['answers', 'answer4'])?.value
+          text: this.newQuestionForm.get(['answers', 'answer4'])?.value || ''
         }
       ],
       correctAnswer: `${this.findId()}-a${this.newQuestionForm.value.correctAnswer}`,
-      explanation: this.newQuestionForm.value.explanation,
-      mainSection: this.newQuestionForm.value.mainSection,
-      subSection: this.newQuestionForm.value.subSection,
+      explanation: this.newQuestionForm.value.explanation || '',
+      mainSection: this.newQuestionForm.value.mainSection || '',
+      subSection: this.newQuestionForm.value.subSection || '',
       subSectionIndex: subSectionIndex
 
     }
@@ -120,6 +130,11 @@ export class AddQuestionComponent implements OnInit {
     setTimeout(() => {
       this.showInfoBar = false
     }, 2000)
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

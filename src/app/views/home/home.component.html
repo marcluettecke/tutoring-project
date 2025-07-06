@@ -1,9 +1,14 @@
 <app-side-nav (clickEmit)="changeData($event)" (expandSidebarEmit)="toggleSidebarExpanded($event)" [activeSection]="activeSection"></app-side-nav>
 <div class="wrapper">
-    <app-question-card class="single-question" *ngFor="let question of questions; let i = index"
-                       [subSectionName]="activeSection.subSection" [questionIndex]="i"
-                       [questionItem]="question"
-                        [sidebarExpanded]="sidebarExpanded"
-    ></app-question-card>
+    @for (question of questions; track question.id; let i = $index) {
+      <app-question-card class="single-question"
+                         [subSectionName]="activeSection.subSection"
+                         [questionIndex]="i"
+                         [questionItem]="question"
+                         [sidebarExpanded]="sidebarExpanded">
+      </app-question-card>
+    }
 </div>
-<app-error-snackbar [errorText]="errorMessage" *ngIf="errorMessage"></app-error-snackbar>
+@if (errorMessage) {
+  <app-error-snackbar [errorText]="errorMessage"></app-error-snackbar>
+}

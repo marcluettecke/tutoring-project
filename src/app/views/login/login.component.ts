@@ -1,10 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
 import {Subscription} from "rxjs";
+import {ErrorSnackbarComponent} from "../../components/error-snackbar/error-snackbar.component";
 
 
 @Component({
              selector: 'app-login',
+             standalone: true,
+             imports: [ErrorSnackbarComponent],
              templateUrl: './login.component.html',
              styleUrls: ['./login.component.scss']
            })
