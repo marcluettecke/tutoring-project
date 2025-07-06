@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
+  <a href="https://github.com/marcluettecke/tutoring-project">
     <img src="./src/assets/logo_vertical.png" alt="Logo" width="250" height="250">
   </a>
 
@@ -16,6 +16,22 @@
     <a href="https://tutoring-service.netlify.app/">View Demo</a>
     ·
     <a href="https://github.com/marcluettecke/tutoring-project/issues">Request Feature</a>
+  </p>
+
+  <!-- Status Badges -->
+  <p align="center">
+    <a href="https://github.com/marcluettecke/tutoring-project/actions/workflows/ci.yml">
+      <img src="https://github.com/marcluettecke/tutoring-project/workflows/CI%20Pipeline/badge.svg" alt="CI Status">
+    </a>
+    <a href="https://codecov.io/gh/marcluettecke/tutoring-project">
+      <img src="https://codecov.io/gh/marcluettecke/tutoring-project/branch/main/graph/badge.svg" alt="Coverage">
+    </a>
+    <a href="https://github.com/marcluettecke/tutoring-project/releases">
+      <img src="https://img.shields.io/github/v/release/marcluettecke/tutoring-project" alt="Release">
+    </a>
+    <a href="https://github.com/marcluettecke/tutoring-project/blob/main/LICENSE">
+      <img src="https://img.shields.io/github/license/marcluettecke/tutoring-project" alt="License">
+    </a>
   </p>
 </div>
 

@@ -1,0 +1,251 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  # Validate the release
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is_prerelease: ${{ steps.version.outputs.is_prerelease }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version info
+        id: version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG#v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          # Check if this is a prerelease (contains alpha, beta, rc)
+          if [[ $VERSION =~ (alpha|beta|rc) ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+            echo "This is a prerelease: $VERSION"
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+            echo "This is a stable release: $VERSION"
+          fi
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-.*)?$ ]]; then
+            echo "❌ Invalid version format: $VERSION"
+            echo "Expected format: X.Y.Z or X.Y.Z-suffix"
+            exit 1
+          fi
+          echo "✅ Version format is valid: $VERSION"
+
+  # Run full CI pipeline
+  ci:
+    name: Run CI Pipeline
+    uses: ./.github/workflows/ci.yml
+
+  # Build and package the release
+  build-release:
+    name: Build Release
+    runs-on: ubuntu-latest
+    needs: [validate, ci]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Update version in package.json
+        run: |
+          VERSION="${{ needs.validate.outputs.version }}"
+          npm version $VERSION --no-git-tag-version
+          echo "Updated package.json to version $VERSION"
+
+      - name: Build production bundle
+        run: npm run build:prod
+
+      - name: Generate build info
+        run: |
+          cat > dist/build-info.json << EOF
+          {
+            "version": "${{ needs.validate.outputs.version }}",
+            "buildTime": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "commit": "${{ github.sha }}",
+            "branch": "${{ github.ref_name }}",
+            "buildNumber": "${{ github.run_number }}",
+            "repository": "${{ github.repository }}"
+          }
+          EOF
+
+      - name: Create deployment package
+        run: |
+          cd dist/tutoring-project
+          tar -czf ../../tutoring-project-${{ needs.validate.outputs.version }}.tar.gz .
+          cd ../..
+          zip -r tutoring-project-${{ needs.validate.outputs.version }}.zip dist/tutoring-project/
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-build-${{ needs.validate.outputs.version }}
+          path: |
+            tutoring-project-${{ needs.validate.outputs.version }}.tar.gz
+            tutoring-project-${{ needs.validate.outputs.version }}.zip
+            dist/
+          retention-days: 90
+
+  # Create GitHub release
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [validate, build-release]
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-build-${{ needs.validate.outputs.version }}
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get the previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          
+          if [[ -n "$PREV_TAG" ]]; then
+            echo "Generating changelog from $PREV_TAG to ${{ github.ref_name }}"
+            
+            # Get commit messages between tags
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" $PREV_TAG..HEAD)
+            
+            # Group commits by type
+            echo "## What's Changed" > changelog.md
+            echo "" >> changelog.md
+            
+            # Features
+            echo "$CHANGELOG" | grep -i "^- feat\|^- add\|^- implement" > features.tmp || true
+            if [[ -s features.tmp ]]; then
+              echo "### ✨ Features" >> changelog.md
+              cat features.tmp >> changelog.md
+              echo "" >> changelog.md
+            fi
+            
+            # Bug fixes
+            echo "$CHANGELOG" | grep -i "^- fix\|^- bug\|^- resolve" > fixes.tmp || true
+            if [[ -s fixes.tmp ]]; then
+              echo "### 🐛 Bug Fixes" >> changelog.md
+              cat fixes.tmp >> changelog.md
+              echo "" >> changelog.md
+            fi
+            
+            # Other changes
+            echo "$CHANGELOG" | grep -v -i "^- feat\|^- add\|^- implement\|^- fix\|^- bug\|^- resolve" > other.tmp || true
+            if [[ -s other.tmp ]]; then
+              echo "### 🔧 Other Changes" >> changelog.md
+              cat other.tmp >> changelog.md
+              echo "" >> changelog.md
+            fi
+            
+            # Clean up
+            rm -f features.tmp fixes.tmp other.tmp
+          else
+            echo "## What's Changed" > changelog.md
+            echo "" >> changelog.md
+            echo "This is the initial release." >> changelog.md
+            echo "" >> changelog.md
+          fi
+          
+          # Add build info
+          echo "## 📦 Build Information" >> changelog.md
+          echo "- **Version:** ${{ needs.validate.outputs.version }}" >> changelog.md
+          echo "- **Build Time:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> changelog.md
+          echo "- **Commit:** ${{ github.sha }}" >> changelog.md
+          echo "" >> changelog.md
+          
+          # Set output for release body
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          cat changelog.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ needs.validate.outputs.version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: ${{ needs.validate.outputs.is_prerelease }}
+
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tutoring-project-${{ needs.validate.outputs.version }}.tar.gz
+          asset_name: tutoring-project-${{ needs.validate.outputs.version }}.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Release Assets (ZIP)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tutoring-project-${{ needs.validate.outputs.version }}.zip
+          asset_name: tutoring-project-${{ needs.validate.outputs.version }}.zip
+          asset_content_type: application/zip
+
+  # Deploy to Netlify (if configured)
+  deploy:
+    name: Deploy to Netlify
+    runs-on: ubuntu-latest
+    needs: [validate, build-release]
+    if: needs.validate.outputs.is_prerelease == 'false'
+    environment: production
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-build-${{ needs.validate.outputs.version }}
+
+      - name: Deploy to Netlify
+        uses: netlify/actions/cli@master
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        with:
+          args: deploy --prod --dir=dist/tutoring-project
+
+      - name: Comment deployment status
+        if: always()
+        run: |
+          if [[ $? -eq 0 ]]; then
+            echo "✅ Deployment successful!"
+            echo "🚀 Version ${{ needs.validate.outputs.version }} has been deployed to production."
+          else
+            echo "❌ Deployment failed!"
+            echo "Please check the deployment logs and retry if necessary."
+          fi
