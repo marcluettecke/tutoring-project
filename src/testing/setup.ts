@@ -13,7 +13,10 @@ getTestBed().initTestEnvironment(
 );
 
 // Global test utilities and mocks
-global.CSS = { supports: () => false };
+Object.defineProperty(global, 'CSS', {
+  value: { supports: () => false },
+  writable: true,
+});
 
 // Mock matchMedia for responsive design tests
 Object.defineProperty(window, 'matchMedia', {
