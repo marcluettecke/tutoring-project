@@ -1,3 +1,17 @@
+[build]
+  publish = "dist/tutoring-project"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20.19.0"
+  NPM_VERSION = "10.1.0"
+
+[context.production]
+  command = "npm ci && npm run build"
+
+[context.branch-deploy]
+  command = "echo 'Skipping build for feature branches' && exit 0"
+
 [[redirects]]
   from = "/*"
   to = "/"
