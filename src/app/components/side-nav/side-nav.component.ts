@@ -1,14 +1,20 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
 import { QuestionsService } from "../../services/questions.service";
 import { Question } from "../../models/question.model";
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { NgClass } from "@angular/common";
 
 @Component({
   selector: 'app-side-nav',
+  standalone: true,
+  imports: [FontAwesomeModule, NgClass],
   templateUrl: './side-nav.component.html',
   styleUrls: ['./side-nav.component.scss']
 })
-export class SideNavComponent implements OnInit {
+export class SideNavComponent implements OnInit, OnDestroy {
   sections: { [id: string]: { name: string, index: number }[] } = {};
   mainSections: string[] = [];
   isExpanded: { [id: number]: boolean } = {};
@@ -23,15 +29,15 @@ export class SideNavComponent implements OnInit {
   @Input() activeSection: { mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number };
   @Output() clickEmit: EventEmitter<{ mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number }> = new EventEmitter();
   @Output() expandSidebarEmit: EventEmitter<boolean> = new EventEmitter<boolean>();
+  
+  private destroy$ = new Subject<void>();
 
   constructor(private questionService: QuestionsService) {
   }
 
   ngOnInit(): void {
     const questions$ = this.questionService.getQuestions();
-    questions$.subscribe((allQuestions: Question[]) => {
-      console.log(`Total questions fetched from service: ${allQuestions.length}`);
-
+    questions$.pipe(takeUntil(this.destroy$)).subscribe((allQuestions: Question[]) => {
       const validQuestions = allQuestions.filter((question: Question) => {
         const hasId = typeof question.id === 'string' && question.id.trim() !== '';
         const hasMainSection = typeof question.mainSection === 'string' && question.mainSection.trim() !== '';
@@ -39,18 +45,8 @@ export class SideNavComponent implements OnInit {
         const hasQuestionText = typeof question.questionText === 'string' && question.questionText.trim() !== '';
         const hasSubSectionIndex = typeof question.subSectionIndex === 'number';
 
-        const isValid = hasId && hasMainSection && hasSubSection && hasQuestionText && hasSubSectionIndex;
-
-        if (!isValid) {
-          console.warn('Filtered out invalid question:', JSON.parse(JSON.stringify(question)));
-        }
-        return isValid;
+        return hasId && hasMainSection && hasSubSection && hasQuestionText && hasSubSectionIndex;
       });
-
-      console.log(`Number of valid questions after filtering: ${validQuestions.length}`);
-      if (validQuestions.length < allQuestions.length) {
-        console.warn(`Filtered out ${allQuestions.length - validQuestions.length} invalid or incomplete questions.`);
-      }
 
       validQuestions.forEach((question: Question) => {
         if (!(question.mainSection in this.sections)) {
@@ -64,7 +60,6 @@ export class SideNavComponent implements OnInit {
       });
 
       this.mainSections = Object.keys(this.sections);
-      console.log('Processed mainSections keys from valid questions:', this.mainSections);
 
       this.mainSections.sort((a, b) => {
         const orderA = this.sectionOrderEnum[a];
@@ -78,7 +73,6 @@ export class SideNavComponent implements OnInit {
 
         return orderA - orderB;
       });
-      console.log('Sorted mainSections:', this.mainSections);
 
       Object.keys(this.sections).forEach(key => {
         if (this.sections[key]) {
@@ -88,7 +82,7 @@ export class SideNavComponent implements OnInit {
         }
       });
 
-      this.mainSections.forEach((el, idx) => {
+      this.mainSections.forEach((_, idx) => {
         this.isExpanded[idx] = idx === 0;
       });
     });
@@ -107,5 +101,10 @@ export class SideNavComponent implements OnInit {
   iconClickHandler() {
     this.open = !this.open;
     this.expandSidebarEmit.emit(this.open);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

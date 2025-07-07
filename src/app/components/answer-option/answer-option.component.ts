@@ -1,7 +1,9 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
-
+import {NgClass} from "@angular/common";
 @Component({
   selector: 'app-answer-option',
+  standalone: true,
+  imports: [NgClass],
   templateUrl: './answer-option.component.html',
   styleUrls: ['./answer-option.component.scss']
 })

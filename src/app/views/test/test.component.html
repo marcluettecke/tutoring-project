@@ -1,17 +1,24 @@
-<app-result-modal *ngIf="modalOpen" (onCloseClick)="modalOpen=false"></app-result-modal>
+@if (modalOpen) {
+  <app-result-modal (onCloseClick)="modalOpen=false"></app-result-modal>
+}
 <div class="wrapper">
-    <app-test-card class="single-question" *ngFor="let question of filteredQuestions; let i = index"
-                   [questionItem]="question"
-                   [questionIndex]="i"
-                   [testStatus]="testStatus"
-    ></app-test-card>
+    @for (question of filteredQuestions; track question.id; let i = $index) {
+      <app-test-card class="single-question"
+                     [questionItem]="question"
+                     [questionIndex]="i"
+                     [testStatus]="testStatus">
+      </app-test-card>
+    }
 </div>
+@if (testStatus === 'ended') {
   <button
     type="button"
-    *ngIf="testStatus==='ended'"
     class="button"
     (click)="openModal()">
     Resultado abierto
   </button>
+}
 <app-timer></app-timer>
-<app-error-snackbar [errorText]="errorMessage" *ngIf="errorMessage"></app-error-snackbar>
+@if (errorMessage) {
+  <app-error-snackbar [errorText]="errorMessage"></app-error-snackbar>
+}

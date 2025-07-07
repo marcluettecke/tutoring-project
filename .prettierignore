@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+tmp/
+out-tsc/
+
+# Coverage
+coverage/
+
+# Generated files
+*.generated.ts
+*.generated.js
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# Logs
+*.log
+
+# Environment files
+.env*
+
+# Netlify
+.netlify/

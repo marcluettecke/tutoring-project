@@ -4,6 +4,10 @@
   <label [for]="id" class="answer" [ngClass]="{'disabled': clicked || disabled}">
     {{answerOption}}
   </label>
-  <span class="answer-icon wrong" *ngIf="(clicked || testFinished) && !isCorrect">X</span>
-  <span class="answer-icon correct" *ngIf="(clicked || testFinished) && isCorrect">✓</span>
+  @if ((clicked || testFinished) && !isCorrect) {
+    <span class="answer-icon wrong">X</span>
+  }
+  @if ((clicked || testFinished) && isCorrect) {
+    <span class="answer-icon correct">✓</span>
+  }
 </div>

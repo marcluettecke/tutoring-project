@@ -1,12 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
+import {Router, RouterModule} from "@angular/router";
 import {CookieService} from "ngx-cookie-service";
 import {AuthService} from "../../services/auth.service";
 import {Subscription} from "rxjs";
 import {AccountsService} from "../../services/accounts.service";
-
 @Component({
              selector: 'app-header',
+             standalone: true,
+             imports: [RouterModule],
              templateUrl: './header.component.html',
              styleUrls: ['./header.component.scss']
            })

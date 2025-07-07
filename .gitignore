@@ -7,6 +7,9 @@
 # Only exists if Bazel was run
 /bazel-out
 
+# Angular build cache
+/.angular
+
 # dependencies
 /node_modules
 
@@ -48,3 +51,6 @@ Thumbs.db
 .firebase
 *-debug.log
 .runtimeconfig.json
+
+# Local AI assistance files
+CLAUDE.md

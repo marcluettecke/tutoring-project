@@ -2,9 +2,13 @@ import {Component, Input, OnInit,} from '@angular/core';
 import {Question} from "../../models/question.model";
 import {TestService} from "../../services/test.service";
 import {faAngleDoubleDown, faAngleDoubleUp} from "@fortawesome/free-solid-svg-icons";
+import {AnswerOptionComponent} from "../answer-option/answer-option.component";
+import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 
 @Component({
              selector: 'app-test-card',
+             standalone: true,
+             imports: [AnswerOptionComponent, FontAwesomeModule],
              templateUrl: './test-card.component.html',
              styleUrls: ['./test-card.component.scss']
            })
