@@ -2,7 +2,7 @@ name: Pull Request Check
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, master, develop ]
     types: [opened, synchronize, reopened, ready_for_review]
 
 concurrency:
