@@ -42,6 +42,11 @@ export class QuestionCardComponent implements OnInit, OnDestroy {
     this.wrongAnswerClicked = !isCorrect;
     this.selectedAnswer = id;
     
+    // Save the answer for persistence across reloads
+    if (this.questionItem.id) {
+      this.testService.saveQuestionAnswer(this.questionItem.id, id);
+    }
+    
     if (this.progressService.isTrackingEnabled && this.firstClick) {
       // Record section-specific answer with timestamp
       this.progressService.recordQuestionAnswer(
@@ -60,6 +65,18 @@ export class QuestionCardComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.resetComponentState();
       });
+    
+    // Check if this question has a saved answer
+    if (this.questionItem.id) {
+      const savedAnswer = this.testService.getSavedAnswer(this.questionItem.id);
+      if (savedAnswer) {
+        // Restore the saved answer state
+        this.clicked = true;
+        this.selectedAnswer = savedAnswer;
+        this.wrongAnswerClicked = savedAnswer !== this.questionItem.correctAnswer;
+        this.firstClick = false;
+      }
+    }
   }
 
   ngOnDestroy(): void {
