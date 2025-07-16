@@ -3,3 +3,22 @@
   <router-outlet></router-outlet>
 </div>
 
+<!-- Progress tracking components -->
+<app-progress-toggle></app-progress-toggle>
+<app-progress-indicator></app-progress-indicator>
+<app-inactivity-warning-modal></app-inactivity-warning-modal>
+
+<!-- Navigation guard modal -->
+@if (showNavigationWarning) {
+  <app-navigation-warning-modal
+    [sessionType]="navigationWarningData?.sessionType || 'progress'"
+    [questionsAnswered]="navigationWarningData?.questionsAnswered || 0"
+    [correctAnswers]="navigationWarningData?.correctAnswers || 0"
+    [timeElapsed]="navigationWarningData?.timeElapsed || 0"
+    [targetRoute]="pendingNavigation || ''"
+    (saveAndNavigate)="onSaveAndNavigate($event)"
+    (discardAndNavigate)="onDiscardAndNavigate($event)"
+    (cancelNavigation)="onCancelNavigation()">
+  </app-navigation-warning-modal>
+}
+

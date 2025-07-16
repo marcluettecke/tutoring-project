@@ -1,13 +1,13 @@
 <div class="option-wrapper" (click)="clickAnswer()"
-     [ngClass]="{'correct-answer': (clicked || testFinished) && isCorrect, 'wrong-answer': (clicked || testFinished) && !isCorrect}">
-  <input [name]="name" [readOnly]="(clicked || testFinished)" type="radio" [id]="id" [disabled]="disabled">
-  <label [for]="id" class="answer" [ngClass]="{'disabled': clicked || disabled}">
+     [ngClass]="{'correct-answer': (selectedAnswer && selectedAnswer.length > 0 || testFinished) && isCorrect, 'wrong-answer': (selectedAnswer && selectedAnswer.length > 0 || testFinished) && !isCorrect}">
+  <input [name]="name" [readOnly]="(selectedAnswer && selectedAnswer.length > 0 || testFinished)" type="radio" [id]="id" [disabled]="disabled">
+  <label [for]="id" class="answer" [ngClass]="{'disabled': (selectedAnswer && selectedAnswer.length > 0) || disabled}">
     {{answerOption}}
   </label>
-  @if ((clicked || testFinished) && !isCorrect) {
+  @if ((selectedAnswer && selectedAnswer.length > 0 || testFinished) && !isCorrect) {
     <span class="answer-icon wrong">X</span>
   }
-  @if ((clicked || testFinished) && isCorrect) {
+  @if ((selectedAnswer && selectedAnswer.length > 0 || testFinished) && isCorrect) {
     <span class="answer-icon correct">✓</span>
   }
 </div>

@@ -1,5 +1,5 @@
 .side-nav {
-  width: fit-content;
+  width: 300px; /* Fixed width */
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -53,6 +53,11 @@
         font-size: 1.5rem;
         margin: 0;
         padding-bottom: 5px;
+        word-wrap: break-word;
+        word-break: break-word;
+        white-space: normal;
+        max-width: 260px; /* Leave space for padding */
+        line-height: 1.3;
 
         &:hover {
           color: var(--secondary-color-base);
@@ -78,6 +83,11 @@
           text-decoration: none;
           list-style: none;
           text-transform: capitalize;
+          word-wrap: break-word;
+          word-break: break-word;
+          white-space: normal;
+          max-width: 240px; /* Leave some space for padding */
+          line-height: 1.4;
 
           &--active {
             font-weight: bold;
@@ -96,7 +106,8 @@
   &--icon {
     position: fixed;
     bottom: 10px;
-    left: 270px;
+    left: 250px; /* Better spacing from right edge (300px - 50px) */
+    transition: left 400ms ease-in-out;
 
     &:hover {
       color: var(--secondary-color-base);
@@ -104,12 +115,15 @@
     }
 
     &--open {
-      animation: flip-icon-left 400ms ease-out forwards;
-
+      left: 250px;
+      transform: rotate(180deg);
+      transition: left 400ms ease-in-out, transform 400ms ease-in-out;
     }
 
     &--closed {
-      animation: flip-icon-right 400ms ease-in forwards;
+      left: 10px;
+      transform: rotate(0deg);
+      transition: left 400ms ease-in-out, transform 400ms ease-in-out;
     }
   }
 
@@ -137,23 +151,6 @@
   }
 }
 
-@keyframes flip-icon-left {
-  from {
-    transform: translateX(0) rotate(0);
-  }
-  to {
-    transform: translateX(-260px) rotate(-180deg);
-  }
-}
-
-@keyframes flip-icon-right {
-  from {
-    transform: translateX(-260px) rotate(-180deg);
-  }
-  to {
-    transform: translateX(0) rotate(0);
-  }
-}
 
 @keyframes expand-main-section {
   from {

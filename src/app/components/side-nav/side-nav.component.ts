@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDoubleLeft, faAngleDoubleRight } from "@fortawesome/free-solid-svg-icons";
 import { QuestionsService } from "../../services/questions.service";
 import { Question } from "../../models/question.model";
 import { Subject } from 'rxjs';
@@ -19,6 +19,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
   mainSections: string[] = [];
   isExpanded: { [id: number]: boolean } = {};
   faAngleDoubleLeft = faAngleDoubleLeft;
+  faAngleDoubleRight = faAngleDoubleRight;
   open = true;
   sectionOrderEnum: { [key: string]: number } = {
     'administrativo': 1,
@@ -85,6 +86,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
       this.mainSections.forEach((_, idx) => {
         this.isExpanded[idx] = idx === 0;
       });
+
+      // Auto-select first subsection if no active section is set
+      this.autoSelectFirstSubsection();
     });
   }
 
@@ -101,6 +105,29 @@ export class SideNavComponent implements OnInit, OnDestroy {
   iconClickHandler() {
     this.open = !this.open;
     this.expandSidebarEmit.emit(this.open);
+  }
+
+  /**
+   * Auto-select the first subsection of the first section if no section is currently active
+   */
+  private autoSelectFirstSubsection(): void {
+    // Only auto-select if no section is currently active (empty string or falsy)
+    if ((!this.activeSection?.mainSection || this.activeSection.mainSection.trim() === '') && this.mainSections.length > 0) {
+      const firstMainSection = this.mainSections[0];
+      const firstSubsections = this.sections[firstMainSection];
+      
+      if (firstSubsections && firstSubsections.length > 0) {
+        const firstSubsection = firstSubsections[0];
+        
+        // Emit the selection to the parent component
+        this.clickHandlerSublist(
+          firstMainSection, 
+          firstSubsection.name, 
+          1, // mainSectionNumber
+          1  // subSectionNumber
+        );
+      }
+    }
   }
 
   ngOnDestroy(): void {

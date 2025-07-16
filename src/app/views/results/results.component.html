@@ -1,0 +1,184 @@
+<div class="results-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="page-title">Análisis de Resultados</h1>
+    <p class="page-description">Explora y compara tus sesiones de práctica y exámenes</p>
+  </div>
+
+  <!-- Global Session Selection Controls -->
+  <div class="session-controls">
+    <!-- Session Selectors -->
+    <div class="session-selectors">
+      <!-- First Session Selector -->
+      <div class="selector-group">
+        <app-session-selector
+          [sessions]="allSessions"
+          [selectedSessionId]="selectedSessionId1"
+          [label]="'Primera sesión:'"
+          [currentSessionText]="'-- Seleccionar sesión --'"
+          [groupByMode]="true"
+          (sessionSelect)="onSessionSelect($event)">
+        </app-session-selector>
+      </div>
+
+      <!-- Second Session Selector (always visible when first session is selected) -->
+      @if (selectedSession1) {
+        <div class="selector-group">
+          <app-session-selector
+            [sessions]="getFilteredSessions()"
+            [selectedSessionId]="selectedSessionId2"
+            [label]="'Segunda sesión:'"
+            [currentSessionText]="'-- Seleccionar sesión (opcional) --'"
+            [groupByMode]="true"
+            (sessionSelect)="onSession2SelectFromSelector($event)">
+          </app-session-selector>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button 
+      class="tab-button"
+      [class.active]="activeTab === 'data'"
+      (click)="switchTab('data')">
+      <fa-icon [icon]="faTable"></fa-icon>
+      <span>Datos</span>
+    </button>
+    <button 
+      class="tab-button"
+      [class.active]="activeTab === 'charts'"
+      (click)="switchTab('charts')">
+      <fa-icon [icon]="faChartBar"></fa-icon>
+      <span>Gráficos</span>
+    </button>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    @if (activeTab === 'data') {
+      <!-- Data Tab Content -->
+      <div class="data-tab">
+        <!-- Results Display Area -->
+        <div class="results-display">
+          @if (selectedSession1 && viewMode === 'single') {
+            <!-- Single Session View -->
+            <div class="single-session-view">
+              <h3>Detalles de la sesión</h3>
+              
+              <!-- Session Summary -->
+              <div class="session-details">
+                <p><strong>Fecha:</strong> {{ selectedSession1.timestamp | date:'dd/MM/yyyy HH:mm' }}</p>
+                <p><strong>Tipo:</strong> {{ getSessionTypeText(selectedSession1) }}</p>
+                <p><strong>Sección:</strong> {{ selectedSession1.mainSection }}</p>
+                @if (selectedSession1.subSection) {
+                  <p><strong>Subsección:</strong> {{ selectedSession1.subSection }}</p>
+                }
+                <p><strong>Preguntas respondidas:</strong> {{ selectedSession1.questionsAnswered }}</p>
+                <p><strong>Respuestas correctas:</strong> {{ selectedSession1.correctAnswers }}</p>
+                <p><strong>Respuestas incorrectas:</strong> {{ selectedSession1.incorrectAnswers }}</p>
+                <p><strong>Precisión:</strong> {{ getSessionAccuracy(selectedSession1).toFixed(1) }}%</p>
+                @if (selectedSession1.testScore !== undefined) {
+                  <p><strong>Puntuación:</strong> {{ selectedSession1.testScore.toFixed(2) }}</p>
+                }
+              </div>
+              
+              <!-- Session Data Table -->
+              <app-session-data-table
+                [sectionBreakdown]="session1SectionBreakdown"
+                [session]="selectedSession1"
+                [sessionLabel]="getSessionLabel(selectedSession1, 'Sesión actual')"
+                [showEmptyState]="hasEmptyBreakdown(session1SectionBreakdown)"
+                emptyStateTitle="Sesión sin desglose detallado"
+                emptyStateDescription="Esta sesión no contiene información detallada por secciones.">
+              </app-session-data-table>
+            </div>
+          } @else if (selectedSession1 && selectedSession2 && viewMode === 'compare') {
+            <!-- Comparison View -->
+            <app-session-comparison-table
+              [session1]="selectedSession1"
+              [session2]="selectedSession2"
+              [session1Label]="getSessionLabel(selectedSession1, 'Primera sesión')"
+              [session2Label]="getSessionLabel(selectedSession2, 'Segunda sesión')">
+            </app-session-comparison-table>
+          } @else if (!selectedSession1) {
+            <!-- Empty State -->
+            <div class="empty-state">
+              <div class="empty-icon">
+                <fa-icon [icon]="faChartBar" size="3x"></fa-icon>
+              </div>
+              <h3>Selecciona una sesión para comenzar</h3>
+              <p>Elige una sesión de práctica o examen para ver los detalles y análisis.</p>
+            </div>
+          } @else if (viewMode === 'compare' && !selectedSession2) {
+            <!-- Comparison Empty State -->
+            <div class="empty-state">
+              <div class="empty-icon">
+                <fa-icon [icon]="faArrowRight" size="3x"></fa-icon>
+              </div>
+              <h3>Selecciona una segunda sesión</h3>
+              <p>Elige otra sesión para comparar con la primera seleccionada.</p>
+            </div>
+          }
+        </div>
+      </div>
+    } @else if (activeTab === 'charts') {
+      <!-- Charts Tab Content -->
+      <div class="charts-tab">
+        <!-- Charts Display Area -->
+        <div class="charts-display">
+          @if (selectedSession1 && viewMode === 'single') {
+            <!-- Single Chart View -->
+            <app-charts-container
+              [currentData]="chartData1"
+              [previousSessions]="[]"
+              [selectedSessionId]="'current'"
+              [selectedSession]="null"
+              [showComparison]="false"
+              [comparisonMode]="'individual'"
+              [canCompare]="false"
+              [comparisonTooltip]="''"
+              [isProgressTracking]="false"
+              (sessionChanged)="onChartSessionChanged($event)"
+              (comparisonModeChanged)="onChartComparisonModeChanged($event)">
+            </app-charts-container>
+          } @else if (selectedSession1 && selectedSession2 && viewMode === 'compare') {
+            <!-- Comparison Chart View -->
+            <app-charts-container
+              [currentData]="chartData1"
+              [previousSessions]="[selectedSession2]"
+              [selectedSessionId]="selectedSession2.id"
+              [selectedSession]="selectedSession2"
+              [showComparison]="true"
+              [comparisonMode]="'compare'"
+              [canCompare]="true"
+              [comparisonTooltip]="'Comparando dos sesiones seleccionadas'"
+              [isProgressTracking]="false"
+              (sessionChanged)="onChartSessionChanged($event)"
+              (comparisonModeChanged)="onChartComparisonModeChanged($event)">
+            </app-charts-container>
+          } @else if (!selectedSession1) {
+            <!-- Empty State for Charts -->
+            <div class="charts-empty-state">
+              <div class="empty-icon">
+                <fa-icon [icon]="faChartLine" size="3x"></fa-icon>
+              </div>
+              <h3>Selecciona una sesión para ver los gráficos</h3>
+              <p>Los gráficos mostrarán el análisis visual de la sesión seleccionada con opciones de comparación.</p>
+            </div>
+          } @else if (viewMode === 'compare' && !selectedSession2) {
+            <!-- Comparison Empty State -->
+            <div class="charts-empty-state">
+              <div class="empty-icon">
+                <fa-icon [icon]="faArrowRight" size="3x"></fa-icon>
+              </div>
+              <h3>Selecciona una segunda sesión</h3>
+              <p>Elige otra sesión para comparar gráficamente con la primera seleccionada.</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

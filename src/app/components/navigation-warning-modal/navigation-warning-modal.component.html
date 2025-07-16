@@ -1,0 +1,57 @@
+<div class="backdrop" (click)="onCancel()"></div>
+
+<div class="warning-modal">
+  <!-- Header Section -->
+  <div class="modal-header">
+    <h2 class="warning-title">
+      <fa-icon [icon]="faExclamationTriangle" class="warning-icon"></fa-icon>
+      Atención: Sesión en progreso
+    </h2>
+  </div>
+
+  <!-- Modal Content -->
+  <div class="modal-content">
+    <div class="warning-message">
+      @if (sessionType === 'progress') {
+        <p><strong>Tienes una sesión de seguimiento de progreso activa.</strong></p>
+        <p>Si navegas a otra página, perderás todo el progreso de la sesión actual y no se guardará automáticamente.</p>
+        <div class="session-info">
+          <p><fa-icon [icon]="faChartLine"></fa-icon> <strong>Preguntas respondidas:</strong> {{ questionsAnswered }}</p>
+          <p><fa-icon [icon]="faCheckCircle"></fa-icon> <strong>Respuestas correctas:</strong> {{ correctAnswers }}</p>
+          <p><fa-icon [icon]="faClock"></fa-icon> <strong>Tiempo transcurrido:</strong> {{ formatTime(timeElapsed) }}</p>
+        </div>
+      } @else if (sessionType === 'exam') {
+        <p><strong>Estás en medio de un examen de práctica.</strong></p>
+        <p>Si navegas a otra página, perderás todo el progreso del examen actual.</p>
+        <div class="session-info">
+          <p><fa-icon [icon]="faFileAlt"></fa-icon> <strong>Examen en progreso</strong></p>
+          <p><fa-icon [icon]="faChartLine"></fa-icon> <strong>Preguntas respondidas:</strong> {{ questionsAnswered }}</p>
+        </div>
+      }
+    </div>
+
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    @if (sessionType === 'progress') {
+      <button class="btn btn-success" (click)="onSaveAndNavigate()">
+        <fa-icon [icon]="faSave"></fa-icon>
+        <span>Guardar y navegar</span>
+      </button>
+      <button class="btn btn-danger" (click)="onDiscardAndNavigate()">
+        <fa-icon [icon]="faTrash"></fa-icon>
+        <span>Descartar y navegar</span>
+      </button>
+    } @else {
+      <button class="btn btn-danger" (click)="onDiscardAndNavigate()">
+        <fa-icon [icon]="faTrash"></fa-icon>
+        <span>Abandonar examen</span>
+      </button>
+    }
+    <button class="btn btn-secondary" (click)="onCancel()">
+      <fa-icon [icon]="faArrowLeft"></fa-icon>
+      <span>Continuar {{ sessionType === 'progress' ? 'sesión' : 'examen' }}</span>
+    </button>
+  </div>
+</div>

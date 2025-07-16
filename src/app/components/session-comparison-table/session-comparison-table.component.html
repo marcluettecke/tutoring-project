@@ -1,0 +1,159 @@
+@if (getComparisonMetrics()) {
+  <div class="comparison-view">
+    <h3>Comparación de sesiones 
+      <span class="session-indicator">({{ session1Label }} vs {{ session2Label }})</span>
+    </h3>
+
+    <!-- Side-by-Side Comparison Table -->
+    <div class="comparison-table-container">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th class="metric-column">Métrica</th>
+            <th class="current-column">{{ session1Label }}</th>
+            <th class="historical-column">{{ session2Label }}</th>
+            <th class="difference-column">Diferencia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="comparison-row">
+            <td class="metric-label">
+              <fa-icon [icon]="faTable" class="metric-icon"></fa-icon>
+              Preguntas Respondidas
+            </td>
+            <td class="current-value">{{ getComparisonMetrics()!.questionsAnswered.current }}</td>
+            <td class="historical-value">{{ getComparisonMetrics()!.questionsAnswered.historical }}</td>
+            <td class="difference-value">
+              @if (getComparisonMetrics()!.questionsAnswered.diff > 0) {
+                <span class="diff improvement">
+                  <fa-icon [icon]="faArrowUp"></fa-icon>
+                  +{{ getComparisonMetrics()!.questionsAnswered.diff }}
+                </span>
+              } @else if (getComparisonMetrics()!.questionsAnswered.diff < 0) {
+                <span class="diff decline">
+                  <fa-icon [icon]="faArrowDown"></fa-icon>
+                  {{ getComparisonMetrics()!.questionsAnswered.diff }}
+                </span>
+              } @else {
+                <span class="diff neutral">
+                  <fa-icon [icon]="faArrowRight"></fa-icon>
+                  Sin cambio
+                </span>
+              }
+            </td>
+          </tr>
+          
+          <tr class="comparison-row">
+            <td class="metric-label">
+              <fa-icon [icon]="faCheck" class="metric-icon correct"></fa-icon>
+              Respuestas Correctas
+            </td>
+            <td class="current-value">{{ getComparisonMetrics()!.correctAnswers.current }}</td>
+            <td class="historical-value">{{ getComparisonMetrics()!.correctAnswers.historical }}</td>
+            <td class="difference-value">
+              @if (getComparisonMetrics()!.correctAnswers.diff > 0) {
+                <span class="diff improvement">
+                  <fa-icon [icon]="faArrowUp"></fa-icon>
+                  +{{ getComparisonMetrics()!.correctAnswers.diff }}
+                </span>
+              } @else if (getComparisonMetrics()!.correctAnswers.diff < 0) {
+                <span class="diff decline">
+                  <fa-icon [icon]="faArrowDown"></fa-icon>
+                  {{ getComparisonMetrics()!.correctAnswers.diff }}
+                </span>
+              } @else {
+                <span class="diff neutral">
+                  <fa-icon [icon]="faArrowRight"></fa-icon>
+                  Sin cambio
+                </span>
+              }
+            </td>
+          </tr>
+          
+          <tr class="comparison-row">
+            <td class="metric-label">
+              <fa-icon [icon]="faTimes" class="metric-icon wrong"></fa-icon>
+              Respuestas Incorrectas
+            </td>
+            <td class="current-value">{{ getComparisonMetrics()!.incorrectAnswers.current }}</td>
+            <td class="historical-value">{{ getComparisonMetrics()!.incorrectAnswers.historical }}</td>
+            <td class="difference-value">
+              @if (getComparisonMetrics()!.incorrectAnswers.diff < 0) {
+                <span class="diff improvement">
+                  <fa-icon [icon]="faArrowDown"></fa-icon>
+                  {{ getComparisonMetrics()!.incorrectAnswers.diff }}
+                </span>
+              } @else if (getComparisonMetrics()!.incorrectAnswers.diff > 0) {
+                <span class="diff decline">
+                  <fa-icon [icon]="faArrowUp"></fa-icon>
+                  +{{ getComparisonMetrics()!.incorrectAnswers.diff }}
+                </span>
+              } @else {
+                <span class="diff neutral">
+                  <fa-icon [icon]="faArrowRight"></fa-icon>
+                  Sin cambio
+                </span>
+              }
+            </td>
+          </tr>
+          
+          <tr class="comparison-row">
+            <td class="metric-label">
+              <fa-icon [icon]="faChartLine" class="metric-icon"></fa-icon>
+              Precisión
+            </td>
+            <td class="current-value">{{ getSessionAccuracy(session1!).toFixed(2) }}%</td>
+            <td class="historical-value">{{ getSessionAccuracy(session2!).toFixed(2) }}%</td>
+            <td class="difference-value">
+              @if (getAccuracyDifference() > 0) {
+                <span class="diff improvement">
+                  <fa-icon [icon]="faArrowUp"></fa-icon>
+                  +{{ getAccuracyDifference().toFixed(1) }}%
+                </span>
+              } @else if (getAccuracyDifference() < 0) {
+                <span class="diff decline">
+                  <fa-icon [icon]="faArrowDown"></fa-icon>
+                  {{ getAccuracyDifference().toFixed(1) }}%
+                </span>
+              } @else {
+                <span class="diff neutral">
+                  <fa-icon [icon]="faArrowRight"></fa-icon>
+                  Sin cambio
+                </span>
+              }
+            </td>
+          </tr>
+
+          @if (session1!.testScore !== undefined || session2!.testScore !== undefined) {
+            <tr class="comparison-row">
+              <td class="metric-label">
+                <fa-icon [icon]="faChartLine" class="metric-icon"></fa-icon>
+                Puntuación Final
+              </td>
+              <td class="current-value">{{ getSessionScore(session1!).toFixed(2) }}</td>
+              <td class="historical-value">{{ getSessionScore(session2!).toFixed(2) }}</td>
+              <td class="difference-value">
+                @if (getScoreDifference() > 0) {
+                  <span class="diff improvement">
+                    <fa-icon [icon]="faArrowUp"></fa-icon>
+                    +{{ getScoreDifference().toFixed(2) }}
+                  </span>
+                } @else if (getScoreDifference() < 0) {
+                  <span class="diff decline">
+                    <fa-icon [icon]="faArrowDown"></fa-icon>
+                    {{ getScoreDifference().toFixed(2) }}
+                  </span>
+                } @else {
+                  <span class="diff neutral">
+                    <fa-icon [icon]="faArrowRight"></fa-icon>
+                    Sin cambio
+                  </span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

@@ -1,0 +1,278 @@
+// Backdrop
+.backdrop {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1100;
+  animation: fadeIn 0.3s ease-out;
+}
+
+// Main Modal Container
+.inactivity-modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 480px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  z-index: 1101;
+  animation: slideInUp 0.4s ease-out;
+  font-family: 'PT Sans', sans-serif;
+  overflow: hidden;
+
+  // Header Section
+  .modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 24px 24px 24px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+    text-align: center;
+
+    .warning-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      animation: pulse 2s infinite;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #92400e;
+      margin: 0;
+    }
+  }
+
+  // Modal Content
+  .modal-content {
+    padding: 24px;
+    text-align: center;
+
+    .warning-message {
+      font-size: 1rem;
+      color: var(--secondary-700);
+      margin: 0 0 24px 0;
+      line-height: 1.5;
+    }
+
+    .countdown-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+
+      .countdown-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-100) 0%, var(--primary-200) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        border: 3px solid var(--primary-300);
+        transition: all 0.3s ease;
+
+        .countdown-number {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: var(--primary-700);
+          font-family: 'Courier New', monospace;
+        }
+      }
+
+      .countdown-label {
+        font-size: 0.875rem;
+        color: var(--secondary-600);
+        font-weight: 500;
+      }
+
+      // Warning state (30-10 seconds)
+      &.warning {
+        .countdown-circle {
+          background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+          border-color: #f59e0b;
+          animation: pulse-warning 1s infinite;
+
+          .countdown-number {
+            color: #92400e;
+          }
+        }
+      }
+
+      // Urgent state (10-0 seconds)
+      &.urgent {
+        .countdown-circle {
+          background: linear-gradient(135deg, #fecaca 0%, #ef4444 100%);
+          border-color: #dc2626;
+          animation: pulse-urgent 0.5s infinite;
+
+          .countdown-number {
+            color: #991b1b;
+          }
+        }
+      }
+    }
+  }
+
+  // Action Buttons
+  .modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 0 24px 24px 24px;
+
+    .btn {
+      flex: 1;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+      &.btn-secondary {
+        background: var(--gray-100);
+        color: var(--secondary-600);
+        border: 1px solid var(--gray-300);
+
+        &:hover {
+          background: var(--gray-200);
+          border-color: var(--gray-400);
+        }
+      }
+
+      &.btn-primary {
+        background: var(--primary-600);
+        color: white;
+
+        &:hover {
+          background: var(--primary-700);
+        }
+      }
+
+      &.btn-outline {
+        background: transparent;
+        color: var(--secondary-600);
+        border: 1px solid var(--gray-300);
+
+        &:hover {
+          background: var(--gray-50);
+          border-color: var(--secondary-400);
+          color: var(--secondary-700);
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pulse-warning {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+  }
+}
+
+@keyframes pulse-urgent {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 768px) {
+  .inactivity-modal {
+    width: 95%;
+    max-width: none;
+
+    .modal-header {
+      padding: 24px 20px 20px 20px;
+
+      .warning-icon {
+        font-size: 2.5rem;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+      }
+    }
+
+    .modal-content {
+      padding: 20px;
+
+      .countdown-display {
+        .countdown-circle {
+          width: 70px;
+          height: 70px;
+
+          .countdown-number {
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+
+    .modal-actions {
+      flex-direction: column;
+      padding: 0 20px 20px 20px;
+
+      .btn {
+        flex: none;
+        width: 100%;
+        min-height: 48px;
+        justify-content: center;
+      }
+    }
+  }
+}

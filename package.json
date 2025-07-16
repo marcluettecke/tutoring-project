@@ -35,6 +35,8 @@
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "chart.js": "^4.5.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "firebase": "^11.10.0",
     "ngx-cookie-service": "^20.0.1",
     "normalize.css": "^8.0.1",

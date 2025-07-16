@@ -1,0 +1,57 @@
+@if (sectionBreakdown && sectionBreakdown.length > 0) {
+  <!-- Section Breakdown Table -->
+  <div class="section-breakdown">
+    <h3>Desglose por secciones 
+      @if (sessionLabel) {
+        <span class="session-indicator">({{ sessionLabel }})</span>
+      }
+    </h3>
+    <div class="breakdown-table-container">
+      <table class="breakdown-table">
+        <thead>
+          <tr>
+            <th>Sección</th>
+            <th>Subsección</th>
+            <th>Preguntas</th>
+            <th>Correctas</th>
+            <th>Incorrectas</th>
+            <th>Precisión</th>
+            <th>Tiempo total</th>
+            <th>Tiempo/pregunta</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (section of sectionBreakdown; track section.sectionName + (section.subSection || '')) {
+            <tr class="breakdown-row">
+              <td class="section-name">{{ getSectionDisplayName(section.sectionName) }}</td>
+              <td class="subsection-name">{{ section.subSection || '-' }}</td>
+              <td class="question-count">{{ section.questionsAnswered }}</td>
+              <td class="correct-count">
+                <span class="count-badge correct">{{ section.correctAnswers }}</span>
+              </td>
+              <td class="incorrect-count">
+                <span class="count-badge wrong">{{ section.incorrectAnswers }}</span>
+              </td>
+              <td class="accuracy-rate">
+                <span class="accuracy-badge" [class]="getSectionAccuracyLevel(section)">
+                  {{ getSectionAccuracy(section).toFixed(1) }}%
+                </span>
+              </td>
+              <td class="time-total">{{ formatTimeSpent(section.timeSpent) }}</td>
+              <td class="time-per-question">{{ formatAverageTimePerQuestion(section) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+} @else if (showEmptyState) {
+  <!-- Empty Session Placeholder -->
+  <div class="empty-session-placeholder">
+    <div class="placeholder-icon">
+      <fa-icon [icon]="faChartBar"></fa-icon>
+    </div>
+    <h3>{{ emptyStateTitle }}</h3>
+    <p>{{ emptyStateDescription }}</p>
+  </div>
+}

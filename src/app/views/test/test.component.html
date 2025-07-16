@@ -1,5 +1,13 @@
 @if (modalOpen) {
-  <app-result-modal (onCloseClick)="modalOpen=false"></app-result-modal>
+  <app-result-modal 
+    [userId]="currentUserId"
+    [currentSection]="'general'"
+    [currentSubsection]="''"
+    [isProgressTracking]="false"
+    (onCloseClick)="onModalClose()"
+    (onRetryClick)="onRetryTest()"
+    (onContinueClick)="onContinueTest()">
+  </app-result-modal>
 }
 <div class="wrapper">
     @for (question of filteredQuestions; track question.id; let i = $index) {

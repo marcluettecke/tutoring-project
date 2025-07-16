@@ -1,0 +1,200 @@
+// Section Breakdown Table
+.section-breakdown {
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--secondary-700);
+    margin-bottom: 16px;
+    
+    .session-indicator {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--gray-600);
+    }
+  }
+}
+
+.breakdown-table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  .breakdown-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    
+    thead {
+      background: var(--secondary-700);
+      color: white;
+      
+      th {
+        padding: 16px 12px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.875rem;
+        letter-spacing: 0.5px;
+        
+        &:first-child {
+          border-top-left-radius: 12px;
+        }
+        
+        &:last-child {
+          border-top-right-radius: 12px;
+        }
+      }
+    }
+    
+    tbody {
+      .breakdown-row {
+        border-bottom: 1px solid var(--gray-100);
+        transition: background-color 0.2s ease;
+        
+        &:hover {
+          background: var(--gray-50);
+        }
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        td {
+          padding: 16px 12px;
+          vertical-align: middle;
+          
+          &.section-name {
+            font-weight: 600;
+            color: var(--secondary-700);
+          }
+          
+          &.subsection-name {
+            color: var(--secondary-600);
+            font-style: italic;
+          }
+          
+          .count-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            min-width: 24px;
+            text-align: center;
+            
+            &.correct {
+              background: var(--correct-background);
+              color: var(--correct-solid);
+            }
+            
+            &.wrong {
+              background: var(--wrong-background);
+              color: var(--wrong-solid);
+            }
+          }
+          
+          .accuracy-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            
+            &.excellent {
+              background: var(--correct-background);
+              color: var(--correct-solid);
+            }
+            
+            &.good {
+              background: hsla(45, 100%, 50%, 0.1);
+              color: hsl(45, 100%, 45%);
+            }
+            
+            &.needs-improvement {
+              background: var(--wrong-background);
+              color: var(--wrong-solid);
+            }
+          }
+          
+          &.time-total,
+          &.time-per-question {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: var(--secondary-600);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Empty Session Placeholder
+.empty-session-placeholder {
+  padding: 60px 20px;
+  text-align: center;
+  background: var(--gray-50);
+  border-radius: 12px;
+  margin: 24px 0;
+  
+  .placeholder-icon {
+    font-size: 4rem;
+    color: var(--gray-400);
+    margin-bottom: 24px;
+    
+    fa-icon {
+      width: 64px;
+      height: 64px;
+    }
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+    color: var(--gray-700);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  
+  p {
+    color: var(--gray-600);
+    margin-bottom: 12px;
+    line-height: 1.6;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .breakdown-table-container {
+    overflow-x: auto;
+    
+    .breakdown-table {
+      min-width: 800px;
+      font-size: 0.8rem;
+      
+      th,
+      td {
+        padding: 12px 8px;
+      }
+    }
+  }
+  
+  .empty-session-placeholder {
+    padding: 40px 16px;
+    
+    .placeholder-icon {
+      font-size: 3rem;
+      
+      fa-icon {
+        width: 48px;
+        height: 48px;
+      }
+    }
+    
+    h3 {
+      font-size: 1.3rem;
+    }
+  }
+}
