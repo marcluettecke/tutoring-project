@@ -1,0 +1,45 @@
+@if (isVisible && currentSession) {
+  <div class="progress-indicator-container" [class.collapsed]="isCollapsed">
+    <div class="progress-indicator">
+      <!-- Toggle Button -->
+      <button 
+        class="toggle-btn" 
+        (click)="toggleCollapsed()"
+        [title]="isCollapsed ? 'Mostrar contador' : 'Ocultar contador'"
+        aria-label="Toggle progress counter">
+        <fa-icon [icon]="faQuestionCircle"></fa-icon>
+      </button>
+
+      <!-- Simple Counter -->
+      <div class="counter-content" [class.hidden]="isCollapsed">
+        <div class="counter-display">
+          <div class="counter-item correct">
+            <div class="counter-number">{{ currentSession.correctAnswers }}</div>
+            <div class="counter-label">Correctas</div>
+          </div>
+          
+          <div class="counter-separator">|</div>
+          
+          <div class="counter-item incorrect">
+            <div class="counter-number">{{ currentSession.incorrectAnswers }}</div>
+            <div class="counter-label">Incorrectas</div>
+          </div>
+          
+          <div class="counter-separator">|</div>
+          
+          <div class="counter-item total">
+            <div class="counter-number">{{ currentSession.questionsAnswered }}</div>
+            <div class="counter-label">Total</div>
+          </div>
+          
+          <div class="counter-separator">|</div>
+          
+          <div class="counter-item time">
+            <div class="counter-number">{{ elapsedTimeText }}</div>
+            <div class="counter-label">Tiempo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

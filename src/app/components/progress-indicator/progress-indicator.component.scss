@@ -1,0 +1,242 @@
+.progress-indicator-container {
+  position: fixed;
+  bottom: 80px; // Position above the progress toggle button
+  right: 20px;
+  z-index: 800;
+  pointer-events: none;
+  
+  .progress-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 50px;
+    padding: 8px;
+    backdrop-filter: blur(12px);
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.1),
+      0 1px 3px rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    font-family: 'PT Sans', sans-serif;
+    pointer-events: auto;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 1) 100%);
+      border-color: rgba(148, 163, 184, 0.5);
+      box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.15),
+        0 2px 6px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .toggle-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      color: #1e40af;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+      box-shadow: 0 2px 4px rgba(30, 64, 175, 0.1);
+
+      &:hover {
+        background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+        color: #1d4ed8;
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(30, 64, 175, 0.2);
+      }
+    }
+
+    .counter-content {
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+      
+      &.hidden {
+        opacity: 0;
+        width: 0;
+        overflow: hidden;
+      }
+
+      .counter-display {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 8px;
+
+        .counter-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 2px;
+          min-width: 50px;
+
+          .counter-number {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1;
+          }
+
+          .counter-label {
+            font-size: 0.7rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+          }
+
+          // Color coding with appealing colors
+          &.correct {
+            .counter-number {
+              color: #059669;
+              text-shadow: 0 1px 2px rgba(5, 150, 105, 0.1);
+            }
+          }
+
+          &.incorrect {
+            .counter-number {
+              color: #dc2626;
+              text-shadow: 0 1px 2px rgba(220, 38, 38, 0.1);
+            }
+          }
+
+          &.total {
+            .counter-number {
+              color: #1e40af;
+              text-shadow: 0 1px 2px rgba(30, 64, 175, 0.1);
+            }
+          }
+
+          &.time {
+            .counter-number {
+              color: #7c3aed;
+              font-family: 'Courier New', monospace;
+              text-shadow: 0 1px 2px rgba(124, 58, 237, 0.1);
+            }
+          }
+        }
+
+        .counter-separator {
+          color: #cbd5e1;
+          font-weight: 300;
+          font-size: 1.2rem;
+          height: 100%;
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+  }
+
+  // Collapsed state
+  &.collapsed {
+    .progress-indicator {
+      padding: 8px;
+      
+      .toggle-btn {
+        opacity: 0.7;
+        
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 768px) {
+  .progress-indicator-container {
+    bottom: 76px; // Position above the progress toggle button on mobile
+    right: 16px;
+    
+    .progress-indicator {
+      padding: 6px;
+      
+      .toggle-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+      }
+      
+      .counter-content {
+        .counter-display {
+          gap: 8px;
+          padding: 0 6px;
+          
+          .counter-item {
+            min-width: 40px;
+            
+            .counter-number {
+              font-size: 1rem;
+            }
+            
+            .counter-label {
+              font-size: 0.65rem;
+            }
+          }
+          
+          .counter-separator {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Very small screens - show only numbers
+@media (max-width: 480px) {
+  .progress-indicator-container {
+    .progress-indicator {
+      .counter-content {
+        .counter-display {
+          gap: 6px;
+          
+          .counter-item {
+            min-width: 30px;
+            
+            .counter-label {
+              display: none;
+            }
+            
+            .counter-number {
+              font-size: 0.95rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animation for number changes
+.counter-number {
+  transition: all 0.2s ease;
+}
+
+// Pulse effect when numbers change
+@keyframes pulse-update {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.counter-number.updated {
+  animation: pulse-update 0.3s ease;
+}

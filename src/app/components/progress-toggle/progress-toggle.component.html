@@ -1,0 +1,39 @@
+@if (isVisible) {
+  <div class="progress-toggle-container">
+    <button 
+      class="refresh-btn"
+      (click)="resetAllAnswers()"
+      title="Reiniciar todas las respuestas"
+      aria-label="Reset all answers">
+      <fa-icon [icon]="faSync"></fa-icon>
+    </button>
+    
+    <button 
+      class="progress-toggle-btn"
+      [class.recording]="isTrackingEnabled"
+      (click)="toggleTracking()"
+      [title]="tooltipText"
+      aria-label="Toggle progress tracking">
+      <div class="recording-indicator">
+        <div class="recording-dot"></div>
+      </div>
+      <div class="toggle-icon">
+        <fa-icon [icon]="faChartLine"></fa-icon>
+      </div>
+      <div class="toggle-text">{{ toggleText }}</div>
+    </button>
+  </div>
+}
+
+@if (showSessionSummary && lastSession && currentUserId) {
+  <app-result-modal
+    [userId]="currentUserId"
+    [currentSection]="lastSession.mainSection"
+    [currentSubsection]="lastSession.subSection || ''"
+    [isProgressTracking]="true"
+    [progressSession]="lastSession"
+    (onCloseClick)="closeSummary()"
+    (onRetryClick)="closeSummary()"
+    (onContinueClick)="closeSummary()">
+  </app-result-modal>
+}

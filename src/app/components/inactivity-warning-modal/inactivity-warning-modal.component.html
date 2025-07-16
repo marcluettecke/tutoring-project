@@ -1,0 +1,49 @@
+@if (isVisible) {
+  <div class="backdrop" (click)="onDismiss()"></div>
+  
+  <div class="inactivity-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="warning-icon">
+        <fa-icon [icon]="faExclamationTriangle"></fa-icon>
+      </div>
+      <h3 class="modal-title">Sesión inactiva</h3>
+    </div>
+    
+    <div class="modal-content">
+      <p class="warning-message">
+        Has estado inactivo durante un tiempo. ¿Deseas continuar con el seguimiento de tu sesión?
+      </p>
+      
+      <div class="countdown-display" [class]="urgencyClass">
+        <div class="countdown-circle">
+          <div class="countdown-number">{{ countdownText }}</div>
+        </div>
+        <div class="countdown-label">Se cerrará automáticamente</div>
+      </div>
+    </div>
+    
+    <div class="modal-actions">
+      <button 
+        class="btn btn-outline" 
+        (click)="onDismiss()"
+        type="button">
+        <fa-icon [icon]="faTimes"></fa-icon>
+        Continuar sin seguimiento
+      </button>
+      <button 
+        class="btn btn-secondary" 
+        (click)="onStopTracking()"
+        type="button">
+        <fa-icon [icon]="faStop"></fa-icon>
+        Detener seguimiento
+      </button>
+      <button 
+        class="btn btn-primary" 
+        (click)="onExtendSession()"
+        type="button">
+        <fa-icon [icon]="faClock"></fa-icon>
+        Continuar sesión
+      </button>
+    </div>
+  </div>
+}
