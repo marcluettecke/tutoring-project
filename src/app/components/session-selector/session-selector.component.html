@@ -1,0 +1,58 @@
+<!-- Session Comparison Dropdown -->
+<div class="comparison-selector">
+  <label for="session-select">{{ label }}</label>
+  <div class="select-container">
+    <select 
+      id="session-select" 
+      [(ngModel)]="selectedSessionId" 
+      (change)="onSessionSelect()"
+      class="session-dropdown">
+      @if (currentSessionText !== placeholder) {
+        <option value="current">{{ currentSessionText }}</option>
+      }
+      @if (currentSessionText === placeholder) {
+        <option value="">{{ placeholder }}</option>
+      }
+      
+      @if (groupByMode) {
+        <!-- Grouped by mode -->
+        @if (practicesSessions.length > 0) {
+          <optgroup label="Sesiones de Práctica">
+            @for (session of practicesSessions; track session.id) {
+              <option [value]="session.id">{{ formatSessionForDropdown(session) }}</option>
+            }
+          </optgroup>
+        }
+        @if (testSessions.length > 0) {
+          <optgroup label="Exámenes">
+            @for (session of testSessions; track session.id) {
+              <option [value]="session.id">{{ formatSessionForDropdown(session) }}</option>
+            }
+          </optgroup>
+        }
+      } @else {
+        <!-- Simple list -->
+        @for (session of sessions; track session.id) {
+          <option [value]="session.id">{{ formatSessionForDropdown(session) }}</option>
+        }
+      }
+    </select>
+    
+    @if (showComparison) {
+      <div class="comparison-controls">
+        <button 
+          class="mode-toggle" 
+          [disabled]="!canCompare"
+          [class.disabled]="!canCompare"
+          (click)="onComparisonModeToggle()" 
+          [title]="comparisonTooltip">
+          @if (comparisonMode === 'individual') {
+            <span>📊</span>
+          } @else {
+            <span>📋</span>
+          }
+        </button>
+      </div>
+    }
+  </div>
+</div>
