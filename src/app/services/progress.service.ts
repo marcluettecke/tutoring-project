@@ -167,7 +167,7 @@ export class ProgressService {
     this.clearInactivityTimers();
     
     // Set 10-minute inactivity timer
-    this.inactivityTimer = setTimeout(() => {
+    this.inactivityTimer = window.setTimeout(() => {
       this.showInactivityWarning();
     }, this.INACTIVITY_TIMEOUT);
   }
@@ -179,7 +179,7 @@ export class ProgressService {
     this.inactivityWarningSubject.next(true);
     
     // Set 60-second warning timer
-    this.warningTimer = setTimeout(() => {
+    this.warningTimer = window.setTimeout(() => {
       this.handleInactivityTimeout();
     }, this.WARNING_TIMEOUT);
   }
