@@ -53,25 +53,31 @@ Object.defineProperty(URL, 'createObjectURL', {
   value: vi.fn(() => 'mock-url'),
 });
 
-// Mock localStorage
+// Mock localStorage with working implementation
+const createStorageMock = () => {
+  let store: { [key: string]: string } = {};
+  return {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value;
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key];
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
+  };
+};
+
 Object.defineProperty(window, 'localStorage', {
-  value: {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn(),
-    clear: vi.fn(),
-  },
+  value: createStorageMock(),
   writable: true,
 });
 
 // Mock sessionStorage
 Object.defineProperty(window, 'sessionStorage', {
-  value: {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn(),
-    clear: vi.fn(),
-  },
+  value: createStorageMock(),
   writable: true,
 });
 
