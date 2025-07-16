@@ -19,5 +19,5 @@
   </ul>
   <div class="bottom-spacer"></div>
 </div>
-<fa-icon [icon]="faAngleDoubleLeft" (click)="iconClickHandler()" class="side-nav--icon"
-         [ngClass]="open? 'side-nav--icon--closed':'side-nav--icon--open'" size="3x"></fa-icon>
+<fa-icon [icon]="open ? faAngleDoubleRight : faAngleDoubleRight" (click)="iconClickHandler()" class="side-nav--icon"
+         [ngClass]="open? 'side-nav--icon--open':'side-nav--icon--closed'" size="3x"></fa-icon>
