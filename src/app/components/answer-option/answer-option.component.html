@@ -1,6 +1,6 @@
 <div class="option-wrapper" (click)="clickAnswer()"
      [ngClass]="{'correct-answer': (selectedAnswer && selectedAnswer.length > 0 || testFinished) && isCorrect, 'wrong-answer': (selectedAnswer && selectedAnswer.length > 0 || testFinished) && !isCorrect}">
-  <input [name]="name" [readOnly]="(selectedAnswer && selectedAnswer.length > 0 || testFinished)" type="radio" [id]="id" [disabled]="disabled">
+  <input [name]="name" [readOnly]="(selectedAnswer && selectedAnswer.length > 0 || testFinished)" type="radio" [id]="id" [disabled]="disabled" [checked]="selectedAnswer === id">
   <label [for]="id" class="answer" [ngClass]="{'disabled': (selectedAnswer && selectedAnswer.length > 0) || disabled}">
     {{answerOption}}
   </label>
