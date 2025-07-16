@@ -15,8 +15,8 @@ import {SideNavComponent} from "../../components/side-nav/side-nav.component";
              styleUrls: ['./home.component.scss']
            })
 export class HomeComponent implements OnInit, OnDestroy {
-  questions: Question[];
-  tempQuestions: Question [];
+  questions: Question[] = [];
+  tempQuestions: Question [] = [];
   sidebarExpanded = true;
   errorMessage = ''
   activeSection: { mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number } = {
@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    // this.updateData()
+    // Auto-selection is now handled by the SideNavComponent
   }
 
   toggleSidebarExpanded(value: boolean) {
@@ -60,6 +60,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
     this.updateData()
   }
+
 
   ngOnDestroy(): void {
     this.destroy$.next();

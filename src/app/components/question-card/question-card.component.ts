@@ -1,5 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, OnDestroy} from '@angular/core';
 import {Question} from "../../models/question.model";
+import {ProgressService} from "../../services/progress.service";
+import {TestService} from "../../services/test.service";
+import {Subject, takeUntil} from 'rxjs';
 import {faAngleDoubleDown, faAngleDoubleUp} from "@fortawesome/free-solid-svg-icons";
 import {AnswerOptionComponent} from "../answer-option/answer-option.component";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
@@ -13,7 +16,7 @@ import {NgClass} from "@angular/common";
              styleUrls: ['./question-card.component.scss'],
 
            })
-export class QuestionCardComponent implements OnInit {
+export class QuestionCardComponent implements OnInit, OnDestroy {
   @Input() questionItem: Question
   @Input() questionIndex: number
   @Input() subSectionName: string
@@ -24,22 +27,55 @@ export class QuestionCardComponent implements OnInit {
 
   clicked = false
   wrongAnswerClicked = false
-  selectedAnswer: string
+  selectedAnswer: string = ''
   explanationShown = false
+  private firstClick = true
+  private destroy$ = new Subject<void>();
 
-  constructor() {
-  }
+  constructor(
+    private progressService: ProgressService,
+    private testService: TestService
+  ) {}
 
   clickHandler(isCorrect: boolean, id: string) {
-    // set the value of if one answer in general was chosen
     this.clicked = true;
-    // set the value for shake animation to trigger if wrong answer is chose
     this.wrongAnswerClicked = !isCorrect;
-    // set the selected value to correct for disabling the right buttons
     this.selectedAnswer = id;
+    
+    if (this.progressService.isTrackingEnabled && this.firstClick) {
+      // Record section-specific answer with timestamp
+      this.progressService.recordQuestionAnswer(
+        this.questionItem.mainSection,
+        this.questionItem.subSection,
+        isCorrect
+      );
+      this.firstClick = false;
+    }
   }
 
   ngOnInit(): void {
+    // Listen for reset events
+    this.testService.resetAnswers
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.resetComponentState();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Reset this component's state to initial values
+   */
+  private resetComponentState(): void {
+    this.clicked = false;
+    this.wrongAnswerClicked = false;
+    this.selectedAnswer = '';
+    this.explanationShown = false;
+    this.firstClick = true;
   }
 
 }

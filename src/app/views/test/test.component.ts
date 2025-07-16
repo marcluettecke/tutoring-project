@@ -1,7 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {QuestionsService} from "../../services/questions.service";
 import {Question} from "../../models/question.model";
 import {TestService} from "../../services/test.service";
+import {AuthService} from "../../services/auth.service";
 import {Subscription} from "rxjs";
 import {QUESTIONWEIGHTS} from './constants';
 import {ResultModalComponent} from '../../components/result-modal/result-modal.component';
@@ -24,12 +26,21 @@ export class TestComponent implements OnInit, OnDestroy {
   errorMessage = ''
   questionSubscription: Subscription
   testStatusSubscription: Subscription
+  currentUserId: string | null = null;
 
 
-  constructor(private questionsService: QuestionsService, private testService: TestService) {
+  constructor(
+    private questionsService: QuestionsService, 
+    private testService: TestService,
+    private authService: AuthService,
+    private router: Router
+  ) {
   }
 
   ngOnInit(): void {
+    // Get current user ID from auth service
+    this.currentUserId = this.authService.loginChanged.value?.uid || null;
+    
     this.questionSubscription = this.questionsService.getQuestions().subscribe(questions => {
                                                                                  this.questions = questions
                                                                                  this.filterQuestions()
@@ -66,6 +77,38 @@ export class TestComponent implements OnInit, OnDestroy {
 
   closeModal() {
     this.modalOpen = false;
+  }
+
+  /**
+   * Handle when user closes modal without saving
+   */
+  onModalClose() {
+    this.modalOpen = false;
+    // Navigate back to home
+    this.router.navigate(['/home']);
+  }
+
+  /**
+   * Handle when user retries the test
+   */
+  onRetryTest() {
+    this.modalOpen = false;
+    // Reset test service and start over
+    this.testService.resetAllAnswers();
+    this.testService.handleTestStart();
+    // Clear current questions and re-filter to get new random questions
+    this.filteredQuestions = [];
+    this.filterQuestions();
+    // Stay on test page for retry
+  }
+
+  /**
+   * Handle when user wants to continue to new test
+   */
+  onContinueTest() {
+    this.modalOpen = false;
+    // Navigate back to home to select new test
+    this.router.navigate(['/home']);
   }
 
   ngOnDestroy() {

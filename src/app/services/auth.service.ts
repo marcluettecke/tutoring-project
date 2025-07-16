@@ -19,10 +19,21 @@ import {UserInfo} from "../models/User.model";
               providedIn: 'root'
             })
 export class AuthService {
-  loginChanged = new BehaviorSubject<UserInfo | null>(this.cookieService.get('userData') ? JSON.parse(this.cookieService.get('userData')) : null)
+  loginChanged = new BehaviorSubject<UserInfo | null>(this.getInitialUserState())
   errorStatusChanged = new Subject<AuthError>()
 
   constructor(private auth: AngularFireAuth, private router: Router, private cookieService: CookieService) {
+  }
+
+  private getInitialUserState(): UserInfo | null {
+    try {
+      const userData = this.cookieService.get('userData');
+      return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+      console.error('Error parsing user data from cookie:', error);
+      this.cookieService.delete('userData');
+      return null;
+    }
   }
 
   handleLogin() {
