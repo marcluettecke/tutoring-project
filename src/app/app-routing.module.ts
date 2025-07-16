@@ -5,6 +5,7 @@ import {AddQuestionComponent} from "./views/add-question/add-question.component"
 import {AdminGuard} from "./guards/admin-guard.guard";
 import {AuthGuard, redirectUnauthorizedTo} from '@angular/fire/auth-guard';
 import {TestComponent} from "./views/test/test.component";
+import {ResultsComponent} from "./views/results/results.component";
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
 
@@ -15,7 +16,18 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: {authGuardPipe: redirectUnauthorizedToLogin}
   },
-  {path: 'test', component: TestComponent},
+  {
+    path: 'test', 
+    component: TestComponent,
+    canActivate: [AuthGuard],
+    data: {authGuardPipe: redirectUnauthorizedToLogin}
+  },
+  {
+    path: 'results',
+    component: ResultsComponent,
+    canActivate: [AuthGuard],
+    data: {authGuardPipe: redirectUnauthorizedToLogin}
+  },
   {path: 'login', component: LoginComponent},
   {
     path: 'addQuestion',
