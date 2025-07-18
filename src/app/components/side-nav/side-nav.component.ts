@@ -93,9 +93,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
   }
 
   clickHandlerMainList(index: number) {
-    if (this.activeSection.mainSectionNumber !== index + 1) {
-      this.isExpanded[index] = !this.isExpanded[index];
-    }
+    this.isExpanded[index] = !this.isExpanded[index];
   }
 
   clickHandlerSublist(mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number) {

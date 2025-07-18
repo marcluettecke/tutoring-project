@@ -5,7 +5,9 @@
   <ul class="side-nav--items">
     @for (section of mainSections; track section; let i = $index) {
       <li id="parentList" class="side-nav--items--item">
-        <p class="side-nav--items--item--text" (click)="clickHandlerMainList(i)">{{i + 1}}. {{section}}</p>
+        <p class="side-nav--items--item--text" 
+           [ngClass]="activeSection.mainSectionNumber === i+1? 'side-nav--items--item--text--active':''"
+           (click)="clickHandlerMainList(i)">{{i + 1}}. {{section}}</p>
         <ul class="side-nav--items--item--sublist"
             [ngClass]="isExpanded[i]? 'side-nav--items--item--sublist--expanded': 'side-nav--items--item--sublist--collapsed'">
           @for (subsection of sections[section]; track subsection.name; let j = $index) {
