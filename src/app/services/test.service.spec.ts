@@ -231,6 +231,66 @@ describe('TestService', () => {
     });
   });
 
+  describe('Question Count Behavior', () => {
+    it('should initialize blank counts from QUESTIONWEIGHTS', () => {
+      expect(service.correctAnswers.administrativo.blank).toBe(QUESTIONWEIGHTS.administrativo);
+      expect(service.correctAnswers['medio ambiente'].blank).toBe(QUESTIONWEIGHTS['medio ambiente']);
+      expect(service.correctAnswers.costas.blank).toBe(QUESTIONWEIGHTS.costas);
+      expect(service.correctAnswers.aguas.blank).toBe(QUESTIONWEIGHTS.aguas);
+      
+      const totalBlank = Object.values(QUESTIONWEIGHTS).reduce((sum, val) => sum + val, 0);
+      expect(service.correctAnswers.total.blank).toBe(totalBlank);
+    });
+
+    it('should track only answered questions for partial test', () => {
+      // Simulate answering only 3 questions
+      const questions = [
+        { id: 'q1', correctAnswer: 'A', mainSection: 'administrativo' },
+        { id: 'q2', correctAnswer: 'B', mainSection: 'medio ambiente' },
+        { id: 'q3', correctAnswer: 'C', mainSection: 'costas' }
+      ];
+
+      // Answer 2 correct, 1 incorrect
+      service.addClickedAnswer(questions[0], 'A', true, false); // correct
+      service.addClickedAnswer(questions[1], 'D', true, false); // incorrect
+      service.addClickedAnswer(questions[2], 'C', true, false); // correct
+
+      // Check total answered questions
+      const totalAnswered = service.correctAnswers.total.correct + service.correctAnswers.total.incorrect;
+      expect(totalAnswered).toBe(3);
+      
+      // Check blank questions remain high (97 out of 100)
+      expect(service.correctAnswers.total.blank).toBe(97);
+      
+      // Verify section-specific counts
+      expect(service.correctAnswers.administrativo.correct).toBe(1);
+      expect(service.correctAnswers.administrativo.incorrect).toBe(0);
+      expect(service.correctAnswers.administrativo.blank).toBe(19); // 20 - 1 answered
+      
+      expect(service.correctAnswers['medio ambiente'].correct).toBe(0);
+      expect(service.correctAnswers['medio ambiente'].incorrect).toBe(1);
+      expect(service.correctAnswers['medio ambiente'].blank).toBe(24); // 25 - 1 answered
+    });
+
+    it('should handle resetAllAnswers correctly after partial test', () => {
+      // Answer some questions
+      const question = { id: 'q1', correctAnswer: 'A', mainSection: 'administrativo' };
+      service.addClickedAnswer(question, 'A', true, false);
+      
+      // Verify state changed
+      expect(service.correctAnswers.total.correct).toBe(1);
+      expect(service.correctAnswers.total.blank).toBe(99);
+      
+      // Reset
+      service.resetAllAnswers();
+      
+      // Verify back to initial state
+      expect(service.correctAnswers.total.correct).toBe(0);
+      expect(service.correctAnswers.total.blank).toBe(100);
+      expect(service.correctAnswers.administrativo.blank).toBe(QUESTIONWEIGHTS.administrativo);
+    });
+  });
+
   describe('Answer Change Handling', () => {
     const mockQuestion = {
       id: 'q1',
