@@ -21,6 +21,7 @@ export interface TestSession {
   completed: boolean;
   score?: number; // percentage
   testScore?: number; // calculated using existing TestService logic
+  sectionBreakdown?: SectionProgressData[]; // Section-by-section breakdown
 }
 
 /**

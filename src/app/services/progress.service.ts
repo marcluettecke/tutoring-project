@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, doc, addDoc, setDoc, getDoc, updateDoc, query, where, orderBy, limit, getDocs, collectionData } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, combineLatest, map } from 'rxjs';
-import { TestSession, SectionProgress, UserProgress, CurrentSessionProgress, SectionSummary, PerformanceMetrics } from '../models/progress.model';
+import { TestSession, SectionProgress, UserProgress, CurrentSessionProgress, SectionSummary, PerformanceMetrics, SectionProgressData } from '../models/progress.model';
 import { TestService } from './test.service';
 
 /**
@@ -72,7 +72,7 @@ export class ProgressService {
       incorrectAnswers: 0,
       timeElapsed: 0,
       isActive: true,
-      mainSection: 'general',
+      mainSection: 'mixed', // Use 'mixed' to indicate multiple sections will be tracked
       subSection: undefined,
       currentStreak: 0,
       longestStreak: 0,
@@ -272,7 +272,8 @@ export class ProgressService {
       timeSpent: Math.floor(session.timeElapsed / 1000), // Convert to seconds
       completed: true,
       score: session.questionsAnswered > 0 ? (session.correctAnswers / session.questionsAnswered) * 100 : 0,
-      testScore: session.correctAnswers - (0.33 * session.incorrectAnswers)
+      testScore: session.correctAnswers - (0.33 * session.incorrectAnswers),
+      sectionBreakdown: session.sectionBreakdown // Include section breakdown
     };
 
     await this.saveCompletedSession(testSession);
@@ -427,7 +428,8 @@ export class ProgressService {
       timeSpent: currentSession.timeElapsed,
       completed: true,
       score: accuracyPercentage,
-      testScore // Include test score if available
+      testScore, // Include test score if available
+      sectionBreakdown: currentSession.sectionBreakdown // Include section breakdown
     };
 
     // Mark session as completed in Firebase
@@ -437,7 +439,8 @@ export class ProgressService {
       timeSpent: currentSession.timeElapsed,
       blankAnswers,
       score: accuracyPercentage,
-      testScore
+      testScore,
+      sectionBreakdown: currentSession.sectionBreakdown // Include section breakdown
     });
 
     // Update aggregated user progress
@@ -501,12 +504,37 @@ export class ProgressService {
     const currentSession = this.currentSessionSubject.value;
     if (!currentSession || !testServiceAnswers.total) return;
 
+    // Build section breakdown from TestService data
+    const sectionBreakdown: SectionProgressData[] = [];
+    const now = Date.now();
+    
+    // Iterate through all sections in testServiceAnswers (excluding 'total')
+    Object.keys(testServiceAnswers).forEach(sectionName => {
+      if (sectionName !== 'total' && testServiceAnswers[sectionName]) {
+        const sectionData = testServiceAnswers[sectionName];
+        const questionsAnswered = sectionData.correct + sectionData.incorrect;
+        
+        if (questionsAnswered > 0) {
+          sectionBreakdown.push({
+            sectionName: sectionName,
+            questionsAnswered: questionsAnswered,
+            correctAnswers: sectionData.correct,
+            incorrectAnswers: sectionData.incorrect,
+            blankAnswers: sectionData.blank,
+            timeSpent: 0, // Time tracking would need to be done per-section
+            accuracy: questionsAnswered > 0 ? (sectionData.correct / questionsAnswered) * 100 : 0
+          });
+        }
+      }
+    });
+
     const updatedProgress: CurrentSessionProgress = {
       ...currentSession,
       questionsAnswered: testServiceAnswers.total.correct + testServiceAnswers.total.incorrect,
       correctAnswers: testServiceAnswers.total.correct,
       incorrectAnswers: testServiceAnswers.total.incorrect,
-      timeElapsed: Date.now() - currentSession.startTime
+      timeElapsed: Date.now() - currentSession.startTime,
+      sectionBreakdown: sectionBreakdown
     };
 
     this.currentSessionSubject.next(updatedProgress);

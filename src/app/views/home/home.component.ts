@@ -1,7 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {QuestionsService} from "../../services/questions.service";
+import {TestService} from "../../services/test.service";
 import {Question} from "../../models/question.model";
-import {Subject, Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {QuestionCardComponent} from "../../components/question-card/question-card.component";
 import {ErrorSnackbarComponent} from "../../components/error-snackbar/error-snackbar.component";
@@ -28,11 +29,16 @@ export class HomeComponent implements OnInit, OnDestroy {
   
   private destroy$ = new Subject<void>();
 
-  constructor(private questionService: QuestionsService) {
+  constructor(
+    private questionService: QuestionsService,
+    private testService: TestService
+  ) {
   }
 
 
   ngOnInit(): void {
+    // Reset test service state when entering practice mode
+    this.testService.resetAllAnswers();
     // Auto-selection is now handled by the SideNavComponent
   }
 

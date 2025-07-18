@@ -198,7 +198,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     // Otherwise create from main session data
     const timeValue = 'timeSpent' in session ? session.timeSpent : 0;
     return [{
-      sectionName: session.mainSection || 'general',
+      sectionName: session.mainSection || 'mixed',
       subSection: session.subSection,
       questionsAnswered: session.questionsAnswered || 0,
       correctAnswers: session.correctAnswers || 0,

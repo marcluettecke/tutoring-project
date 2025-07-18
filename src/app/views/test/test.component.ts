@@ -60,12 +60,13 @@ export class TestComponent implements OnInit, OnDestroy {
       const questionPerSection = this.questions.filter(el => el.mainSection === mainSection)
       // find how many questions per mainSection exist
       const maxFilter = questionPerSection.length
-      const indices = Array(maxFilter).fill(1).map((_, index) => index + 1);
+      const indices = Array(maxFilter).fill(0).map((_, index) => index);
       indices.sort(() => Math.random() - 0.5);
 
-
-      for (const index of indices.slice(0, QUESTIONWEIGHTS[mainSection])) {
-        // console.log(indices.slice(0, questionWeights[mainSection]))
+      // Take only the number of questions specified in QUESTIONWEIGHTS or all available questions, whichever is smaller
+      const questionsToTake = Math.min(QUESTIONWEIGHTS[mainSection], maxFilter);
+      
+      for (const index of indices.slice(0, questionsToTake)) {
         this.filteredQuestions.push(questionPerSection[index])
       }
     }
