@@ -7,8 +7,7 @@ import {
   collectionData,
   addDoc,
   query,
-  where,
-  QueryConstraint
+  where
 } from '@angular/fire/firestore';
 
 @Injectable({

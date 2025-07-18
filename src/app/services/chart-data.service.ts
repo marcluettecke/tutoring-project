@@ -111,7 +111,7 @@ export class ChartDataService {
   /**
    * Build section data from progress session
    */
-  buildSectionDataFromProgressSession(progressSession: any): SectionProgressData[] {
+  buildSectionDataFromProgressSession(progressSession: CurrentSessionProgress): SectionProgressData[] {
     // If no section breakdown, create it from the session data
     if (!progressSession.sectionBreakdown || progressSession.sectionBreakdown.length === 0) {
       return [{

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChartConfiguration, ChartType } from 'chart.js';
+import { ChartConfiguration } from 'chart.js';
 import { BaseChartComponent } from '../base-chart/base-chart.component';
 import { SectionProgressData } from '../../../models/progress.model';
 

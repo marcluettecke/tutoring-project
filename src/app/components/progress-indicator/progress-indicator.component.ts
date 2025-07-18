@@ -31,7 +31,7 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
   faClock = faClock;
   
   private destroy$ = new Subject<void>();
-  private timeUpdateInterval: any = null;
+  private timeUpdateInterval: number | null = null;
 
   constructor(
     private progressService: ProgressService,
@@ -71,6 +71,7 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
    * Setup test service listener for real-time updates
    */
   private setupTestServiceListener(): void {
+    // Method placeholder - functionality moved to ngOnInit
   }
 
   /**

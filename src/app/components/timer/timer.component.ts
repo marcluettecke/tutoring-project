@@ -31,7 +31,7 @@ export class TimerComponent implements OnInit, OnDestroy {
 
   startTest() {
     this.testService.handleTestStart()
-    this.timerSubscription = this.obsTimer.subscribe(timeRun => {
+    this.timerSubscription = this.obsTimer.subscribe(_timeRun => {
       if (this.remainingTime !== 0) {
         this.remainingTime -= 1
         this.displayTime = this.transform(this.remainingTime)

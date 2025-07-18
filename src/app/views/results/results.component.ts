@@ -189,7 +189,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   /**
    * Extract section breakdown from session data
    */
-  private extractSectionBreakdown(session: any): SectionProgressData[] {
+  private extractSectionBreakdown(session: TestSession | CurrentSessionProgress): SectionProgressData[] {
     // If session has sectionBreakdown property, use it
     if ('sectionBreakdown' in session && session.sectionBreakdown && Array.isArray(session.sectionBreakdown)) {
       return session.sectionBreakdown;

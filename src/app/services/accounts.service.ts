@@ -20,7 +20,7 @@ export class AccountsService {
   constructor(private firestore: Firestore, private cookieService: CookieService, private authService: AuthService) {
     this.authService.loginChanged
       .subscribe(user => {
-        if (!!user) {
+        if (user) {
           this.checkIfAdmin(user.email as string)
         }
       })

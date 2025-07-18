@@ -3,13 +3,6 @@ import {Question} from "../models/question.model";
 import {Subject} from "rxjs";
 import {QUESTIONWEIGHTS} from "../views/test/constants";
 
-interface ClickedAnswer {
-  correctAnswer?: string,
-  clickedAnswer?: string
-  mainSection?: string
-  correct?: boolean
-}
-
 @Injectable({
               providedIn: 'root'
             })
@@ -167,7 +160,7 @@ export class TestService {
         timestamp: Date.now()
       };
       localStorage.setItem(this.TEST_STATE_KEY, JSON.stringify(stateToSave));
-    } catch (error) {
+    } catch {
       // Error saving test state
     }
   }
@@ -190,7 +183,7 @@ export class TestService {
           this.clearSavedState();
         }
       }
-    } catch (error) {
+    } catch {
       this.clearSavedState();
     }
     return null;
@@ -202,7 +195,7 @@ export class TestService {
   private clearSavedState(): void {
     try {
       localStorage.removeItem(this.TEST_STATE_KEY);
-    } catch (error) {
+    } catch {
       // Error clearing saved test state
     }
   }
@@ -218,8 +211,8 @@ export class TestService {
         const twelveHoursAgo = Date.now() - (12 * 60 * 60 * 1000);
         return parsed.timestamp && parsed.timestamp > twelveHoursAgo;
       }
-    } catch (error) {
-      console.error('Error checking saved state:', error);
+    } catch {
+      // Error checking saved state
     }
     return false;
   }
@@ -256,7 +249,7 @@ export class TestService {
         questions: answeredArray,
         timestamp: Date.now()
       }));
-    } catch (error) {
+    } catch {
       // Error saving answered questions
     }
   }
@@ -277,7 +270,7 @@ export class TestService {
           this.clearAnsweredQuestionsFromStorage();
         }
       }
-    } catch (error) {
+    } catch {
       this.clearAnsweredQuestionsFromStorage();
     }
   }
@@ -288,7 +281,7 @@ export class TestService {
   private clearAnsweredQuestionsFromStorage(): void {
     try {
       localStorage.removeItem(this.ANSWERED_QUESTIONS_KEY);
-    } catch (error) {
+    } catch {
       // Error clearing answered questions
     }
   }

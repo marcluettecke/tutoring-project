@@ -2,13 +2,11 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {Router} from "@angular/router";
 import {BehaviorSubject, from, Subject} from "rxjs";
 import {
-  Auth,
   browserLocalPersistence,
   GoogleAuthProvider,
   setPersistence,
   signInWithPopup,
   signOut,
-  User,
   AuthError,
   onAuthStateChanged
 } from "firebase/auth";
@@ -23,9 +21,9 @@ export class AuthService implements OnDestroy {
   loginChanged = new BehaviorSubject<UserInfo | null>(this.getInitialUserState())
   errorStatusChanged = new Subject<AuthError>()
   
-  private sessionCheckInterval: any = null;
-  private authStateUnsubscribe: any = null;
-  private activityMonitorInterval: any = null;
+  private sessionCheckInterval: number | null = null;
+  private authStateUnsubscribe: (() => void) | null = null;
+  private activityMonitorInterval: number | null = null;
   private lastActivityTime: number = Date.now();
 
   constructor(private auth: AngularFireAuth, private router: Router, private cookieService: CookieService) {
@@ -37,7 +35,7 @@ export class AuthService implements OnDestroy {
     try {
       const userData = this.cookieService.get('userData');
       return userData ? JSON.parse(userData) : null;
-    } catch (error) {
+    } catch {
       this.cookieService.delete('userData');
       return null;
     }
@@ -78,7 +76,7 @@ export class AuthService implements OnDestroy {
       const provider = new GoogleAuthProvider();
       const googleLoginObservable = from(signInWithPopup(this.auth, provider))
       googleLoginObservable
-        .subscribe(_ => {
+        .subscribe(_result => {
                      this.handleLogin()
                    }, err => {
                      this.handleError(err)

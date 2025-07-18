@@ -19,9 +19,12 @@ export class AnswerOptionComponent implements OnInit {
 
   @Output() answerWasclickedEvent = new EventEmitter<string>()
 
-  constructor() { }
+  constructor() {
+    // Constructor for dependency injection
+  }
 
   ngOnInit(): void {
+    // Lifecycle hook - no initialization needed
   }
 
   clickAnswer() {

@@ -168,7 +168,7 @@ describe('InfoSnackbarComponent', () => {
         'Moving to next question',
       ];
 
-      infos.forEach((info, index) => {
+      infos.forEach((info, _index) => {
         component.infoText = info;
         expect(component.infoText).toBe(info);
       });

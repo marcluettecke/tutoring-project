@@ -163,7 +163,7 @@ describe('ErrorSnackbarComponent', () => {
         'Data fetch failed',
       ];
 
-      errors.forEach((error, index) => {
+      errors.forEach((error, _index) => {
         component.errorText = error;
         expect(component.errorText).toBe(error);
       });

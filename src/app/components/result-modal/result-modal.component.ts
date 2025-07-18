@@ -167,8 +167,8 @@ export class ResultModalComponent implements OnInit, OnDestroy {
       };
 
       await this.progressService.saveCompletedSession(currentSession);
-    } catch (error) {
-      console.error('Error saving current session:', error);
+    } catch {
+      // Error saving current session
     }
   }
 
@@ -199,12 +199,12 @@ export class ResultModalComponent implements OnInit, OnDestroy {
                 .sort((a, b) => b.timestamp - a.timestamp);
             }
           },
-          error: (error) => {
-            console.error('Error loading previous sessions:', error);
+          error: () => {
+            // Error loading previous sessions
           }
         });
-    } catch (error) {
-      console.error('Error loading previous sessions:', error);
+    } catch {
+      // Error loading previous sessions
     }
   }
 
@@ -314,10 +314,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * Save progress session and close modal
    */
   async saveAndClose(): Promise<void> {
-    console.log('saveAndClose called');
-    console.log('isProgressTracking:', this.isProgressTracking);
-    console.log('progressSession:', this.progressSession);
-    console.log('userId:', this.userId);
+    // Save and close method called
 
     if (this.isProgressTracking && this.progressSession && this.userId) {
       try {
@@ -339,16 +336,13 @@ export class ResultModalComponent implements OnInit, OnDestroy {
           sectionBreakdown: this.progressSession.sectionBreakdown // Include section breakdown
         };
 
-        console.log('Saving testSession:', testSession);
         // Save to Firebase
         await this.progressService.saveCompletedSession(testSession);
-        console.log('Progress session saved successfully to Firebase');
-      } catch (error) {
-        console.error('Error saving progress session:', error);
-        console.error('Error details:', error);
+      } catch {
+        // Error saving progress session
       }
     } else {
-      console.log('Save conditions not met');
+      // Save conditions not met
     }
 
     this.handleCloseClick();
@@ -1035,7 +1029,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
 
   // Cached chart data property
   private _cachedChartData: SectionProgressData[] | null = null;
-  private _lastCorrectAnswers: any = null;
+  private _lastCorrectAnswers: TestServiceAnswers | null = null;
 
   getChartData(): SectionProgressData[] {
     // Check if we can use cached data for test mode
@@ -1077,8 +1071,8 @@ export class ResultModalComponent implements OnInit, OnDestroy {
       try {
         // Save the test exam session
         await this.saveCurrentSession();
-      } catch (error) {
-        console.error('Error saving test exam:', error);
+      } catch {
+        // Error saving test exam
       }
     }
     this.handleCloseClick();

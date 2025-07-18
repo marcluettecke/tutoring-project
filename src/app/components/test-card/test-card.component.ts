@@ -3,7 +3,7 @@ import {Question} from "../../models/question.model";
 import {TestService} from "../../services/test.service";
 import {ProgressService} from "../../services/progress.service";
 import {Subject, takeUntil} from 'rxjs';
-import {faAngleDoubleDown, faAngleDoubleUp} from "@fortawesome/free-solid-svg-icons";
+import {faAngleDoubleDown} from "@fortawesome/free-solid-svg-icons";
 import {AnswerOptionComponent} from "../answer-option/answer-option.component";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 
