@@ -99,7 +99,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
     if (this.progressSession.questionsAnswered > 0 &&
       (!this.progressSession.sectionBreakdown || this.progressSession.sectionBreakdown.length === 0)) {
       this.progressSession.sectionBreakdown = [{
-        sectionName: this.progressSession.mainSection || 'general',
+        sectionName: this.progressSession.mainSection || 'mixed',
         subSection: this.progressSession.subSection,
         questionsAnswered: this.progressSession.questionsAnswered,
         correctAnswers: this.progressSession.correctAnswers,
@@ -127,12 +127,33 @@ export class ResultModalComponent implements OnInit, OnDestroy {
     try {
       const sessionId = `${this.userId}_${Date.now()}`;
 
+      // Build section breakdown from correctAnswers data
+      const sectionBreakdown: SectionProgressData[] = [];
+      Object.keys(this.correctAnswers).forEach(sectionName => {
+        if (sectionName !== 'total' && this.correctAnswers[sectionName]) {
+          const sectionData = this.correctAnswers[sectionName];
+          const questionsAnswered = sectionData.correct + sectionData.incorrect;
+          
+          if (questionsAnswered > 0) {
+            sectionBreakdown.push({
+              sectionName: sectionName,
+              questionsAnswered: questionsAnswered,
+              correctAnswers: sectionData.correct,
+              incorrectAnswers: sectionData.incorrect,
+              blankAnswers: sectionData.blank,
+              timeSpent: 0, // Test mode doesn't track time per section
+              accuracy: questionsAnswered > 0 ? (sectionData.correct / questionsAnswered) * 100 : 0
+            });
+          }
+        }
+      });
+
       const currentSession: TestSession = {
         id: sessionId,
         userId: this.userId,
         timestamp: Date.now(),
         mode: this.isProgressTracking ? 'practice' : 'test',
-        mainSection: this.currentSection || 'general',
+        mainSection: this.currentSection || 'mixed',
         subSection: this.currentSubsection,
         questionsAnswered: this.correctAnswers.total.correct + this.correctAnswers.total.incorrect,
         correctAnswers: this.correctAnswers.total.correct,
@@ -141,7 +162,8 @@ export class ResultModalComponent implements OnInit, OnDestroy {
         timeSpent: 0,
         completed: true,
         score: this.overallAccuracy,
-        testScore: this.overallScore
+        testScore: this.overallScore,
+        sectionBreakdown: sectionBreakdown // Include section breakdown
       };
 
       await this.progressService.saveCompletedSession(currentSession);
@@ -313,7 +335,8 @@ export class ResultModalComponent implements OnInit, OnDestroy {
           timeSpent: Math.floor(this.progressSession.timeElapsed / 1000),
           completed: true,
           score: this.progressSession.questionsAnswered > 0 ? (this.progressSession.correctAnswers / this.progressSession.questionsAnswered) * 100 : 0,
-          testScore: this.progressSession.correctAnswers - (0.33 * this.progressSession.incorrectAnswers)
+          testScore: this.progressSession.correctAnswers - (0.33 * this.progressSession.incorrectAnswers),
+          sectionBreakdown: this.progressSession.sectionBreakdown // Include section breakdown
         };
 
         console.log('Saving testSession:', testSession);
@@ -770,12 +793,34 @@ export class ResultModalComponent implements OnInit, OnDestroy {
       };
     } else if (!this.isProgressTracking && this.correctAnswers.total) {
       const total = this.correctAnswers.total;
+      
+      // Build section breakdown for test mode
+      const sectionBreakdown: SectionProgressData[] = [];
+      Object.keys(this.correctAnswers).forEach(sectionName => {
+        if (sectionName !== 'total' && this.correctAnswers[sectionName]) {
+          const sectionData = this.correctAnswers[sectionName];
+          const questionsAnswered = sectionData.correct + sectionData.incorrect;
+          
+          if (questionsAnswered > 0) {
+            sectionBreakdown.push({
+              sectionName: sectionName,
+              questionsAnswered: questionsAnswered,
+              correctAnswers: sectionData.correct,
+              incorrectAnswers: sectionData.incorrect,
+              blankAnswers: sectionData.blank,
+              timeSpent: 0,
+              accuracy: questionsAnswered > 0 ? (sectionData.correct / questionsAnswered) * 100 : 0
+            });
+          }
+        }
+      });
+      
       return {
         id: 'current',
         userId: this.userId || '',
         timestamp: Date.now(),
         mode: 'test',
-        mainSection: this.currentSection || 'general',
+        mainSection: this.currentSection || 'mixed',
         subSection: this.currentSubsection,
         questionsAnswered: total.correct + total.incorrect,
         correctAnswers: total.correct,
@@ -783,7 +828,8 @@ export class ResultModalComponent implements OnInit, OnDestroy {
         blankAnswers: total.blank,
         timeSpent: 0, // Test service doesn't track time
         completed: true,
-        testScore: this.overallScore
+        testScore: this.overallScore,
+        sectionBreakdown: sectionBreakdown // Include section breakdown
       };
     }
     return null;
