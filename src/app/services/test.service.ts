@@ -3,10 +3,6 @@ import {Question} from "../models/question.model";
 import {Subject} from "rxjs";
 import {QUESTIONWEIGHTS} from "../views/test/constants";
 
-interface ClickedAnswers {
-  [key: string]: ClickedAnswer
-}
-
 interface ClickedAnswer {
   correctAnswer?: string,
   clickedAnswer?: string
