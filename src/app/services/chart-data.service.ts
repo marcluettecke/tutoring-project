@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TestSession, SectionProgressData, TestServiceAnswers } from '../models/progress.model';
+import { TestSession, SectionProgressData, TestServiceAnswers, CurrentSessionProgress } from '../models/progress.model';
 
 @Injectable({
   providedIn: 'root'

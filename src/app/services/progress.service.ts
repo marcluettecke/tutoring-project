@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, doc, addDoc, setDoc, getDoc, updateDoc, query, where, orderBy, limit, getDocs, collectionData } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, map } from 'rxjs';
-import { TestSession, SectionProgress, UserProgress, CurrentSessionProgress, SectionSummary, SectionProgressData } from '../models/progress.model';
+import { TestSession, SectionProgress, UserProgress, CurrentSessionProgress, SectionSummary, SectionProgressData, TestServiceAnswers } from '../models/progress.model';
 import { TestService } from './test.service';
 
 /**
@@ -481,7 +481,7 @@ export class ProgressService {
     const sessionsQuery = query(sessionsRef, orderBy('timestamp', 'desc'), limit(50));
 
     return collectionData(sessionsQuery, { idField: 'id' }).pipe(
-      map((sessions: TestSession[]) => {
+      map((sessions) => {
         const typedSessions = sessions as TestSession[];
         return this.calculateUserProgress(userId, typedSessions);
       })
@@ -649,9 +649,9 @@ export class ProgressService {
   private calculateTestScore(testResults: TestServiceAnswers): number {
     // This would integrate with TestService's scoring logic
     // For now, return a placeholder that matches the TestService calculation
-    if (testResults && testResults.correctAnswers !== undefined) {
-      const correct = testResults.correctAnswers || 0;
-      const incorrect = testResults.incorrectAnswers || 0;
+    if (testResults && testResults.total) {
+      const correct = testResults.total.correct || 0;
+      const incorrect = testResults.total.incorrect || 0;
       const penalty = incorrect * 0.33; // TestService penalty logic
       return Math.max(0, correct - penalty);
     }
@@ -879,13 +879,13 @@ export class ProgressService {
    * @param data - Data object to sanitize
    * @returns Cleaned data object
    */
-  private sanitizeForFirestore(data: TestSession): TestSession {
+  private sanitizeForFirestore<T>(data: T): T {
     if (data === null || data === undefined) {
-      return null;
+      return null as T;
     }
     
     if (Array.isArray(data)) {
-      return data.map(item => this.sanitizeForFirestore(item));
+      return data.map(item => this.sanitizeForFirestore(item)) as T;
     }
     
     if (typeof data === 'object') {
@@ -893,7 +893,7 @@ export class ProgressService {
       for (const [key, value] of Object.entries(data)) {
         cleaned[key] = this.sanitizeForFirestore(value);
       }
-      return cleaned;
+      return cleaned as T;
     }
     
     return data;
