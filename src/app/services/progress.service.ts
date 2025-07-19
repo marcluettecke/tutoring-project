@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, doc, addDoc, setDoc, getDoc, updateDoc, query, where, orderBy, limit, getDocs, collectionData } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable, combineLatest, map } from 'rxjs';
-import { TestSession, SectionProgress, UserProgress, CurrentSessionProgress, SectionSummary, PerformanceMetrics, SectionProgressData } from '../models/progress.model';
+import { BehaviorSubject, Observable, map } from 'rxjs';
+import { TestSession, SectionProgress, UserProgress, CurrentSessionProgress, SectionSummary, SectionProgressData, TestServiceAnswers } from '../models/progress.model';
 import { TestService } from './test.service';
 
 /**
@@ -235,7 +235,7 @@ export class ProgressService {
   /**
    * End current session
    */
-  private async endCurrentSession(reason: string): Promise<void> {
+  private async endCurrentSession(_reason: string): Promise<void> {
     const currentSession = this.currentSessionSubject.value;
     if (currentSession && currentSession.isActive) {
       // Mark session as ended
@@ -248,7 +248,7 @@ export class ProgressService {
       this.currentSessionSubject.next(endedSession);
       
       // Don't automatically save sessions - only save when user explicitly clicks save
-      console.log(`Session ended without auto-saving: ${reason}. User can manually save if desired.`);
+      // Session ended without auto-saving: User can manually save if desired
     }
   }
 
@@ -397,7 +397,7 @@ export class ProgressService {
    * @param sessionId - Session ID to complete
    * @param finalTestResults - Optional test results from TestService
    */
-  async completeSession(userId: string, sessionId: string, finalTestResults?: any): Promise<SectionSummary> {
+  async completeSession(userId: string, sessionId: string, finalTestResults?: TestServiceAnswers): Promise<SectionSummary> {
     const currentSession = this.currentSessionSubject.value;
     if (!currentSession || currentSession.sessionId !== sessionId) {
       throw new Error('No active session found');
@@ -481,7 +481,7 @@ export class ProgressService {
     const sessionsQuery = query(sessionsRef, orderBy('timestamp', 'desc'), limit(50));
 
     return collectionData(sessionsQuery, { idField: 'id' }).pipe(
-      map((sessions: any[]) => {
+      map((sessions) => {
         const typedSessions = sessions as TestSession[];
         return this.calculateUserProgress(userId, typedSessions);
       })
@@ -500,13 +500,13 @@ export class ProgressService {
    * Update progress from TestService data
    * @param testServiceAnswers - Current answers from TestService
    */
-  updateFromTestService(testServiceAnswers: any): void {
+  updateFromTestService(testServiceAnswers: TestServiceAnswers): void {
     const currentSession = this.currentSessionSubject.value;
     if (!currentSession || !testServiceAnswers.total) return;
 
     // Build section breakdown from TestService data
     const sectionBreakdown: SectionProgressData[] = [];
-    const now = Date.now();
+    const _now = Date.now();
     
     // Iterate through all sections in testServiceAnswers (excluding 'total')
     Object.keys(testServiceAnswers).forEach(sectionName => {
@@ -646,12 +646,12 @@ export class ProgressService {
    * @param testResults - Results from TestService
    * @returns Calculated test score
    */
-  private calculateTestScore(testResults: any): number {
+  private calculateTestScore(testResults: TestServiceAnswers): number {
     // This would integrate with TestService's scoring logic
     // For now, return a placeholder that matches the TestService calculation
-    if (testResults && testResults.correctAnswers !== undefined) {
-      const correct = testResults.correctAnswers || 0;
-      const incorrect = testResults.incorrectAnswers || 0;
+    if (testResults && testResults.total) {
+      const correct = testResults.total.correct || 0;
+      const incorrect = testResults.total.incorrect || 0;
       const penalty = incorrect * 0.33; // TestService penalty logic
       return Math.max(0, correct - penalty);
     }
@@ -856,25 +856,17 @@ export class ProgressService {
    */
   async saveCompletedSession(session: TestSession): Promise<void> {
     try {
-      console.log('saveCompletedSession called with:', session);
-      
       const userProgressRef = doc(this.firestore, 'userProgress', session.userId);
       const sessionRef = collection(userProgressRef, 'sessions');
       
-      console.log('Firestore userProgressRef:', userProgressRef.path);
-      console.log('Firestore sessionRef:', sessionRef.path);
-      
       // Clean session data for Firestore (no undefined values)
       const cleanSession = this.sanitizeForFirestore(session);
-      console.log('Cleaned session data:', cleanSession);
       
       // Add the session to the user's session collection
-      const docRef = await addDoc(sessionRef, cleanSession);
-      console.log('Document written with ID: ', docRef.id);
+      const _docRef = await addDoc(sessionRef, cleanSession);
       
       // Update aggregated user progress
       await this.updateUserProgress(session.userId, session);
-      console.log('User progress updated successfully');
     } catch (error) {
       console.error('Error saving completed session:', error);
       console.error('Firestore error details:', error);
@@ -887,21 +879,21 @@ export class ProgressService {
    * @param data - Data object to sanitize
    * @returns Cleaned data object
    */
-  private sanitizeForFirestore(data: any): any {
+  private sanitizeForFirestore<T>(data: T): T {
     if (data === null || data === undefined) {
-      return null;
+      return null as T;
     }
     
     if (Array.isArray(data)) {
-      return data.map(item => this.sanitizeForFirestore(item));
+      return data.map(item => this.sanitizeForFirestore(item)) as T;
     }
     
     if (typeof data === 'object') {
-      const cleaned: any = {};
+      const cleaned: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(data)) {
         cleaned[key] = this.sanitizeForFirestore(value);
       }
-      return cleaned;
+      return cleaned as T;
     }
     
     return data;

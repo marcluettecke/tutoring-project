@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import {
   Chart,
   ChartConfiguration,
-  ChartType,
   registerables
 } from 'chart.js';
 

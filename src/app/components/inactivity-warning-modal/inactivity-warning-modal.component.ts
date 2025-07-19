@@ -28,7 +28,7 @@ export class InactivityWarningModalComponent implements OnInit, OnDestroy {
   faTimes = faTimes;
   
   private destroy$ = new Subject<void>();
-  private countdownInterval: any = null;
+  private countdownInterval: number | null = null;
 
   constructor(private progressService: ProgressService) {}
 

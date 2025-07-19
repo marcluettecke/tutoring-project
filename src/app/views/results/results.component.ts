@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ProgressService } from '../../services/progress.service';
-import { TestSession, SectionProgressData } from '../../models/progress.model';
+import { TestSession, SectionProgressData, CurrentSessionProgress } from '../../models/progress.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChartBar, faTable, faArrowUp, faArrowDown, faArrowRight, faCheck, faTimes, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { SessionSelectorComponent } from '../../components/session-selector/session-selector.component';
@@ -189,7 +189,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   /**
    * Extract section breakdown from session data
    */
-  private extractSectionBreakdown(session: any): SectionProgressData[] {
+  private extractSectionBreakdown(session: TestSession | CurrentSessionProgress): SectionProgressData[] {
     // If session has sectionBreakdown property, use it
     if ('sectionBreakdown' in session && session.sectionBreakdown && Array.isArray(session.sectionBreakdown)) {
       return session.sectionBreakdown;

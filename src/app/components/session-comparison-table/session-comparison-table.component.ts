@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTable, faCheck, faTimes, faArrowUp, faArrowDown, faArrowRight, faChartLine } from '@fortawesome/free-solid-svg-icons';
-import { TestSession, SectionProgressData } from '../../models/progress.model';
+import { TestSession } from '../../models/progress.model';
 
 export interface SessionComparisonMetrics {
   questionsAnswered: {

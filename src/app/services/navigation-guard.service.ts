@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { ProgressService } from './progress.service';
 import { TestService } from './test.service';
 import { Router } from '@angular/router';

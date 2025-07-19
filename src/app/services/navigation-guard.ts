@@ -5,5 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class NavigationGuard {
 
-  constructor() { }
+  constructor() {
+    // Constructor for dependency injection
+  }
 }
