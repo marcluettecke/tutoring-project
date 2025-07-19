@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Question} from "../models/question.model";
 import {Subject} from "rxjs";
 import {QUESTIONWEIGHTS} from "../views/test/constants";
+import {ExamConfiguration} from "../models/exam-configuration.model";
 
 @Injectable({
               providedIn: 'root'
@@ -11,10 +12,15 @@ export class TestService {
   resetAnswers: Subject<void> = new Subject<void>()
   private readonly TEST_STATE_KEY = 'testServiceState';
   private readonly ANSWERED_QUESTIONS_KEY = 'answeredQuestions';
+  private readonly CUSTOM_CONFIG_KEY = 'customExamConfiguration';
   correctAnswers: { [key: string]: { blank: number, correct: number, incorrect: number } }
   private answeredQuestions: Map<string, string> = new Map(); // questionId -> selectedAnswer
+  private customConfiguration: ExamConfiguration | null = null;
 
   constructor() {
+    // Restore custom configuration first
+    this.restoreCustomConfiguration();
+    
     // Initialize with default values or restore from saved state
     this.correctAnswers = this.restoreState() || this.getDefaultState();
     this.restoreAnsweredQuestions();
@@ -115,10 +121,16 @@ export class TestService {
 
   /**
    * Resets all question states to unanswered and clears UI selections
-   * Restores original question counts from QUESTIONWEIGHTS configuration
+   * Restores original question counts from QUESTIONWEIGHTS configuration or custom configuration
    */
   resetAllAnswers(): void {
-    this.correctAnswers = this.getDefaultState();
+    this.correctAnswers = this.hasCustomConfiguration() 
+      ? this.getDefaultStateForConfiguration(
+          this.customConfiguration?.totalQuestions === 'full' 
+            ? undefined 
+            : this.customConfiguration?.totalQuestions as number
+        )
+      : this.getDefaultState();
     
     // Clear saved state from localStorage
     this.clearSavedState();
@@ -283,6 +295,117 @@ export class TestService {
       localStorage.removeItem(this.ANSWERED_QUESTIONS_KEY);
     } catch {
       // Error clearing answered questions
+    }
+  }
+
+  /**
+   * Set custom exam configuration
+   */
+  setCustomConfiguration(config: ExamConfiguration): void {
+    this.customConfiguration = config;
+    try {
+      localStorage.setItem(this.CUSTOM_CONFIG_KEY, JSON.stringify({
+        config: config,
+        timestamp: Date.now()
+      }));
+    } catch {
+      // Error saving custom configuration
+    }
+  }
+
+  /**
+   * Get custom exam configuration
+   */
+  getCustomConfiguration(): ExamConfiguration | null {
+    return this.customConfiguration;
+  }
+
+  /**
+   * Check if using custom configuration
+   */
+  hasCustomConfiguration(): boolean {
+    return this.customConfiguration !== null;
+  }
+
+  /**
+   * Clear custom configuration
+   */
+  clearCustomConfiguration(): void {
+    this.customConfiguration = null;
+    try {
+      localStorage.removeItem(this.CUSTOM_CONFIG_KEY);
+    } catch {
+      // Error clearing custom configuration
+    }
+  }
+
+  /**
+   * Restore custom configuration from storage
+   */
+  restoreCustomConfiguration(): void {
+    try {
+      const saved = localStorage.getItem(this.CUSTOM_CONFIG_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const oneHourAgo = Date.now() - (60 * 60 * 1000);
+        
+        if (parsed.timestamp && parsed.timestamp > oneHourAgo) {
+          this.customConfiguration = parsed.config;
+        } else {
+          this.clearCustomConfiguration();
+        }
+      }
+    } catch {
+      this.clearCustomConfiguration();
+    }
+  }
+
+  /**
+   * Get default state based on custom configuration or standard weights
+   */
+  private getDefaultStateForConfiguration(totalQuestions?: number): any {
+    if (this.customConfiguration) {
+      const state: any = {
+        total: {
+          blank: totalQuestions || 0,
+          correct: 0,
+          incorrect: 0
+        }
+      };
+
+      // Initialize sections based on custom configuration
+      this.customConfiguration.selections.forEach(selection => {
+        if (!state[selection.mainSection]) {
+          state[selection.mainSection] = {
+            blank: 0,
+            correct: 0,
+            incorrect: 0
+          };
+        }
+      });
+
+      return state;
+    }
+
+    return this.getDefaultState();
+  }
+
+  /**
+   * Update question count for custom configuration
+   */
+  updateCustomQuestionCount(mainSection: string, count: number): void {
+    if (!this.correctAnswers[mainSection]) {
+      this.correctAnswers[mainSection] = {
+        blank: count,
+        correct: 0,
+        incorrect: 0
+      };
+    } else {
+      const diff = count - (this.correctAnswers[mainSection].blank + 
+                           this.correctAnswers[mainSection].correct + 
+                           this.correctAnswers[mainSection].incorrect);
+      this.correctAnswers[mainSection].blank += diff;
+      this.correctAnswers.total.blank += diff;
     }
   }
 }

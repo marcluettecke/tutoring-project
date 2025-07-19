@@ -1,0 +1,193 @@
+<div class="exam-configuration">
+  <h1>Configuración del Examen</h1>
+  
+  @if (isLoading) {
+    <div class="loading">
+      <p>Cargando información de preguntas...</p>
+    </div>
+  } @else {
+    <!-- Quick Preset Options -->
+    <div class="preset-options">
+      <h2>Opciones Rápidas</h2>
+      <button type="button" 
+              (click)="applyStandardExamPreset()"
+              class="preset-button standard-exam"
+              [class.active-standard]="isStandardExamConfiguration">
+        @if (isStandardExamConfiguration) {
+          <span class="active-badge">✓ Configuración actual</span>
+        }
+        <div class="preset-icon">📋</div>
+        <div class="preset-content">
+          <h3>Examen Estándar</h3>
+          <p>100 preguntas con la distribución oficial:</p>
+          <ul>
+            <li>Administrativo: 20 preguntas</li>
+            <li>Medio Ambiente: 25 preguntas</li>
+            <li>Costas: 20 preguntas</li>
+            <li>Aguas: 35 preguntas</li>
+          </ul>
+        </div>
+      </button>
+      
+      <div class="divider-text">O configura tu examen personalizado:</div>
+    </div>
+    
+    <form [formGroup]="examForm" class="configuration-form">
+      
+      <!-- Section Selection -->
+      <div class="section-selection">
+        <h2>Seleccionar Secciones y Subsecciones</h2>
+        
+        <div formArrayName="selections" class="selections-container">
+          @for (selection of selectionsArray.controls; track selection; let i = $index) {
+            <div [formGroupName]="i" class="selection-item">
+              
+              <!-- Main Section Dropdown -->
+              <div class="main-section-row">
+                <select formControlName="mainSection" 
+                        (change)="onMainSectionChange(i)"
+                        class="section-select">
+                  <option value="">Seleccionar sección...</option>
+                  @for (section of mainSections; track section) {
+                    <option [value]="section">
+                      {{ section | titlecase }} ({{ getAvailableQuestions(section) }} preguntas)
+                    </option>
+                  }
+                </select>
+                
+                @if (selectionsArray.length > 1) {
+                  <button type="button" 
+                          (click)="removeSection(i)"
+                          class="icon-button remove-button"
+                          title="Eliminar sección">
+                    <fa-icon [icon]="faTrash"></fa-icon>
+                  </button>
+                }
+              </div>
+              
+              <!-- Subsection Selection -->
+              @if (selection.get('mainSection')?.value) {
+                <div class="subsection-selection">
+                  <label class="checkbox-label">
+                    <input type="checkbox" 
+                           formControlName="includeAllSubsections"
+                           [checked]="selection.get('includeAllSubsections')?.value">
+                    Incluir todas las subsecciones
+                  </label>
+                  
+                  @if (!selection.get('includeAllSubsections')?.value) {
+                    <div class="subsections-grid">
+                      @for (subsection of subsections[selection.get('mainSection')?.value]; track subsection.name) {
+                        <label class="subsection-checkbox">
+                          <input type="checkbox"
+                                 [checked]="isSubsectionSelected(i, subsection.name)"
+                                 (change)="toggleSubsection(i, subsection.name)">
+                          <span class="subsection-label">
+                            {{ subsection.name }}
+                            <span class="question-count">
+                              ({{ getAvailableQuestions(selection.get('mainSection')?.value, subsection.name) }} preguntas)
+                            </span>
+                          </span>
+                        </label>
+                      }
+                    </div>
+                  }
+                </div>
+                
+                <!-- Question Count Selector -->
+                <div class="question-count-selector">
+                  <label>Número de preguntas:</label>
+                  <div class="question-selector-options">
+                    @for (option of getQuestionOptionsForSelection(i); track option) {
+                      <label class="radio-option"
+                             [class.disabled]="!isQuestionOptionAvailable(i, option)"
+                             [class.standard-weight]="isStandardWeightOption(i, option)">
+                        <input type="radio" 
+                               formControlName="questionCount"
+                               [value]="option"
+                               [disabled]="!isQuestionOptionAvailable(i, option)">
+                        <span>{{ getQuestionOptionLabelForSelection(i, option) }}</span>
+                      </label>
+                    }
+                  </div>
+                </div>
+              }
+              
+            </div>
+          }
+        </div>
+        
+        <button type="button" 
+                (click)="addSection()"
+                class="add-section-button">
+          <fa-icon [icon]="faPlus"></fa-icon>
+          Agregar otra sección
+        </button>
+      </div>
+      
+      <!-- Summary Section -->
+      <div class="summary-section">
+        <h2>Resumen de la Configuración</h2>
+        
+        <div class="summary-content">
+          <p class="total-questions">
+            <strong>Total de preguntas seleccionadas:</strong> 
+            <span class="total-number">{{ totalSelectedQuestions }}</span>
+          </p>
+          
+          @if (getSectionInfo().length > 0) {
+            <div class="section-breakdown">
+              <h3>Distribución por sección:</h3>
+              <table class="distribution-table">
+                <thead>
+                  <tr>
+                    <th>Sección</th>
+                    <th>Disponibles</th>
+                    <th>Seleccionadas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (info of getSectionInfo(); track $index) {
+                    <tr>
+                      <td>
+                        {{ info.mainSection | titlecase }}
+                        @if (info.subsection) {
+                          <span class="subsection-name">- {{ info.subsection }}</span>
+                        }
+                      </td>
+                      <td class="text-center">{{ info.availableQuestions }}</td>
+                      <td class="text-center">
+                        <strong>{{ info.selectedQuestions }}</strong>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+      
+      <!-- Validation Errors -->
+      @if (validationErrors.length > 0) {
+        <div class="validation-errors">
+          @for (error of validationErrors; track error) {
+            <p class="error-message">{{ error }}</p>
+          }
+        </div>
+      }
+      
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button type="button"
+                (click)="startExam()"
+                [disabled]="validationErrors.length > 0"
+                class="start-button">
+          <fa-icon [icon]="faPlay"></fa-icon>
+          Comenzar Examen
+        </button>
+      </div>
+      
+    </form>
+  }
+</div>

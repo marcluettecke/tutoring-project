@@ -61,7 +61,10 @@ describe('TestComponent', () => {
     mockTestService = {
       testStatus: of('idle'),
       resetAllAnswers: vi.fn(),
-      handleTestStart: vi.fn()
+      handleTestStart: vi.fn(),
+      getCustomConfiguration: vi.fn().mockReturnValue(null),
+      clearCustomConfiguration: vi.fn(),
+      updateCustomQuestionCount: vi.fn()
     } as unknown as MockedObject<TestService>;
 
     mockAuthService = {
@@ -80,7 +83,32 @@ describe('TestComponent', () => {
     );
   });
 
+  describe('Initialization', () => {
+    it('should redirect to exam configuration if no custom config exists', () => {
+      mockTestService.getCustomConfiguration = vi.fn().mockReturnValue(null);
+      
+      component.ngOnInit();
+      
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/exam-configuration']);
+    });
+  });
+
   describe('Question Filtering', () => {
+    beforeEach(() => {
+      // Mock custom configuration for standard exam
+      const customConfig = {
+        selections: [
+          { mainSection: 'administrativo', subsections: [], questionCount: 20 },
+          { mainSection: 'medio ambiente', subsections: [], questionCount: 25 },
+          { mainSection: 'costas', subsections: [], questionCount: 20 },
+          { mainSection: 'aguas', subsections: [], questionCount: 35 }
+        ],
+        totalQuestions: 100,
+        questionDistribution: 'custom'
+      };
+      mockTestService.getCustomConfiguration = vi.fn().mockReturnValue(customConfig);
+    });
+
     it('should filter questions according to QUESTIONWEIGHTS', () => {
       component.ngOnInit();
 
@@ -169,6 +197,21 @@ describe('TestComponent', () => {
   });
 
   describe('Test Lifecycle', () => {
+    beforeEach(() => {
+      // Mock custom configuration for standard exam
+      const customConfig = {
+        selections: [
+          { mainSection: 'administrativo', subsections: [], questionCount: 20 },
+          { mainSection: 'medio ambiente', subsections: [], questionCount: 25 },
+          { mainSection: 'costas', subsections: [], questionCount: 20 },
+          { mainSection: 'aguas', subsections: [], questionCount: 35 }
+        ],
+        totalQuestions: 100,
+        questionDistribution: 'custom'
+      };
+      mockTestService.getCustomConfiguration = vi.fn().mockReturnValue(customConfig);
+    });
+
     it('should reset test service when retrying', () => {
       component.ngOnInit();
       const initialQuestions = [...component.filteredQuestions];
@@ -183,10 +226,11 @@ describe('TestComponent', () => {
       expect(component.filteredQuestions.length).toBe(initialQuestions.length);
     });
 
-    it('should navigate home when continuing after test', () => {
+    it('should navigate to exam configuration when continuing after test', () => {
       component.onContinueTest();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+      expect(mockTestService.clearCustomConfiguration).toHaveBeenCalled();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/exam-configuration']);
       expect(component.modalOpen).toBe(false);
     });
 
@@ -199,6 +243,21 @@ describe('TestComponent', () => {
   });
 
   describe('Modal Management', () => {
+    beforeEach(() => {
+      // Mock custom configuration for standard exam
+      const customConfig = {
+        selections: [
+          { mainSection: 'administrativo', subsections: [], questionCount: 20 },
+          { mainSection: 'medio ambiente', subsections: [], questionCount: 25 },
+          { mainSection: 'costas', subsections: [], questionCount: 20 },
+          { mainSection: 'aguas', subsections: [], questionCount: 35 }
+        ],
+        totalQuestions: 100,
+        questionDistribution: 'custom'
+      };
+      mockTestService.getCustomConfiguration = vi.fn().mockReturnValue(customConfig);
+    });
+
     it('should open modal when test ends', async () => {
       const testStatusSubject = new Subject();
       mockTestService.testStatus = testStatusSubject.asObservable();
