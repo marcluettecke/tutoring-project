@@ -7,7 +7,7 @@
       <a (click)="navigateWithGuard('/home', $event)" class="navigation-link" routerLinkActive="active">Home</a>
     }
     @if (isLoggedIn) {
-      <a (click)="navigateWithGuard('/test', $event)" class="navigation-link" routerLinkActive="active">Examen de práctica</a>
+      <a (click)="navigateWithGuard('/exam-configuration', $event)" class="navigation-link" routerLinkActive="active">Examen de práctica</a>
     }
     @if (isLoggedIn) {
       <a (click)="navigateWithGuard('/results', $event)" class="navigation-link" routerLinkActive="active">Análisis de Resultados</a>
