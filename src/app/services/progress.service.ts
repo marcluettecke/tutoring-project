@@ -30,8 +30,8 @@ export class ProgressService {
   private lastActivityTime: number = 0;
   private lastAnswerTimestamp: number | null = null;
 
-  private readonly INACTIVITY_TIMEOUT = 10 * 1000;
-  private readonly WARNING_TIMEOUT = 5 * 1000;
+  private readonly INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
+  private readonly WARNING_TIMEOUT = 60 * 1000; // 60 seconds in milliseconds
 
   constructor(
     private firestore: Firestore,

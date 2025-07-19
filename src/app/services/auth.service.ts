@@ -20,15 +20,24 @@ import {UserInfo} from "../models/User.model";
 export class AuthService implements OnDestroy {
   loginChanged = new BehaviorSubject<UserInfo | null>(this.getInitialUserState())
   errorStatusChanged = new Subject<AuthError>()
+  sessionExpiryWarning$ = new BehaviorSubject<boolean>(false);
   
   private sessionCheckInterval: number | null = null;
   private authStateUnsubscribe: (() => void) | null = null;
   private activityMonitorInterval: number | null = null;
   private lastActivityTime: number = Date.now();
+  private inactivityTimer: number | null = null;
+  private warningTimer: number | null = null;
+  private warningShown = false;
+  
+  // Inactivity timeouts (30 minutes before warning, 60 seconds warning)
+  private readonly INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+  private readonly WARNING_TIMEOUT = 60 * 1000; // 60 seconds
 
   constructor(private auth: AngularFireAuth, private router: Router, private cookieService: CookieService) {
     this.initializeAuthStateMonitor();
     this.setupActivityMonitoring();
+    this.startInactivityMonitoring();
   }
 
   private getInitialUserState(): UserInfo | null {
@@ -91,6 +100,8 @@ export class AuthService implements OnDestroy {
     this.cookieService.delete('userData')
     this.cookieService.delete('adminState')
     this.clearSessionMonitoring();
+    this.clearInactivityTimers();
+    this.sessionExpiryWarning$.next(false);
   }
 
   /**
@@ -108,6 +119,7 @@ export class AuthService implements OnDestroy {
           }
         }
         this.startSessionMonitoring();
+        this.resetInactivityTimer();
       } else {
         // User is signed out
         if (this.loginChanged.value) {
@@ -207,8 +219,82 @@ export class AuthService implements OnDestroy {
     ['click', 'keypress', 'mousemove', 'scroll', 'touchstart'].forEach(event => {
       document.addEventListener(event, () => {
         this.lastActivityTime = Date.now();
+        this.resetInactivityTimer();
       });
     });
+  }
+
+  /**
+   * Start inactivity monitoring for auth session
+   */
+  private startInactivityMonitoring(): void {
+    if (this.loginChanged.value) {
+      this.resetInactivityTimer();
+    }
+  }
+
+  /**
+   * Reset inactivity timer
+   */
+  private resetInactivityTimer(): void {
+    // Clear existing timers
+    this.clearInactivityTimers();
+    
+    // Only set timer if user is logged in
+    if (!this.loginChanged.value) return;
+    
+    // Set 30-minute inactivity timer
+    this.inactivityTimer = window.setTimeout(() => {
+      this.showInactivityWarning();
+    }, this.INACTIVITY_TIMEOUT);
+  }
+
+  /**
+   * Show inactivity warning modal
+   */
+  private showInactivityWarning(): void {
+    this.warningShown = true;
+    this.sessionExpiryWarning$.next(true);
+    
+    // Set 60-second warning timer
+    this.warningTimer = window.setTimeout(() => {
+      this.handleInactivityTimeout();
+    }, this.WARNING_TIMEOUT);
+  }
+
+  /**
+   * Handle inactivity timeout (auto-logout)
+   */
+  private handleInactivityTimeout(): void {
+    this.sessionExpiryWarning$.next(false);
+    this.warningShown = false;
+    this.logOut();
+  }
+
+  /**
+   * Extend auth session when user responds to warning
+   */
+  extendAuthSession(): void {
+    this.sessionExpiryWarning$.next(false);
+    this.warningShown = false;
+    this.clearInactivityTimers();
+    this.refreshSession();
+    this.resetInactivityTimer();
+  }
+
+  /**
+   * Clear all inactivity timers
+   */
+  private clearInactivityTimers(): void {
+    if (this.inactivityTimer) {
+      clearTimeout(this.inactivityTimer);
+      this.inactivityTimer = null;
+    }
+    
+    if (this.warningTimer) {
+      clearTimeout(this.warningTimer);
+      this.warningTimer = null;
+    }
   }
 
   ngOnDestroy(): void {
@@ -216,5 +302,6 @@ export class AuthService implements OnDestroy {
       this.authStateUnsubscribe();
     }
     this.clearSessionMonitoring();
+    this.clearInactivityTimers();
   }
 }
