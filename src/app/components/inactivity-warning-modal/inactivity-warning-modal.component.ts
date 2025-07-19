@@ -1,14 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, combineLatest } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faExclamationTriangle, faClock, faStop, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faClock, faStop, faTimes, faCheck, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { ProgressService } from '../../services/progress.service';
+import { AuthService } from '../../services/auth.service';
 
 /**
- * Inactivity warning modal component
- * Shows when user has been inactive for 10 minutes during a tracked session
- * Auto-closes tracking if user doesn't respond within 60 seconds
+ * Generic inactivity warning modal component
+ * Shows when:
+ * 1. User has been inactive for 10 minutes during a tracked session
+ * 2. Auth session is about to expire due to inactivity
+ * Auto-closes tracking/logs out if user doesn't respond within 60 seconds
  */
 @Component({
   selector: 'app-inactivity-warning-modal',
@@ -20,17 +23,23 @@ import { ProgressService } from '../../services/progress.service';
 export class InactivityWarningModalComponent implements OnInit, OnDestroy {
   isVisible = false;
   countdown = 60;
+  modalType: 'progress' | 'auth' = 'progress';
   
   // FontAwesome icons
   faExclamationTriangle = faExclamationTriangle;
   faClock = faClock;
   faStop = faStop;
   faTimes = faTimes;
+  faCheck = faCheck;
+  faSignOut = faSignOutAlt;
   
   private destroy$ = new Subject<void>();
   private countdownInterval: number | null = null;
 
-  constructor(private progressService: ProgressService) {}
+  constructor(
+    private progressService: ProgressService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.setupInactivityWarningListener();
@@ -43,17 +52,26 @@ export class InactivityWarningModalComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Setup inactivity warning listener
+   * Setup inactivity warning listener for both progress and auth
    */
   private setupInactivityWarningListener(): void {
-    this.progressService.inactivityWarning$
+    // Listen to both progress and auth inactivity warnings
+    combineLatest([
+      this.progressService.inactivityWarning$,
+      this.authService.sessionExpiryWarning$
+    ])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(showWarning => {
-        this.isVisible = showWarning;
-        
-        if (showWarning) {
+      .subscribe(([progressWarning, authWarning]) => {
+        if (progressWarning) {
+          this.isVisible = true;
+          this.modalType = 'progress';
+          this.startCountdown();
+        } else if (authWarning) {
+          this.isVisible = true;
+          this.modalType = 'auth';
           this.startCountdown();
         } else {
+          this.isVisible = false;
           this.clearCountdown();
         }
       });
@@ -89,7 +107,11 @@ export class InactivityWarningModalComponent implements OnInit, OnDestroy {
    * Handle extend session button click
    */
   onExtendSession(): void {
-    this.progressService.extendSession();
+    if (this.modalType === 'progress') {
+      this.progressService.extendSession();
+    } else {
+      this.authService.extendAuthSession();
+    }
   }
 
   /**
@@ -100,10 +122,22 @@ export class InactivityWarningModalComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Handle logout button click
+   */
+  onLogout(): void {
+    this.authService.logOut();
+  }
+
+  /**
    * Handle dismiss modal (continue without tracking, close modal)
    */
   onDismiss(): void {
-    this.progressService.dismissInactivityWarning();
+    if (this.modalType === 'progress') {
+      this.progressService.dismissInactivityWarning();
+    } else {
+      // For auth, dismissing means logging out
+      this.authService.logOut();
+    }
   }
 
   /**
