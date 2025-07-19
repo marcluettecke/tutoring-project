@@ -10,6 +10,7 @@ import {ResultModalComponent} from '../../components/result-modal/result-modal.c
 import {TestCardComponent} from '../../components/test-card/test-card.component';
 import {TimerComponent} from '../../components/timer/timer.component';
 import {ErrorSnackbarComponent} from '../../components/error-snackbar/error-snackbar.component';
+import {ExamConfiguration} from '../../models/exam-configuration.model';
 
 @Component({
              selector: 'app-test',
@@ -38,6 +39,14 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Check if we have a custom configuration
+    const customConfig = this.testService.getCustomConfiguration();
+    if (!customConfig) {
+      // If no custom configuration, redirect to configuration page
+      this.router.navigate(['/exam-configuration']);
+      return;
+    }
+    
     // Reset test service to clear any previous state
     this.testService.resetAllAnswers();
     
@@ -47,6 +56,8 @@ export class TestComponent implements OnInit, OnDestroy {
     this.questionSubscription = this.questionsService.getQuestions().subscribe(questions => {
                                                                                  this.questions = questions
                                                                                  this.filterQuestions()
+                                                                                 // Automatically start the test after loading questions
+                                                                                 this.testService.handleTestStart()
                                                                                },
                                                                                error => {
                                                                                  this.errorMessage = error
@@ -58,7 +69,17 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   filterQuestions() {
+    const customConfig = this.testService.getCustomConfiguration();
+    
+    if (customConfig) {
+      this.filterQuestionsWithCustomConfig(customConfig);
+    } else {
+      // Fallback to default filtering
+      this.filterQuestionsDefault();
+    }
+  }
 
+  private filterQuestionsDefault() {
     for (const mainSection of ['administrativo', 'medio ambiente', 'costas', 'aguas']) {
       const questionPerSection = this.questions.filter(el => el.mainSection === mainSection)
       // find how many questions per mainSection exist
@@ -73,6 +94,89 @@ export class TestComponent implements OnInit, OnDestroy {
         this.filteredQuestions.push(questionPerSection[index])
       }
     }
+  }
+
+  private filterQuestionsWithCustomConfig(config: ExamConfiguration) {
+    // Always use custom distribution since each section has its own question count
+    this.selectCustomDistributionQuestions(this.questions, config);
+
+    // Update test service with actual question counts per section
+    const actualCounts: { [key: string]: number } = {};
+    this.filteredQuestions.forEach(q => {
+      actualCounts[q.mainSection] = (actualCounts[q.mainSection] || 0) + 1;
+    });
+
+    Object.keys(actualCounts).forEach(section => {
+      this.testService.updateCustomQuestionCount(section, actualCounts[section]);
+    });
+  }
+
+  private calculateTotalAvailableQuestions(config: ExamConfiguration): number {
+    const counted = new Set<string>();
+    let total = 0;
+
+    config.selections.forEach(selection => {
+      const questions = this.questions.filter(q => {
+        if (q.mainSection !== selection.mainSection) return false;
+        
+        if (selection.subsections && selection.subsections.length > 0) {
+          return selection.subsections.includes(q.subSection || '');
+        }
+        return true;
+      });
+
+      questions.forEach(q => {
+        if (!counted.has(q.id)) {
+          counted.add(q.id);
+          total++;
+        }
+      });
+    });
+
+    return total;
+  }
+
+  private selectProportionalQuestions(questions: Question[], config: ExamConfiguration, totalNeeded: number) {
+    // Shuffle all questions
+    const shuffled = [...questions].sort(() => Math.random() - 0.5);
+    
+    // Take the required number
+    this.filteredQuestions = shuffled.slice(0, totalNeeded);
+  }
+
+  private selectCustomDistributionQuestions(questions: Question[], config: ExamConfiguration) {
+    this.filteredQuestions = []; // Clear any existing questions
+    
+    config.selections.forEach(selection => {
+      const sectionQuestions = questions.filter(q => {
+        if (q.mainSection !== selection.mainSection) return false;
+        
+        if (selection.subsections && selection.subsections.length > 0) {
+          return selection.subsections.includes(q.subSection || '');
+        }
+        return true;
+      });
+
+      // Determine how many questions to select
+      let questionsToSelect = sectionQuestions.length; // Default to all
+      if (selection.questionCount !== undefined) {
+        questionsToSelect = selection.questionCount;
+      }
+
+      // Shuffle and take the specified count
+      const shuffled = [...sectionQuestions].sort(() => Math.random() - 0.5);
+      const selected = shuffled.slice(0, questionsToSelect);
+      
+      this.filteredQuestions.push(...selected);
+    });
+
+    // Remove any duplicates
+    const uniqueIds = new Set<string>();
+    this.filteredQuestions = this.filteredQuestions.filter(q => {
+      if (uniqueIds.has(q.id)) return false;
+      uniqueIds.add(q.id);
+      return true;
+    });
   }
 
   openModal() {
@@ -111,13 +215,21 @@ export class TestComponent implements OnInit, OnDestroy {
    */
   onContinueTest() {
     this.modalOpen = false;
-    // Navigate back to home to select new test
-    this.router.navigate(['/home']);
+    // Clear custom configuration
+    this.testService.clearCustomConfiguration();
+    // Navigate to exam configuration to select new test
+    this.router.navigate(['/exam-configuration']);
   }
 
   ngOnDestroy() {
-    this.questionSubscription.unsubscribe()
-    this.testStatusSubscription.unsubscribe()
+    if (this.questionSubscription) {
+      this.questionSubscription.unsubscribe();
+    }
+    if (this.testStatusSubscription) {
+      this.testStatusSubscription.unsubscribe();
+    }
+    // Clear custom configuration when leaving test
+    this.testService.clearCustomConfiguration();
   }
 
 }
