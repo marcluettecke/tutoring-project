@@ -369,7 +369,13 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * @returns Array of section keys
    */
   get sectionsInOrder(): string[] {
-    return ['administrativo', 'medio ambiente', 'costas', 'aguas', 'total'];
+    // Get all sections from correctAnswers except 'total'
+    const sections = Object.keys(this.correctAnswers)
+      .filter(key => key !== 'total')
+      .sort(); // Sort alphabetically or you can define custom order
+    
+    // Add 'total' at the end
+    return [...sections, 'total'];
   }
 
   /**
