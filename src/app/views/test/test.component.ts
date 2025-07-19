@@ -38,6 +38,9 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Reset test service to clear any previous state
+    this.testService.resetAllAnswers();
+    
     // Get current user ID from auth service
     this.currentUserId = this.authService.loginChanged.value?.uid || null;
     
