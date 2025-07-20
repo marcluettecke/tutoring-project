@@ -242,7 +242,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * @returns Formatted session duration
    */
   get sessionDuration(): string {
-    if (!this.progressSession) return '0:00';
+    if (!this.progressSession) return '-';
     const totalSeconds = Math.floor(this.progressSession.timeElapsed / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -891,7 +891,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * @returns Formatted time string
    */
   formatTimeSpent(timeMs: number): string {
-    if (timeMs === 0) return '0s';
+    if (timeMs === 0) return '-';
     const totalSeconds = Math.floor(timeMs / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -908,7 +908,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * @returns Formatted average time string
    */
   formatAverageTimePerQuestion(section: SectionProgressData): string {
-    if (section.questionsAnswered === 0) return '0s';
+    if (section.questionsAnswered === 0) return '-';
     const averageMs = section.timeSpent / section.questionsAnswered;
     const averageSeconds = Math.floor(averageMs / 1000);
     return `${averageSeconds}s`;
@@ -957,7 +957,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * @returns Formatted time string
    */
   formatTime(timeMs: number): string {
-    if (timeMs === 0) return '0s';
+    if (timeMs === 0) return '-';
     const totalSeconds = Math.floor(timeMs / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
