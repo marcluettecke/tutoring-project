@@ -30,6 +30,7 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
   currentUserId: string | null = null;
   showSessionSummary = false;
   lastSession: CurrentSessionProgress | null = null;
+  isPausedForModal = false; // Track if we're paused just for showing the modal
   
   // FontAwesome icons
   faChartLine = faChartLine;
@@ -117,22 +118,73 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
       if (currentSession && currentSession.questionsAnswered > 0) {
         this.lastSession = currentSession;
         this.showSessionSummary = true;
+        this.isPausedForModal = true; // Remember we're just paused for modal
+        // Temporarily pause tracking but don't update UI state yet
+        // The UI will update based on user's choice in the modal
+        await this.progressService.stopTracking();
+      } else {
+        // No session data, just stop tracking
+        await this.progressService.stopTracking();
       }
-      await this.progressService.stopTracking();
-      
-      // Reset all questions when stopping tracking for a clean slate
-      this.testService.resetAllAnswers();
     } else {
       this.showSessionSummary = false;
-      this.progressService.startTracking(this.currentUserId);
+      // When starting fresh tracking, always reset to ensure clean state
+      this.testService.resetAllAnswers();
+      this.progressService.startTracking(this.currentUserId, false); // false = don't preserve answers (already reset)
     }
   }
 
   /**
-   * Close session summary
+   * Handle modal close (X button or outside click)
+   * This truly ends the session and clears all state
    */
-  closeSummary(): void {
+  handleModalClose(): void {
     this.showSessionSummary = false;
+    this.lastSession = null;
+    this.isPausedForModal = false;
+    
+    // End the session completely and clear all state
+    if (this.currentUserId) {
+      this.progressService.endTrackingSession();
+      // Clear all answered questions since user chose to close without saving
+      this.testService.resetAllAnswers();
+    }
+  }
+
+  /**
+   * Handle retry button click
+   * Starts a new session with cleared answers
+   */
+  handleModalRetry(): void {
+    this.showSessionSummary = false;
+    this.lastSession = null;
+    this.isPausedForModal = false;
+    
+    if (this.currentUserId) {
+      // End the current session completely
+      this.progressService.endTrackingSession();
+      // Reset answers for retry
+      this.testService.resetAllAnswers();
+      // Start fresh tracking session
+      this.progressService.startTracking(this.currentUserId, false);
+    }
+  }
+
+  /**
+   * Handle continue button click
+   * Resumes the existing session
+   */
+  handleModalContinue(): void {
+    this.showSessionSummary = false;
+    this.isPausedForModal = false;
+    
+    if (this.currentUserId) {
+      // Just resume tracking - don't start a new session
+      // The session is already paused, we just need to re-enable tracking
+      this.progressService.resumeTracking();
+      
+    }
+    
     this.lastSession = null;
   }
 
@@ -144,7 +196,7 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
     
     // If tracking is enabled, also reset the current session
     if (this.isTrackingEnabled && this.currentUserId) {
-      this.progressService.startTracking(this.currentUserId);
+      this.progressService.startTracking(this.currentUserId, false); // false = don't preserve answers (already reset)
     }
   }
 

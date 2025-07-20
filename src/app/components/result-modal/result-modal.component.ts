@@ -301,7 +301,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * Closes the modal and allows user to continue with their tracking session
    */
   continueSession(): void {
-    this.onCloseClick.emit();
+    this.onContinueClick.emit();
   }
 
   /**

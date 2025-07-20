@@ -10,7 +10,7 @@
     
     <button 
       class="progress-toggle-btn"
-      [class.recording]="isTrackingEnabled"
+      [class.recording]="isTrackingEnabled || isPausedForModal"
       (click)="toggleTracking()"
       [title]="tooltipText"
       aria-label="Toggle progress tracking">
@@ -20,7 +20,7 @@
       <div class="toggle-icon">
         <fa-icon [icon]="faChartLine"></fa-icon>
       </div>
-      <div class="toggle-text">{{ toggleText }}</div>
+      <div class="toggle-text">{{ isPausedForModal ? 'Seguimiento ON' : toggleText }}</div>
     </button>
   </div>
 }
@@ -32,8 +32,8 @@
     [currentSubsection]="lastSession.subSection || ''"
     [isProgressTracking]="true"
     [progressSession]="lastSession"
-    (onCloseClick)="closeSummary()"
-    (onRetryClick)="closeSummary()"
-    (onContinueClick)="closeSummary()">
+    (onCloseClick)="handleModalClose()"
+    (onRetryClick)="handleModalRetry()"
+    (onContinueClick)="handleModalContinue()">
   </app-result-modal>
 }
