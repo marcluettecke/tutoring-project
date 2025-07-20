@@ -99,7 +99,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
     if (this.progressSession.questionsAnswered > 0 &&
       (!this.progressSession.sectionBreakdown || this.progressSession.sectionBreakdown.length === 0)) {
       this.progressSession.sectionBreakdown = [{
-        sectionName: this.progressSession.mainSection || 'mixed',
+        sectionName: this.progressSession.mainSection || 'Varias',
         subSection: this.progressSession.subSection,
         questionsAnswered: this.progressSession.questionsAnswered,
         correctAnswers: this.progressSession.correctAnswers,
@@ -153,7 +153,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
         userId: this.userId,
         timestamp: Date.now(),
         mode: this.isProgressTracking ? 'practice' : 'test',
-        mainSection: this.currentSection || 'mixed',
+        mainSection: this.currentSection || 'Varias',
         subSection: this.currentSubsection,
         questionsAnswered: this.correctAnswers.total.correct + this.correctAnswers.total.incorrect,
         correctAnswers: this.correctAnswers.total.correct,
@@ -820,7 +820,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
         userId: this.userId || '',
         timestamp: Date.now(),
         mode: 'test',
-        mainSection: this.currentSection || 'mixed',
+        mainSection: this.currentSection || 'Varias',
         subSection: this.currentSubsection,
         questionsAnswered: total.correct + total.incorrect,
         correctAnswers: total.correct,

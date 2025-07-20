@@ -162,7 +162,7 @@ describe('ResultModalComponent', () => {
         timeElapsed: 300000,
         isActive: false,
         startTime: Date.now() - 300000,
-        mainSection: 'mixed',
+        mainSection: 'Varias',
         mode: 'practice',
         currentStreak: 0,
         longestStreak: 2,

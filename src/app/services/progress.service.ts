@@ -72,7 +72,7 @@ export class ProgressService {
       incorrectAnswers: 0,
       timeElapsed: 0,
       isActive: true,
-      mainSection: 'mixed', // Use 'mixed' to indicate multiple sections will be tracked
+      mainSection: 'Varias', // Use 'Varias' to indicate multiple sections will be tracked
       subSection: undefined,
       currentStreak: 0,
       longestStreak: 0,
