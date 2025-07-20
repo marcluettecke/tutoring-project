@@ -9,24 +9,28 @@ export interface SectionColor {
 
 export const SECTION_COLORS: Record<string, SectionColor> = {
   'administrativo': {
-    backgroundColor: 'rgba(54, 162, 235, 0.8)',  // Blue
-    borderColor: 'rgba(54, 162, 235, 1)'
-  },
-  'medio ambiente': {
-    backgroundColor: 'rgba(75, 192, 192, 0.8)',  // Teal/Green
-    borderColor: 'rgba(75, 192, 192, 1)'
-  },
-  'costas': {
     backgroundColor: 'rgba(255, 206, 86, 0.8)',  // Yellow
     borderColor: 'rgba(255, 206, 86, 1)'
   },
-  'aguas': {
-    backgroundColor: 'rgba(153, 102, 255, 0.8)', // Purple
-    borderColor: 'rgba(153, 102, 255, 1)'
+  'medio ambiente': {
+    backgroundColor: 'rgba(75, 192, 192, 0.8)',  // Green
+    borderColor: 'rgba(75, 192, 192, 1)'
   },
-  'varias': {
+  'costas': {
     backgroundColor: 'rgba(255, 159, 64, 0.8)',  // Orange
     borderColor: 'rgba(255, 159, 64, 1)'
+  },
+  'aguas': {
+    backgroundColor: 'rgba(54, 162, 235, 0.8)', // Blue
+    borderColor: 'rgba(54, 162, 235, 1)'
+  },
+  'total': {
+    backgroundColor: 'rgba(255, 99, 132, 0.8)',  // Red
+    borderColor: 'rgba(255, 99, 132, 1)'
+  },
+  'varias': {
+    backgroundColor: 'rgba(255, 99, 132, 0.8)',  // Red (same as total)
+    borderColor: 'rgba(255, 99, 132, 1)'
   }
 };
 
