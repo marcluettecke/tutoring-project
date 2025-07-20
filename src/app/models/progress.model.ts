@@ -150,6 +150,7 @@ export interface CurrentSessionProgress {
   mode: 'practice' | 'test';
   currentQuestionIndex?: number;
   sectionBreakdown: SectionProgressData[];
+  lastAnswerTimestamp?: number;
 }
 
 /**

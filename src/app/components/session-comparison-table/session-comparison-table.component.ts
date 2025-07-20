@@ -44,6 +44,9 @@ export class SessionComparisonTableComponent {
   faArrowDown = faArrowDown;
   faArrowRight = faArrowRight;
   faChartLine = faChartLine;
+  
+  // Expose Math to template
+  Math = Math;
 
   // Inputs
   @Input() session1: TestSession | null = null;

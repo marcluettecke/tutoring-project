@@ -109,8 +109,22 @@ export class SideNavComponent implements OnInit, OnDestroy {
    * Auto-select the first subsection of the first section if no section is currently active
    */
   private autoSelectFirstSubsection(): void {
-    // Only auto-select if no section is currently active (empty string or falsy)
-    if ((!this.activeSection?.mainSection || this.activeSection.mainSection.trim() === '') && this.mainSections.length > 0) {
+    // If we have an active section with content, ensure it's expanded
+    if (this.activeSection?.mainSection && this.activeSection.mainSection.trim() !== '') {
+      const mainSectionIndex = this.mainSections.indexOf(this.activeSection.mainSection);
+      if (mainSectionIndex >= 0) {
+        // Clear all expansions first
+        Object.keys(this.isExpanded).forEach(key => {
+          this.isExpanded[parseInt(key)] = false;
+        });
+        // Expand the active section
+        this.isExpanded[mainSectionIndex] = true;
+      }
+      return;
+    }
+    
+    // Only auto-select if no section is currently active
+    if (this.mainSections.length > 0) {
       const firstMainSection = this.mainSections[0];
       const firstSubsections = this.sections[firstMainSection];
       

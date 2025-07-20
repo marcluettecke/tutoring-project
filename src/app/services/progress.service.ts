@@ -32,6 +32,8 @@ export class ProgressService {
 
   private readonly INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
   private readonly WARNING_TIMEOUT = 60 * 1000; // 60 seconds in milliseconds
+  private readonly SESSION_STATE_KEY = 'progressSessionState';
+  private readonly SESSION_STATE_MAX_AGE = 12 * 60 * 60 * 1000; // 12 hours
 
   constructor(
     private firestore: Firestore,
@@ -83,6 +85,7 @@ export class ProgressService {
     };
 
     this.currentSessionSubject.next(currentProgress);
+    this.saveSessionState();
   }
 
   /**
@@ -103,6 +106,7 @@ export class ProgressService {
     
     localStorage.removeItem('progressTrackingEnabled');
     localStorage.removeItem('progressTrackingUserId');
+    this.clearSessionState();
   }
 
   /**
@@ -124,6 +128,14 @@ export class ProgressService {
     if (isEnabled && userId) {
       this.currentUserId = userId;
       this.isTrackingEnabledSubject.next(true);
+      
+      // Restore session state if available
+      const restoredSession = this.restoreSessionState();
+      if (restoredSession) {
+        this.currentSessionSubject.next(restoredSession);
+        this.lastAnswerTimestamp = restoredSession.lastAnswerTimestamp || null;
+      }
+      
       this.startInactivityMonitoring();
     }
   }
@@ -246,6 +258,7 @@ export class ProgressService {
       };
       
       this.currentSessionSubject.next(endedSession);
+      this.saveSessionState();
       
       // Don't automatically save sessions - only save when user explicitly clicks save
       // Session ended without auto-saving: User can manually save if desired
@@ -379,6 +392,7 @@ export class ProgressService {
     };
 
     this.currentSessionSubject.next(updatedProgress);
+    this.saveSessionState();
 
     // Update Firebase session document
     const sessionRef = doc(this.firestore, 'userProgress', userId, 'sessions', sessionId);
@@ -466,6 +480,7 @@ export class ProgressService {
 
     // Clear current session
     this.currentSessionSubject.next(null);
+    this.clearSessionState();
 
     return summary;
   }
@@ -538,6 +553,7 @@ export class ProgressService {
     };
 
     this.currentSessionSubject.next(updatedProgress);
+    this.saveSessionState();
     this.resetInactivityTimer();
   }
 
@@ -598,6 +614,7 @@ export class ProgressService {
     };
 
     this.currentSessionSubject.next(updatedProgress);
+    this.saveSessionState();
     this.resetInactivityTimer();
   }
 
@@ -848,6 +865,7 @@ export class ProgressService {
    */
   updateSessionProgress(sessionProgress: CurrentSessionProgress): void {
     this.currentSessionSubject.next(sessionProgress);
+    this.saveSessionState();
   }
 
   /**
@@ -940,5 +958,64 @@ export class ProgressService {
     }
 
     return recommendations;
+  }
+
+  /**
+   * Save current session state to localStorage
+   */
+  private saveSessionState(): void {
+    const currentSession = this.currentSessionSubject.value;
+    if (!currentSession) return;
+    
+    try {
+      const stateToSave = {
+        session: currentSession,
+        lastAnswerTimestamp: this.lastAnswerTimestamp,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(this.SESSION_STATE_KEY, JSON.stringify(stateToSave));
+    } catch {
+      // Error saving session state
+    }
+  }
+
+  /**
+   * Restore session state from localStorage
+   */
+  private restoreSessionState(): CurrentSessionProgress | null {
+    try {
+      const savedState = localStorage.getItem(this.SESSION_STATE_KEY);
+      if (savedState) {
+        const parsed = JSON.parse(savedState);
+        
+        // Check if state is too old
+        if (Date.now() - parsed.timestamp > this.SESSION_STATE_MAX_AGE) {
+          localStorage.removeItem(this.SESSION_STATE_KEY);
+          return null;
+        }
+        
+        // Update time elapsed based on saved timestamp
+        const session = parsed.session;
+        if (session && session.isActive) {
+          session.timeElapsed = Date.now() - session.startTime;
+          this.lastAnswerTimestamp = parsed.lastAnswerTimestamp || null;
+          return session;
+        }
+      }
+    } catch {
+      // Error restoring session state
+    }
+    return null;
+  }
+
+  /**
+   * Clear saved session state from localStorage
+   */
+  private clearSessionState(): void {
+    try {
+      localStorage.removeItem(this.SESSION_STATE_KEY);
+    } catch {
+      // Error clearing session state
+    }
   }
 }

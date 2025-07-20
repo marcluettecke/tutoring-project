@@ -29,29 +29,29 @@ describe('HomeComponent', () => {
   });
 
   describe('Initialization', () => {
-    it('should reset test service on init', () => {
-      component.ngOnInit();
+    it('should update active section when changing sections', () => {
+      const newSection = {
+        mainSection: 'test',
+        subSection: 'subtest',
+        mainSectionNumber: 1,
+        subSectionNumber: 2
+      };
+      
+      component.changeData(newSection);
 
-      expect(mockTestService.resetAllAnswers).toHaveBeenCalled();
+      expect(component.activeSection).toEqual(newSection);
+      expect(mockQuestionService.getSpecificQuestions).toHaveBeenCalledWith('test', 'subtest');
     });
 
-    it('should reset test service before any other operations', () => {
-      const callOrder: string[] = [];
+    it('should not reset test service on init to preserve state', () => {
+      // Mock localStorage to prevent errors
+      vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
       
-      mockTestService.resetAllAnswers.mockImplementation(() => {
-        callOrder.push('resetAllAnswers');
-      });
-
-      mockQuestionService.getSpecificQuestions.mockImplementation(() => {
-        callOrder.push('getSpecificQuestions');
-        return of([]);
-      });
-
       component.ngOnInit();
-      component.updateData();
 
-      // Verify reset happens first
-      expect(callOrder[0]).toBe('resetAllAnswers');
+      expect(mockTestService.resetAllAnswers).not.toHaveBeenCalled();
+      
+      vi.restoreAllMocks();
     });
   });
 
