@@ -322,9 +322,9 @@
         (click)="saveAndClose()">
         <fa-icon [icon]="faCheck"></fa-icon>
         @if (selectedSession && selectedSessionId !== 'current') {
-          <span>Guardar sesión actual y continuar</span>
+          <span>Guardar sesión actual y finalizar</span>
         } @else {
-          <span>Guardar y continuar</span>
+          <span>Guardar y finalizar</span>
         }
       </button>
     } @else {
@@ -339,9 +339,9 @@
       <button class="btn btn-success" (click)="saveTestAndClose()">
         <fa-icon [icon]="faCheck"></fa-icon>
         @if (selectedSession && selectedSessionId !== 'current') {
-          <span>Guardar examen actual y continuar</span>
+          <span>Guardar examen actual y finalizar</span>
         } @else {
-          <span>Guardar y continuar</span>
+          <span>Guardar y finalizar</span>
         }
       </button>
     }
