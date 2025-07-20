@@ -362,7 +362,7 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Apply standard exam preset with official distribution
+   * Apply standard exam preset with most frequent distribution
    */
   applyStandardExamPreset(): void {
     // Clear existing selections

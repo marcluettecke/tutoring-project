@@ -111,7 +111,6 @@
         font-size: 1.3rem;
       }
 
-
       p {
         margin: 0 0 0.75rem 0;
         color: #6b7280;
@@ -162,23 +161,25 @@
   color: #6b7280;
   font-style: italic;
   position: relative;
-
+  padding: 0 20px; // Add horizontal padding to create space for the text
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
   &:before,
   &:after {
     content: '';
-    position: absolute;
-    top: 50%;
-    width: calc(50% - 120px);
+    flex: 1;
     height: 1px;
     background: #e0e0e0;
   }
 
   &:before {
-    left: 0;
+    margin-right: 20px; // Space between line and text
   }
 
   &:after {
-    right: 0;
+    margin-left: 20px; // Space between text and line
   }
 }
 
