@@ -75,7 +75,7 @@ describe('Sections Constants', () => {
           'Ley 40/2015',
           'LCSP',
           'EBEP',
-          'Igualdad, Violencia de Género y Dependencia',
+          'Leyes de Derechos Sociales',
           'Unión Europea',
           'Otros',
         ];

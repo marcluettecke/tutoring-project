@@ -7,7 +7,7 @@ export const SUBSECTIONS = {
     {name: 'Ley 40/2015', index: 3},
     {name: 'LCSP', index: 4},
     {name: 'EBEP', index: 5},
-    {name: 'Igualdad, Violencia de Género y Dependencia', index: 6},
+    {name: 'Leyes de Derechos Sociales', index: 6},
     {name: 'Unión Europea', index: 7},
     {name: 'Otros', index: 8},
   ],
