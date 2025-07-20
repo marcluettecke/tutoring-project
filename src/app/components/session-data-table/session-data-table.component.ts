@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChartBar } from '@fortawesome/free-solid-svg-icons';
 import { TestSession, SectionProgressData } from '../../models/progress.model';
+import { formatSpanishPercentage, formatTime } from '../../utils/number-format.utils';
 
 @Component({
   selector: 'app-session-data-table',
@@ -58,9 +59,7 @@ export class SessionDataTableComponent {
    * Format time spent
    */
   formatTimeSpent(timeInMs: number): string {
-    const minutes = Math.floor(timeInMs / 60000);
-    const seconds = Math.floor((timeInMs % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return formatTime(timeInMs);
   }
 
   /**
@@ -70,5 +69,12 @@ export class SessionDataTableComponent {
     if (section.questionsAnswered === 0) return '0:00';
     const avgTimeMs = section.timeSpent / section.questionsAnswered;
     return this.formatTimeSpent(avgTimeMs);
+  }
+  
+  /**
+   * Format percentage to Spanish locale
+   */
+  formatSpanishPercentage(value: number, decimals: number = 1): string {
+    return formatSpanishPercentage(value, decimals);
   }
 }

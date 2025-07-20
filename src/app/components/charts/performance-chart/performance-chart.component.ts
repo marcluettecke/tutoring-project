@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ChartConfiguration } from 'chart.js';
 import { BaseChartComponent } from '../base-chart/base-chart.component';
 import { SectionProgressData } from '../../../models/progress.model';
+import { formatSpanishPercentage } from '../../../utils/number-format.utils';
 
 @Component({
   selector: 'app-performance-chart',
@@ -133,7 +134,7 @@ export class PerformanceChartComponent implements OnChanges {
                 const total = correctData[context.dataIndex] + 
                             incorrectData[context.dataIndex] + 
                             blankData[context.dataIndex];
-                const percentage = total > 0 ? ((context.parsed.y / total) * 100).toFixed(1) : '0.0';
+                const percentage = total > 0 ? formatSpanishPercentage((context.parsed.y / total) * 100, 1) : formatSpanishPercentage(0, 1);
                 return `${context.dataset.label}: ${context.parsed.y} (${percentage}%)`;
               }
             }
@@ -204,7 +205,7 @@ export class PerformanceChartComponent implements OnChanges {
             callbacks: {
               label: (context) => {
                 const total = totals.correct + totals.incorrect + totals.blank;
-                const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : '0.0';
+                const percentage = total > 0 ? formatSpanishPercentage((context.parsed / total) * 100, 1) : formatSpanishPercentage(0, 1);
                 return `${context.label}: ${context.parsed} (${percentage}%)`;
               }
             }

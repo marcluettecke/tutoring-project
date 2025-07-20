@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ChartConfiguration, ChartDataset } from 'chart.js';
 import { BaseChartComponent } from '../base-chart/base-chart.component';
 import { SectionProgressData } from '../../../models/progress.model';
+import { formatSpanishNumber, formatSpanishPercentage } from '../../../utils/number-format.utils';
 
 @Component({
   selector: 'app-time-chart',
@@ -157,7 +158,7 @@ export class TimeChartComponent implements OnChanges {
                 } else {
                   // Average time per question
                   const avgSeconds = this.calculateAvgTimePerQuestion(sectionData);
-                  return `Promedio por pregunta: ${avgSeconds.toFixed(1)}s`;
+                  return `Promedio por pregunta: ${formatSpanishNumber(avgSeconds, 1)}s`;
                 }
               }
             }
@@ -243,9 +244,9 @@ export class TimeChartComponent implements OnChanges {
                 const dataIndex = context.dataIndex;
                 const sectionData = this.data[dataIndex];
                 const timeInMinutes = this.convertToMinutes(sectionData.timeSpent || 0);
-                const percentage = totalTime > 0 ? ((sectionData.timeSpent || 0) / totalTime * 100).toFixed(1) : '0.0';
+                const percentage = totalTime > 0 ? formatSpanishPercentage((sectionData.timeSpent || 0) / totalTime * 100, 1) : formatSpanishPercentage(0, 1);
                 return [
-                  `${context.label}: ${timeInMinutes.toFixed(1)} min (${percentage}%)`,
+                  `${context.label}: ${formatSpanishNumber(timeInMinutes, 1)} min (${percentage})`,
                   `Preguntas: ${sectionData.questionsAnswered}`
                 ];
               }

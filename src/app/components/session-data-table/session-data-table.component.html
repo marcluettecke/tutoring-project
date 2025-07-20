@@ -34,7 +34,7 @@
               </td>
               <td class="accuracy-rate">
                 <span class="accuracy-badge" [class]="getSectionAccuracyLevel(section)">
-                  {{ getSectionAccuracy(section).toFixed(1) }}%
+                  {{ formatSpanishPercentage(getSectionAccuracy(section), 1) }}
                 </span>
               </td>
               <td class="time-total">{{ formatTimeSpent(section.timeSpent) }}</td>

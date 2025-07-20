@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTable, faCheck, faTimes, faArrowUp, faArrowDown, faArrowRight, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { TestSession } from '../../models/progress.model';
+import { formatSpanishNumber, formatSpanishPercentage, formatTime } from '../../utils/number-format.utils';
 
 export interface SessionComparisonMetrics {
   questionsAnswered: {
@@ -103,9 +104,21 @@ export class SessionComparisonTableComponent {
    * Format time in milliseconds to readable format
    */
   formatTime(timeInMs: number): string {
-    const minutes = Math.floor(timeInMs / 60000);
-    const seconds = Math.floor((timeInMs % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return formatTime(timeInMs);
+  }
+  
+  /**
+   * Format number to Spanish locale
+   */
+  formatSpanishNumber(value: number, decimals: number = 2): string {
+    return formatSpanishNumber(value, decimals);
+  }
+  
+  /**
+   * Format percentage to Spanish locale
+   */
+  formatSpanishPercentage(value: number, decimals: number = 1): string {
+    return formatSpanishPercentage(value, decimals);
   }
 
   /**

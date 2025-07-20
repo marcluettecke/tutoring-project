@@ -34,22 +34,22 @@
             <div class="overall-score" [class]="getSectionPerformanceLevel('total')">
               <div class="score-circle">
                 @if (selectedSession && selectedSessionId !== 'current' && comparisonMode === 'individual') {
-                  <div class="score-value">{{ (selectedSession.testScore || selectedSession.score || 0).toFixed(2) }}</div>
+                  <div class="score-value">{{ formatSpanishNumber(selectedSession.testScore || selectedSession.score || 0, 2) }}</div>
                   <div class="score-label">Puntuación del examen</div>
                   <div class="score-explanation">({{ formatSessionForDropdown(selectedSession) }})</div>
                 } @else {
-                  <div class="score-value">{{ overallScore.toFixed(2) }}</div>
+                  <div class="score-value">{{ formatSpanishNumber(overallScore, 2) }}</div>
                   <div class="score-label">Puntuación del examen</div>
-                  <div class="score-explanation">(Correcto: +1, Incorrecto: -0.33)</div>
+                  <div class="score-explanation">(Correcto: +1, Incorrecto: -0,33)</div>
                 }
               </div>
               <div class="accuracy-display">
                 @if (selectedSession && selectedSessionId !== 'current' && comparisonMode === 'individual') {
-                  <div class="accuracy-value">{{ getHistoricalAccuracy().toFixed(2) }}%</div>
+                  <div class="accuracy-value">{{ formatSpanishPercentage(getHistoricalAccuracy(), 2) }}</div>
                   <div class="accuracy-label">Precisión</div>
                   <div class="accuracy-explanation">({{ selectedSession.correctAnswers }}/{{ selectedSession.questionsAnswered }} correctas)</div>
                 } @else {
-                  <div class="accuracy-value">{{ overallAccuracy.toFixed(2) }}%</div>
+                  <div class="accuracy-value">{{ formatSpanishPercentage(overallAccuracy, 2) }}</div>
                   <div class="accuracy-label">Precisión</div>
                   <div class="accuracy-explanation">({{ correctAnswers.total.correct || 0 }}/{{ (correctAnswers.total.correct || 0) + (correctAnswers.total.incorrect || 0) }} correctas)</div>
                 }
@@ -132,7 +132,7 @@
                         </td>
                         <td class="accuracy-rate">
                           <span class="accuracy-badge" [class]="getSectionAccuracyLevel(section)">
-                            {{ getSectionAccuracy(section).toFixed(1) }}%
+                            {{ formatSpanishPercentage(getSectionAccuracy(section), 1) }}
                           </span>
                         </td>
                         <td class="time-total">{{ formatTimeSpent(section.timeSpent) }}</td>
@@ -235,7 +235,7 @@
                 <span class="count-badge blank">{{ selectedSession.blankAnswers || 0 }}</span>
               </td>
               <td class="score-value">
-                <strong>{{ (selectedSession.testScore || selectedSession.score || 0).toFixed(2) }}</strong>
+                <strong>{{ formatSpanishNumber(selectedSession.testScore || selectedSession.score || 0, 2) }}</strong>
               </td>
               <td class="status-indicator">
                 @if (getHistoricalAccuracy() >= 85) {
@@ -264,7 +264,7 @@
                   <span class="count-badge blank">{{ correctAnswers[section].blank }}</span>
                 </td>
                 <td class="score-value">
-                  <strong>{{ (correctAnswers[section].correct - (0.33 * correctAnswers[section].incorrect)).toFixed(2) }}</strong>
+                  <strong>{{ formatSpanishNumber(correctAnswers[section].correct - (0.33 * correctAnswers[section].incorrect), 2) }}</strong>
                 </td>
                 <td class="status-indicator">
                   @if (getSectionPerformanceLevel(section) === 'excellent') {

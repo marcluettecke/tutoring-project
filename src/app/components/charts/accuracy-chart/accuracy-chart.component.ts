@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ChartConfiguration, ChartDataset } from 'chart.js';
 import { BaseChartComponent } from '../base-chart/base-chart.component';
 import { SectionProgressData } from '../../../models/progress.model';
+import { formatSpanishPercentage } from '../../../utils/number-format.utils';
+import { getSectionBackgroundColors, getSectionBorderColors } from '../../../constants/chart-colors';
 
 @Component({
   selector: 'app-accuracy-chart',
@@ -90,25 +92,14 @@ export class AccuracyChartComponent implements OnChanges {
   private generateBarChart() {
     const labels = this.data.map(item => this.getSectionDisplayName(item.sectionName));
     const accuracyData = this.data.map(item => this.calculateAccuracy(item));
+    const sectionNames = this.data.map(item => item.sectionName);
 
     const datasets: ChartDataset<'bar', number[]>[] = [
       {
         label: 'Precisión (%)',
         data: accuracyData,
-        backgroundColor: [
-          'rgba(54, 162, 235, 0.8)',
-          'rgba(75, 192, 192, 0.8)', 
-          'rgba(255, 206, 86, 0.8)',
-          'rgba(153, 102, 255, 0.8)',
-          'rgba(255, 99, 132, 0.8)'
-        ],
-        borderColor: [
-          'rgba(54, 162, 235, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(255, 206, 86, 1)', 
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 99, 132, 1)'
-        ],
+        backgroundColor: getSectionBackgroundColors(sectionNames),
+        borderColor: getSectionBorderColors(sectionNames),
         borderWidth: 2,
         borderRadius: 4,
         borderSkipped: false
@@ -150,12 +141,12 @@ export class AccuracyChartComponent implements OnChanges {
                 const sectionData = this.data[dataIndex];
                 if (sectionData) {
                   return [
-                    `${context.dataset.label}: ${context.parsed.y.toFixed(1)}%`,
+                    `${context.dataset.label}: ${formatSpanishPercentage(context.parsed.y, 1)}`,
                     `Correctas: ${sectionData.correctAnswers}`,
                     `Total: ${sectionData.questionsAnswered}`
                   ];
                 }
-                return `${context.dataset.label}: ${context.parsed.y.toFixed(1)}%`;
+                return `${context.dataset.label}: ${formatSpanishPercentage(context.parsed.y, 1)}`;
               }
             }
           }
@@ -195,6 +186,7 @@ export class AccuracyChartComponent implements OnChanges {
     // Regular section-based pie chart
     const labels = this.data.map(item => this.getSectionDisplayName(item.sectionName));
     const accuracyData = this.data.map(item => this.calculateAccuracy(item));
+    const sectionNames = this.data.map(item => item.sectionName);
 
     this.chartConfig = {
       type: 'pie',
@@ -203,20 +195,8 @@ export class AccuracyChartComponent implements OnChanges {
         datasets: [
           {
             data: accuracyData,
-            backgroundColor: [
-              'rgba(54, 162, 235, 0.8)',
-              'rgba(75, 192, 192, 0.8)', 
-              'rgba(255, 206, 86, 0.8)',
-              'rgba(153, 102, 255, 0.8)',
-              'rgba(255, 99, 132, 0.8)'
-            ],
-            borderColor: [
-              'rgba(54, 162, 235, 1)',
-              'rgba(75, 192, 192, 1)',
-              'rgba(255, 206, 86, 1)', 
-              'rgba(153, 102, 255, 1)',
-              'rgba(255, 99, 132, 1)'
-            ],
+            backgroundColor: getSectionBackgroundColors(sectionNames),
+            borderColor: getSectionBorderColors(sectionNames),
             borderWidth: 2
           }
         ]
@@ -236,12 +216,12 @@ export class AccuracyChartComponent implements OnChanges {
                 const sectionData = this.data[dataIndex];
                 if (sectionData) {
                   return [
-                    `${context.label}: ${context.parsed.toFixed(1)}%`,
+                    `${context.label}: ${formatSpanishPercentage(context.parsed, 1)}`,
                     `Correctas: ${sectionData.correctAnswers}`,
                     `Total: ${sectionData.questionsAnswered}`
                   ];
                 }
-                return `${context.label}: ${context.parsed.toFixed(1)}%`;
+                return `${context.label}: ${formatSpanishPercentage(context.parsed, 1)}`;
               }
             }
           }
@@ -287,7 +267,7 @@ export class AccuracyChartComponent implements OnChanges {
             callbacks: {
               label: (context) => {
                 const value = context.parsed;
-                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+                const percentage = total > 0 ? formatSpanishPercentage((value / total) * 100, 1) : formatSpanishPercentage(0, 1);
                 return [
                   `${context.label}: ${value}`,
                   `Porcentaje: ${percentage}%`

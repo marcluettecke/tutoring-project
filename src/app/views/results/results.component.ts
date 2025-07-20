@@ -12,6 +12,7 @@ import { SessionDataTableComponent } from '../../components/session-data-table/s
 import { SessionComparisonTableComponent } from '../../components/session-comparison-table/session-comparison-table.component';
 import { ChartsContainerComponent } from '../../components/charts/charts-container/charts-container.component';
 import { ChartDataService } from '../../services/chart-data.service';
+import { formatSpanishNumber, formatSpanishPercentage } from '../../utils/number-format.utils';
 
 @Component({
   selector: 'app-results',
@@ -325,5 +326,19 @@ export class ResultsComponent implements OnInit, OnDestroy {
    */
   getChartDataForSession(session: TestSession): SectionProgressData[] {
     return this.chartDataService.convertSessionToChartData(session);
+  }
+
+  /**
+   * Format number to Spanish locale
+   */
+  formatSpanishNumber(value: number, decimals: number = 2): string {
+    return formatSpanishNumber(value, decimals);
+  }
+
+  /**
+   * Format percentage to Spanish locale
+   */
+  formatSpanishPercentage(value: number, decimals: number = 1): string {
+    return formatSpanishPercentage(value, decimals);
   }
 }

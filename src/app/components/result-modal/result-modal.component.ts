@@ -10,6 +10,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChartBar, faTable, faArrowUp, faArrowDown, faArrowRight, faCheck, faTimes, faChartLine, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { SessionComparisonTableComponent } from '../session-comparison-table/session-comparison-table.component';
 import { ChartsContainerComponent } from '../charts/charts-container/charts-container.component';
+import { formatSpanishNumber, formatSpanishPercentage } from '../../utils/number-format.utils';
 
 /**
  * Enhanced result modal component with modern styling and session comparison
@@ -153,7 +154,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
         userId: this.userId,
         timestamp: Date.now(),
         mode: this.isProgressTracking ? 'practice' : 'test',
-        mainSection: this.currentSection || 'Varias',
+        mainSection: this.isProgressTracking ? (this.currentSection || 'Varias') : this.determineMainSection(),
         subSection: this.currentSubsection,
         questionsAnswered: this.correctAnswers.total.correct + this.correctAnswers.total.incorrect,
         correctAnswers: this.correctAnswers.total.correct,
@@ -820,7 +821,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
         userId: this.userId || '',
         timestamp: Date.now(),
         mode: 'test',
-        mainSection: this.currentSection || 'Varias',
+        mainSection: this.determineMainSection(),
         subSection: this.currentSubsection,
         questionsAnswered: total.correct + total.incorrect,
         correctAnswers: total.correct,
@@ -972,6 +973,44 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    */
   get Math() {
     return Math;
+  }
+
+  /**
+   * Format number to Spanish locale
+   */
+  formatSpanishNumber(value: number, decimals: number = 2): string {
+    return formatSpanishNumber(value, decimals);
+  }
+
+  /**
+   * Format percentage to Spanish locale
+   */
+  formatSpanishPercentage(value: number, decimals: number = 1): string {
+    return formatSpanishPercentage(value, decimals);
+  }
+
+  /**
+   * Determine the main section based on answers
+   * Returns the section name if all answers are from one section, or 'Varias' if mixed
+   */
+  private determineMainSection(): string {
+    if (!this.correctAnswers) return 'Varias';
+    
+    // Get all sections that have questions answered (excluding 'total')
+    const sectionsWithAnswers = Object.keys(this.correctAnswers)
+      .filter(section => section !== 'total' && this.correctAnswers[section])
+      .filter(section => {
+        const sectionData = this.correctAnswers[section];
+        return (sectionData.correct + sectionData.incorrect) > 0;
+      });
+    
+    // If answers come from exactly one section, return that section name
+    if (sectionsWithAnswers.length === 1) {
+      return sectionsWithAnswers[0];
+    }
+    
+    // If answers come from multiple sections or no sections, return 'Varias'
+    return 'Varias';
   }
 
   /**

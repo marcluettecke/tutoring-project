@@ -78,9 +78,9 @@
                 <p><strong>Preguntas respondidas:</strong> {{ selectedSession1.questionsAnswered }}</p>
                 <p><strong>Respuestas correctas:</strong> {{ selectedSession1.correctAnswers }}</p>
                 <p><strong>Respuestas incorrectas:</strong> {{ selectedSession1.incorrectAnswers }}</p>
-                <p><strong>Precisión:</strong> {{ getSessionAccuracy(selectedSession1).toFixed(1) }}%</p>
+                <p><strong>Precisión:</strong> {{ formatSpanishPercentage(getSessionAccuracy(selectedSession1), 1) }}</p>
                 @if (selectedSession1.testScore !== undefined) {
-                  <p><strong>Puntuación:</strong> {{ selectedSession1.testScore.toFixed(2) }}</p>
+                  <p><strong>Puntuación:</strong> {{ formatSpanishNumber(selectedSession1.testScore, 2) }}</p>
                 }
               </div>
               
