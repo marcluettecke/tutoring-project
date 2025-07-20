@@ -42,21 +42,21 @@ import { ChartDataService } from '../../../services/chart-data.service';
                 @if (selectedStatistic === 'accuracy') {
                   <app-accuracy-chart
                     [data]="currentData"
-                    [title]="'Precisión por Sección'"
+                    [title]="'Precisión por sección'"
                     [chartType]="selectedVisualization"
                     [height]="'400px'">
                   </app-accuracy-chart>
                 } @else if (selectedStatistic === 'performance') {
                   <app-performance-chart
                     [data]="currentData"
-                    [title]="'Distribución de Respuestas'"
+                    [title]="'Distribución de respuestas'"
                     [chartType]="selectedVisualization"
                     [height]="'400px'">
                   </app-performance-chart>
                 } @else if (selectedStatistic === 'time') {
                   <app-time-chart
                     [data]="currentData"
-                    [title]="'Tiempo por Sección'"
+                    [title]="'Tiempo por sección'"
                     [chartType]="selectedVisualization"
                     [height]="'400px'">
                   </app-time-chart>
@@ -70,21 +70,21 @@ import { ChartDataService } from '../../../services/chart-data.service';
                 @if (selectedStatistic === 'accuracy') {
                   <app-accuracy-chart
                     [data]="selectedData"
-                    [title]="'Precisión por Sección'"
+                    [title]="'Precisión por sección'"
                     [chartType]="selectedVisualization"
                     [height]="'400px'">
                   </app-accuracy-chart>
                 } @else if (selectedStatistic === 'performance') {
                   <app-performance-chart
                     [data]="selectedData"
-                    [title]="'Distribución de Respuestas'"
+                    [title]="'Distribución de respuestas'"
                     [chartType]="selectedVisualization"
                     [height]="'400px'">
                   </app-performance-chart>
                 } @else if (selectedStatistic === 'time') {
                   <app-time-chart
                     [data]="selectedData"
-                    [title]="'Tiempo por Sección'"
+                    [title]="'Tiempo por sección'"
                     [chartType]="selectedVisualization"
                     [height]="'400px'">
                   </app-time-chart>

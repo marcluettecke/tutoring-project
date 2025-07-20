@@ -17,7 +17,7 @@
       @if (groupByMode) {
         <!-- Grouped by mode -->
         @if (practicesSessions.length > 0) {
-          <optgroup label="Sesiones de Práctica">
+          <optgroup label="Sesiones de práctica">
             @for (session of practicesSessions; track session.id) {
               <option [value]="session.id">{{ formatSessionForDropdown(session) }}</option>
             }
