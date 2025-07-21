@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { TestService } from './test.service';
 import { QUESTIONWEIGHTS } from '../views/test/constants';
+import { Question } from '../models/question.model';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('TestService', () => {
@@ -28,11 +29,9 @@ describe('TestService', () => {
     expect(service.correctAnswers.total.incorrect).toBe(0);
   });
 
-  it('should provide initial empty test status', (done) => {
-    service.testStatus.subscribe(status => {
-      expect(status).toBe('');
-      done();
-    });
+  it('should provide initial empty test status', () => {
+    const initialStatus = service.testStatus.getValue();
+    expect(initialStatus).toBe('');
   });
 
   it('should update test status when test starts and ends', () => {
@@ -47,16 +46,25 @@ describe('TestService', () => {
   });
 
   it('should update counts when answer is clicked', () => {
-    const mockQuestion = {
+    const mockQuestion: Question = {
       id: 'q1',
-      question: 'Test question',
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 'A',
-      mainSection: 'administrativo'
+      questionText: 'Test question',
+      questionIndex: 0,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'a',
+      explanation: 'Test explanation',
+      mainSection: 'administrativo',
+      subSection: 'general',
+      subSectionIndex: 0
     };
 
     // First click - correct answer
-    service.addClickedAnswer(mockQuestion, 'A', true, false);
+    service.addClickedAnswer(mockQuestion, 'a', true, false);
     
     expect(service.correctAnswers.total.correct).toBe(1);
     expect(service.correctAnswers.total.blank).toBe(99);
@@ -65,16 +73,25 @@ describe('TestService', () => {
 
   it('should reset all answers', () => {
     // Add some answers first
-    const mockQuestion = {
+    const mockQuestion: Question = {
       id: 'q1',
-      question: 'Test question',
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 'A',
-      mainSection: 'administrativo'
+      questionText: 'Test question',
+      questionIndex: 0,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'a',
+      explanation: 'Test explanation',
+      mainSection: 'administrativo',
+      subSection: 'general',
+      subSectionIndex: 0
     };
     
-    service.addClickedAnswer(mockQuestion, 'B', true, false);
-    service.saveQuestionAnswer('q1', 'B');
+    service.addClickedAnswer(mockQuestion, 'b', true, false);
+    service.saveQuestionAnswer('q1', 'b');
     
     // Reset
     service.resetAllAnswers();
@@ -87,15 +104,24 @@ describe('TestService', () => {
 
   describe('State Persistence', () => {
     it('should save state to localStorage', () => {
-      const mockQuestion = {
+      const mockQuestion: Question = {
         id: 'q1',
-        question: 'Test question',
-        options: ['A', 'B', 'C', 'D'],
-        correctAnswer: 'A',
-        mainSection: 'administrativo'
+        questionText: 'Test question',
+        questionIndex: 0,
+        answers: [
+          { id: 'a', text: 'A' },
+          { id: 'b', text: 'B' },
+          { id: 'c', text: 'C' },
+          { id: 'd', text: 'D' }
+        ],
+        correctAnswer: 'a',
+        explanation: 'Test explanation',
+        mainSection: 'administrativo',
+        subSection: 'general',
+        subSectionIndex: 0
       };
       
-      service.addClickedAnswer(mockQuestion, 'A', true, false);
+      service.addClickedAnswer(mockQuestion, 'a', true, false);
       
       const savedState = localStorage.getItem('testServiceState');
       expect(savedState).toBeTruthy();
@@ -262,16 +288,61 @@ describe('TestService', () => {
 
     it('should track only answered questions for partial test', () => {
       // Simulate answering only 3 questions
-      const questions = [
-        { id: 'q1', correctAnswer: 'A', mainSection: 'administrativo' },
-        { id: 'q2', correctAnswer: 'B', mainSection: 'medio ambiente' },
-        { id: 'q3', correctAnswer: 'C', mainSection: 'costas' }
+      const questions: Question[] = [
+        { 
+          id: 'q1', 
+          questionText: 'Test question 1',
+          questionIndex: 0,
+          answers: [
+            { id: 'a', text: 'A' },
+            { id: 'b', text: 'B' },
+            { id: 'c', text: 'C' },
+            { id: 'd', text: 'D' }
+          ],
+          correctAnswer: 'a', 
+          explanation: 'Test explanation',
+          mainSection: 'administrativo',
+          subSection: 'general',
+          subSectionIndex: 0
+        },
+        { 
+          id: 'q2',
+          questionText: 'Test question 2',
+          questionIndex: 1,
+          answers: [
+            { id: 'a', text: 'A' },
+            { id: 'b', text: 'B' },
+            { id: 'c', text: 'C' },
+            { id: 'd', text: 'D' }
+          ],
+          correctAnswer: 'b', 
+          explanation: 'Test explanation',
+          mainSection: 'medio ambiente',
+          subSection: 'general',
+          subSectionIndex: 0
+        },
+        { 
+          id: 'q3',
+          questionText: 'Test question 3',
+          questionIndex: 2,
+          answers: [
+            { id: 'a', text: 'A' },
+            { id: 'b', text: 'B' },
+            { id: 'c', text: 'C' },
+            { id: 'd', text: 'D' }
+          ],
+          correctAnswer: 'c',
+          explanation: 'Test explanation',
+          mainSection: 'costas',
+          subSection: 'general',
+          subSectionIndex: 0
+        }
       ];
 
       // Answer 2 correct, 1 incorrect
-      service.addClickedAnswer(questions[0], 'A', true, false); // correct
-      service.addClickedAnswer(questions[1], 'D', true, false); // incorrect
-      service.addClickedAnswer(questions[2], 'C', true, false); // correct
+      service.addClickedAnswer(questions[0], 'a', true, false); // correct
+      service.addClickedAnswer(questions[1], 'd', true, false); // incorrect
+      service.addClickedAnswer(questions[2], 'c', true, false); // correct
 
       // Check total answered questions
       const totalAnswered = service.correctAnswers.total.correct + service.correctAnswers.total.incorrect;
@@ -292,8 +363,23 @@ describe('TestService', () => {
 
     it('should handle resetAllAnswers correctly after partial test', () => {
       // Answer some questions
-      const question = { id: 'q1', correctAnswer: 'A', mainSection: 'administrativo' };
-      service.addClickedAnswer(question, 'A', true, false);
+      const question: Question = { 
+        id: 'q1',
+        questionText: 'Test question',
+        questionIndex: 0,
+        answers: [
+          { id: 'a', text: 'A' },
+          { id: 'b', text: 'B' },
+          { id: 'c', text: 'C' },
+          { id: 'd', text: 'D' }
+        ],
+        correctAnswer: 'a',
+        explanation: 'Test explanation',
+        mainSection: 'administrativo',
+        subSection: 'general',
+        subSectionIndex: 0
+      };
+      service.addClickedAnswer(question, 'a', true, false);
       
       // Verify state changed
       expect(service.correctAnswers.total.correct).toBe(1);
@@ -310,29 +396,38 @@ describe('TestService', () => {
   });
 
   describe('Answer Change Handling', () => {
-    const mockQuestion = {
+    const mockQuestion: Question = {
       id: 'q1',
-      question: 'Test question',
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 'A',
-      mainSection: 'administrativo'
+      questionText: 'Test question',
+      questionIndex: 0,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'a',
+      explanation: 'Test explanation',
+      mainSection: 'administrativo',
+      subSection: 'general',
+      subSectionIndex: 0
     };
 
     it('should handle changing from wrong to correct answer', () => {
       // First click - wrong answer
-      service.addClickedAnswer(mockQuestion, 'B', true, false);
+      service.addClickedAnswer(mockQuestion, 'b', true, false);
       expect(service.correctAnswers.total.incorrect).toBe(1);
       expect(service.correctAnswers.total.correct).toBe(0);
       
       // Change to correct answer
-      service.addClickedAnswer(mockQuestion, 'A', false, true);
+      service.addClickedAnswer(mockQuestion, 'a', false, true);
       expect(service.correctAnswers.total.incorrect).toBe(0);
       expect(service.correctAnswers.total.correct).toBe(1);
     });
 
     it('should handle changing from correct to wrong answer', () => {
       // First click - correct answer
-      service.addClickedAnswer(mockQuestion, 'A', true, false);
+      service.addClickedAnswer(mockQuestion, 'a', true, false);
       expect(service.correctAnswers.total.correct).toBe(1);
       expect(service.correctAnswers.total.incorrect).toBe(0);
       
@@ -344,7 +439,7 @@ describe('TestService', () => {
 
     it('should not change counts when selecting same wrong answer again', () => {
       // First click - wrong answer
-      service.addClickedAnswer(mockQuestion, 'B', true, false);
+      service.addClickedAnswer(mockQuestion, 'b', true, false);
       
       // Click same wrong answer again
       service.addClickedAnswer(mockQuestion, 'B', false, true);

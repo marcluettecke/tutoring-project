@@ -71,7 +71,8 @@ describe('ResultModalComponent', () => {
       // For each section, the displayed count should be correct + incorrect (not including blank)
       const sections = ['administrativo', 'medio ambiente', 'costas', 'aguas'];
       sections.forEach(section => {
-        const answered = testAnswers[section].correct + testAnswers[section].incorrect;
+        const sectionAnswers = testAnswers[section as keyof typeof testAnswers];
+        const answered = sectionAnswers.correct + sectionAnswers.incorrect;
         expect(answered).toBe(
           section === 'administrativo' ? 1 :
           section === 'medio ambiente' ? 1 :

@@ -33,7 +33,7 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
   faClock = faClock;
   
   private destroy$ = new Subject<void>();
-  private timeUpdateInterval: number | null = null;
+  private timeUpdateInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(
     private progressService: ProgressService,

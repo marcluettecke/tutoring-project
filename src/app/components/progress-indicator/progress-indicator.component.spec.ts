@@ -55,10 +55,8 @@ describe('ProgressIndicatorComponent', () => {
 
   describe('Visibility Rules', () => {
     const activeSession: CurrentSessionProgress = {
-      id: 'test-session',
-      userId: 'test-user',
+      sessionId: 'test-session',
       startTime: Date.now(),
-      lastActivityTime: Date.now(),
       mainSection: 'administrativo',
       isActive: true,
       questionsAnswered: 5,
@@ -66,7 +64,10 @@ describe('ProgressIndicatorComponent', () => {
       incorrectAnswers: 2,
       totalQuestions: 100,
       timeElapsed: 300000,
-      sectionBreakdown: []
+      sectionBreakdown: [],
+      currentStreak: 0,
+      longestStreak: 0,
+      mode: 'practice'
     };
 
     beforeEach(() => {
@@ -125,18 +126,19 @@ describe('ProgressIndicatorComponent', () => {
   describe('Session Progress', () => {
     it('should update session when receiving new data', () => {
       const session: CurrentSessionProgress = {
-        id: 'test-session',
-        userId: 'test-user',
-        startTime: Date.now(),
-        lastActivityTime: Date.now(),
-        mainSection: 'administrativo',
+        sessionId: 'test-session',
+          startTime: Date.now(),
+          mainSection: 'administrativo',
         isActive: true,
         questionsAnswered: 10,
         correctAnswers: 7,
         incorrectAnswers: 3,
         totalQuestions: 100,
         timeElapsed: 600000,
-        sectionBreakdown: []
+        sectionBreakdown: [],
+      currentStreak: 0,
+      longestStreak: 0,
+      mode: 'practice'
       };
 
       component.ngOnInit();
@@ -147,18 +149,19 @@ describe('ProgressIndicatorComponent', () => {
 
     it('should calculate accuracy percentage correctly', () => {
       const session: CurrentSessionProgress = {
-        id: 'test-session',
-        userId: 'test-user',
-        startTime: Date.now(),
-        lastActivityTime: Date.now(),
-        mainSection: 'administrativo',
+        sessionId: 'test-session',
+          startTime: Date.now(),
+          mainSection: 'administrativo',
         isActive: true,
         questionsAnswered: 20,
         correctAnswers: 15,
         incorrectAnswers: 5,
         totalQuestions: 100,
         timeElapsed: 1200000,
-        sectionBreakdown: []
+        sectionBreakdown: [],
+      currentStreak: 0,
+      longestStreak: 0,
+      mode: 'practice'
       };
 
       component.currentSession = session;
@@ -167,18 +170,19 @@ describe('ProgressIndicatorComponent', () => {
 
     it('should handle zero questions answered', () => {
       const session: CurrentSessionProgress = {
-        id: 'test-session',
-        userId: 'test-user',
-        startTime: Date.now(),
-        lastActivityTime: Date.now(),
-        mainSection: 'administrativo',
+        sessionId: 'test-session',
+          startTime: Date.now(),
+          mainSection: 'administrativo',
         isActive: true,
         questionsAnswered: 0,
         correctAnswers: 0,
         incorrectAnswers: 0,
         totalQuestions: 100,
         timeElapsed: 0,
-        sectionBreakdown: []
+        sectionBreakdown: [],
+      currentStreak: 0,
+      longestStreak: 0,
+      mode: 'practice'
       };
 
       component.currentSession = session;
@@ -189,18 +193,19 @@ describe('ProgressIndicatorComponent', () => {
   describe('Time Formatting', () => {
     it('should format elapsed time correctly', () => {
       const session: CurrentSessionProgress = {
-        id: 'test-session',
-        userId: 'test-user',
-        startTime: Date.now() - 125000, // 2 minutes 5 seconds ago
-        lastActivityTime: Date.now(),
-        mainSection: 'administrativo',
+        sessionId: 'test-session',
+          startTime: Date.now() - 125000, // 2 minutes 5 seconds ago
+          mainSection: 'administrativo',
         isActive: true,
         questionsAnswered: 5,
         correctAnswers: 3,
         incorrectAnswers: 2,
         totalQuestions: 100,
         timeElapsed: 125000,
-        sectionBreakdown: []
+        sectionBreakdown: [],
+      currentStreak: 0,
+      longestStreak: 0,
+      mode: 'practice'
       };
 
       // Mock getElapsedTime to return 125000ms (2:05)
