@@ -41,7 +41,7 @@ export interface ChartSelection {
       <div class="control-group">
         <label>Tipo:</label>
         <div class="visualization-buttons">
-          @for (viz of visualizationOptions; track viz.value) {
+          @for (viz of getAvailableVisualizations(); track viz.value) {
             <button
               type="button"
               class="viz-button"
@@ -183,9 +183,26 @@ export class ChartControlsComponent {
   }
 
   onSelectionChange() {
+    // Reset to bar chart if current visualization is not available for new statistic
+    const availableViz = this.getAvailableVisualizations();
+    if (!availableViz.find(v => v.value === this.selectedVisualization)) {
+      this.selectedVisualization = 'bar';
+    }
+    
     this.selectionChanged.emit({
       statistic: this.selectedStatistic,
       visualization: this.selectedVisualization
     });
+  }
+
+  getAvailableVisualizations() {
+    // Pie chart only makes sense for performance (distribution of answers)
+    // For accuracy and time, bar chart is better to show per-section breakdown
+    if (this.selectedStatistic === 'performance') {
+      return this.visualizationOptions;
+    } else {
+      // Only bar chart for accuracy and time metrics
+      return this.visualizationOptions.filter(v => v.value === 'bar');
+    }
   }
 }

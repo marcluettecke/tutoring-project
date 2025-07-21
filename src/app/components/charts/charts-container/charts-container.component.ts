@@ -51,7 +51,8 @@ import { ChartDataService } from '../../../services/chart-data.service';
                     [data]="currentData"
                     [title]="'Distribución de respuestas'"
                     [chartType]="selectedVisualization"
-                    [height]="'400px'">
+                    [height]="'400px'"
+                    [isProgressTracking]="isProgressTracking">
                   </app-performance-chart>
                 } @else if (selectedStatistic === 'time') {
                   <app-time-chart
@@ -79,7 +80,8 @@ import { ChartDataService } from '../../../services/chart-data.service';
                     [data]="selectedData"
                     [title]="'Distribución de respuestas'"
                     [chartType]="selectedVisualization"
-                    [height]="'400px'">
+                    [height]="'400px'"
+                    [isProgressTracking]="isProgressTracking">
                   </app-performance-chart>
                 } @else if (selectedStatistic === 'time') {
                   <app-time-chart
@@ -109,7 +111,8 @@ import { ChartDataService } from '../../../services/chart-data.service';
                 [title]="'Distribución de Respuestas'"
                 [subtitle]="getChartSubtitle()"
                 [chartType]="selectedVisualization"
-                [height]="'500px'">
+                [height]="'500px'"
+                [isProgressTracking]="isProgressTracking">
               </app-performance-chart>
             } @else if (selectedStatistic === 'time') {
               <app-time-chart
