@@ -255,6 +255,16 @@ export class ResultsComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get accuracy class for styling
+   */
+  getSessionAccuracyClass(session: TestSession): string {
+    const accuracy = this.getSessionAccuracy(session);
+    if (accuracy >= 85) return 'excellent';
+    if (accuracy >= 70) return 'good';
+    return 'needs-improvement';
+  }
+
+  /**
    * Check if session has empty breakdown
    */
   hasEmptyBreakdown(breakdown: SectionProgressData[]): boolean {

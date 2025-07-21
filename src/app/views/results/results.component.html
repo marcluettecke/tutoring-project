@@ -68,20 +68,61 @@
               <h3>Detalles de la sesión</h3>
               
               <!-- Session Summary -->
-              <div class="session-details">
-                <p><strong>Fecha:</strong> {{ selectedSession1.timestamp | date:'dd/MM/yyyy HH:mm' }}</p>
-                <p><strong>Tipo:</strong> {{ getSessionTypeText(selectedSession1) }}</p>
-                <p><strong>Sección:</strong> {{ selectedSession1.mainSection }}</p>
-                @if (selectedSession1.subSection) {
-                  <p><strong>Subsección:</strong> {{ selectedSession1.subSection }}</p>
-                }
-                <p><strong>Preguntas respondidas:</strong> {{ selectedSession1.questionsAnswered }}</p>
-                <p><strong>Respuestas correctas:</strong> {{ selectedSession1.correctAnswers }}</p>
-                <p><strong>Respuestas incorrectas:</strong> {{ selectedSession1.incorrectAnswers }}</p>
-                <p><strong>Precisión:</strong> {{ formatSpanishPercentage(getSessionAccuracy(selectedSession1), 1) }}</p>
-                @if (selectedSession1.testScore !== undefined) {
-                  <p><strong>Puntuación:</strong> {{ formatSpanishNumber(selectedSession1.testScore, 2) }}</p>
-                }
+              <div class="session-summary-table">
+                <table class="summary-table">
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Tipo</th>
+                      <th>Sección</th>
+                      @if (selectedSession1.subSection) {
+                        <th>Subsección</th>
+                      }
+                      <th>Preguntas</th>
+                      <th>Correctas</th>
+                      <th>Incorrectas</th>
+                      @if (selectedSession1.mode === 'test') {
+                        <th>En blanco</th>
+                      }
+                      <th>Precisión</th>
+                      @if (selectedSession1.testScore !== undefined) {
+                        <th>Puntuación</th>
+                      }
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ selectedSession1.timestamp | date:'dd/MM/yyyy HH:mm' }}</td>
+                      <td>{{ getSessionTypeText(selectedSession1) }}</td>
+                      <td>{{ selectedSession1.mainSection }}</td>
+                      @if (selectedSession1.subSection) {
+                        <td>{{ selectedSession1.subSection }}</td>
+                      }
+                      <td>{{ selectedSession1.questionsAnswered }}</td>
+                      <td>
+                        <span class="count-badge correct">{{ selectedSession1.correctAnswers }}</span>
+                      </td>
+                      <td>
+                        <span class="count-badge wrong">{{ selectedSession1.incorrectAnswers }}</span>
+                      </td>
+                      @if (selectedSession1.mode === 'test') {
+                        <td>
+                          <span class="count-badge blank">{{ selectedSession1.blankAnswers || 0 }}</span>
+                        </td>
+                      }
+                      <td>
+                        <span class="accuracy-badge" [class]="getSessionAccuracyClass(selectedSession1)">
+                          {{ formatSpanishPercentage(getSessionAccuracy(selectedSession1), 1) }}
+                        </span>
+                      </td>
+                      @if (selectedSession1.testScore !== undefined) {
+                        <td>
+                          <strong>{{ formatSpanishNumber(selectedSession1.testScore, 2) }}</strong>
+                        </td>
+                      }
+                    </tr>
+                  </tbody>
+                </table>
               </div>
               
               <!-- Session Data Table -->
