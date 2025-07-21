@@ -167,8 +167,8 @@ export class ChartControlsComponent {
   faList = faList;
 
   statisticOptions = [
-    { value: 'accuracy' as StatisticType, label: 'Precisión por sección' },
-    { value: 'performance' as StatisticType, label: 'Distribución de respuestas' },
+    { value: 'accuracy' as StatisticType, label: 'Resultados en %' },
+    { value: 'performance' as StatisticType, label: 'Resultados en respuestas totales' },
     { value: 'time' as StatisticType, label: 'Tiempo por sección' }
   ];
 
