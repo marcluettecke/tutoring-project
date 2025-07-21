@@ -25,6 +25,19 @@ export class SessionDataTableComponent {
   @Input() emptyStateDescription: string = 'No se respondieron preguntas durante esta sesión.';
 
   /**
+   * Format blank count based on session mode
+   * Shows "-" for practice sessions, actual count for test sessions
+   */
+  formatBlankCount(blankCount: number | undefined): string {
+    // If we have session info and it's a practice session, show dash
+    if (this.session && this.session.mode === 'practice') {
+      return '-';
+    }
+    // For test sessions or when no session info, show the actual count
+    return (blankCount || 0).toString();
+  }
+
+  /**
    * Get section display name
    */
   getSectionDisplayName(sectionName: string): string {
