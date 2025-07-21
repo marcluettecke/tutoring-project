@@ -7,7 +7,7 @@ import { ProgressService } from "../../services/progress.service";
 import { ChartDataService } from "../../services/chart-data.service";
 import { TestSession, TestServiceAnswers, CurrentSessionProgress, SectionProgressData, SectionProgressDataWithComparison } from '../../models/progress.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChartBar, faTable, faArrowUp, faArrowDown, faArrowRight, faCheck, faTimes, faChartLine, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faTable, faArrowUp, faArrowDown, faArrowRight, faCheck, faTimes, faChartLine, faPlay, faEye, faMinus, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { SessionComparisonTableComponent } from '../session-comparison-table/session-comparison-table.component';
 import { ChartsContainerComponent } from '../charts/charts-container/charts-container.component';
 import { formatSpanishNumber, formatSpanishPercentage } from '../../utils/number-format.utils';
@@ -27,6 +27,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
   @Output() onCloseClick: EventEmitter<void> = new EventEmitter();
   @Output() onRetryClick: EventEmitter<void> = new EventEmitter();
   @Output() onContinueClick: EventEmitter<void> = new EventEmitter();
+  @Output() onMinimizeChange: EventEmitter<boolean> = new EventEmitter();
 
   @Input() currentSection: string = '';
   @Input() currentSubsection: string = '';
@@ -41,6 +42,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
   showComparison = false;
   comparisonMode: 'individual' | 'compare' = 'individual';
   activeTab: 'data' | 'charts' = 'data';
+  isMinimized = false;
 
   faChartBar = faChartBar;
   faTable = faTable;
@@ -48,9 +50,12 @@ export class ResultModalComponent implements OnInit, OnDestroy {
   faArrowDown = faArrowDown;
   faArrowRight = faArrowRight;
   faCheck = faCheck;
+  faEye = faEye;
   faTimes = faTimes;
   faChartLine = faChartLine;
   faPlay = faPlay;
+  faMinus = faMinus;
+  faExpand = faExpand;
 
   private destroy$ = new Subject<void>();
 
@@ -1121,6 +1126,24 @@ export class ResultModalComponent implements OnInit, OnDestroy {
       }
     }
     this.handleCloseClick();
+  }
+
+  /**
+   * Review answers - allows users to check their answers
+   * Minimizes modal to show test with answers revealed
+   */
+  reviewAnswers(): void {
+    // Minimize the modal instead of closing it
+    this.isMinimized = true;
+    this.onMinimizeChange.emit(true);
+  }
+
+  /**
+   * Toggle minimize/maximize state of the modal
+   */
+  toggleMinimize(): void {
+    this.isMinimized = !this.isMinimized;
+    this.onMinimizeChange.emit(this.isMinimized);
   }
 
   /**

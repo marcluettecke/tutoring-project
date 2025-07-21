@@ -15,10 +15,12 @@ const TEST_TIME = 120 * 60
 export class TimerComponent implements OnInit, OnDestroy {
   testStatus = ''
   remainingTime: number = TEST_TIME
-  displayTime: string
+  displayTime: string = this.transform(TEST_TIME)
   obsTimer: Observable<number> = timer(1000, 1000)
   timerSubscription: Subscription
   testStatusSubscription: Subscription
+  isModalMinimized = false
+  modalMinimizedSubscription: Subscription
 
   constructor(private testService: TestService) {
   }
@@ -26,12 +28,36 @@ export class TimerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.testStatusSubscription = this.testService.testStatus.subscribe(status => {
       this.testStatus = status
+      
+      // Auto-start timer if test is already started (happens when coming from exam config)
+      if (status === 'started' && !this.timerSubscription) {
+        this.startTimer();
+      }
+    })
+    
+    // Subscribe to modal minimized state
+    this.modalMinimizedSubscription = this.testService.modalMinimized.subscribe(isMinimized => {
+      this.isModalMinimized = isMinimized
     })
   }
 
   startTest() {
     this.testService.handleTestStart()
+    this.startTimer();
+  }
+  
+  private startTimer() {
+    // Set status immediately to ensure timer works
+    this.testStatus = 'started'
+    // Initialize display time when starting
+    this.displayTime = this.transform(this.remainingTime)
+    
     this.timerSubscription = this.obsTimer.subscribe(_timeRun => {
+      // Don't decrease time if modal is minimized or test has ended
+      if (this.testStatus === 'ended' || this.isModalMinimized) {
+        return;
+      }
+      
       if (this.remainingTime !== 0) {
         this.remainingTime -= 1
         this.displayTime = this.transform(this.remainingTime)
@@ -44,7 +70,9 @@ export class TimerComponent implements OnInit, OnDestroy {
 
   submitTest() {
     this.testService.handleTestEnd()
-    this.timerSubscription.unsubscribe()
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe()
+    }
   }
 
   transform(value: number): string {
@@ -59,6 +87,9 @@ export class TimerComponent implements OnInit, OnDestroy {
     }
     if(this.testStatusSubscription) {
       this.testStatusSubscription.unsubscribe()
+    }
+    if(this.modalMinimizedSubscription) {
+      this.modalMinimizedSubscription.unsubscribe()
     }
   }
 

@@ -1,27 +1,32 @@
 @if (isVisible) {
   <div class="progress-toggle-container">
-    <button 
-      class="refresh-btn"
-      (click)="resetAllAnswers()"
-      title="Reiniciar todas las respuestas"
-      aria-label="Reset all answers">
-      <fa-icon [icon]="faSync"></fa-icon>
-    </button>
+    <div class="button-wrapper" [title]="(isTrackingEnabled || isPausedForModal || isModalMinimized) ? 'No se puede reiniciar durante el seguimiento' : 'Reiniciar todas las respuestas'">
+      <button 
+        class="refresh-btn"
+        (click)="resetAllAnswers()"
+        [disabled]="isTrackingEnabled || isPausedForModal || isModalMinimized"
+        aria-label="Reset all answers">
+        <fa-icon [icon]="faSync"></fa-icon>
+      </button>
+    </div>
     
-    <button 
-      class="progress-toggle-btn"
-      [class.recording]="isTrackingEnabled || isPausedForModal"
-      (click)="toggleTracking()"
-      [title]="tooltipText"
-      aria-label="Toggle progress tracking">
-      <div class="recording-indicator">
-        <div class="recording-dot"></div>
-      </div>
-      <div class="toggle-icon">
-        <fa-icon [icon]="faChartLine"></fa-icon>
-      </div>
-      <div class="toggle-text">{{ isPausedForModal ? 'Seguimiento ON' : toggleText }}</div>
-    </button>
+    <div class="button-wrapper" [title]="isModalMinimized ? 'Resume o cierra el modal primero' : tooltipText">
+      <button 
+        class="progress-toggle-btn"
+        [class.recording]="isTrackingEnabled || isPausedForModal"
+        [class.paused]="isModalMinimized"
+        [disabled]="isModalMinimized"
+        (click)="toggleTracking()"
+        aria-label="Toggle progress tracking">
+        <div class="recording-indicator">
+          <div class="recording-dot" [class.paused]="isModalMinimized"></div>
+        </div>
+        <div class="toggle-icon">
+          <fa-icon [icon]="faChartLine"></fa-icon>
+        </div>
+        <div class="toggle-text">{{ isModalMinimized ? 'Pausado' : (isPausedForModal ? 'Seguimiento ON' : toggleText) }}</div>
+      </button>
+    </div>
   </div>
 }
 
@@ -34,6 +39,7 @@
     [progressSession]="lastSession"
     (onCloseClick)="handleModalClose()"
     (onRetryClick)="handleModalRetry()"
-    (onContinueClick)="handleModalContinue()">
+    (onContinueClick)="handleModalContinue()"
+    (onMinimizeChange)="handleModalMinimizeChange($event)">
   </app-result-modal>
 }

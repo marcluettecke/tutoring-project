@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Question} from "../models/question.model";
-import {Subject} from "rxjs";
+import {Subject, BehaviorSubject} from "rxjs";
 import {QUESTIONWEIGHTS} from "../views/test/constants";
 import {ExamConfiguration} from "../models/exam-configuration.model";
 
@@ -19,8 +19,9 @@ interface CorrectAnswersState {
               providedIn: 'root'
             })
 export class TestService {
-  testStatus: Subject<string> = new Subject<string>()
+  testStatus: BehaviorSubject<string> = new BehaviorSubject<string>('')
   resetAnswers: Subject<void> = new Subject<void>()
+  modalMinimized: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   private readonly TEST_STATE_KEY = 'testServiceState';
   private readonly ANSWERED_QUESTIONS_KEY = 'answeredQuestions';
   private readonly CUSTOM_CONFIG_KEY = 'customExamConfiguration';
@@ -128,6 +129,13 @@ export class TestService {
    */
   handleTestEnd(): void {
     this.testStatus.next('ended');
+  }
+
+  /**
+   * Updates modal minimized state
+   */
+  setModalMinimized(isMinimized: boolean): void {
+    this.modalMinimized.next(isMinimized);
   }
 
   /**

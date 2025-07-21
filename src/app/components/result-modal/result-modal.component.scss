@@ -30,6 +30,10 @@
   backdrop-filter: blur(4px);
   z-index: 1000;
   @include utils.fade-in;
+  
+  &.minimized {
+    display: none;
+  }
 }
 
 // Main Modal Container
@@ -48,6 +52,32 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  
+  &.minimized {
+    top: auto;
+    bottom: 20px;
+    left: 20px;
+    transform: none;
+    width: 320px;
+    max-width: 320px;
+    max-height: 60px;
+    overflow: hidden;
+    
+    .modal-header {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding: 16px 50px 16px 20px;
+      height: 60px;
+      box-sizing: border-box;
+      
+      .result-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 1.25rem;
+      }
+    }
+  }
   font-family: 'PT Sans', sans-serif;
   @include utils.slide-in-up;
 
@@ -97,9 +127,33 @@
   padding: 32px 32px 0 32px;
   border-bottom: 1px solid var(--gray-200);
   margin-bottom: 24px;
+  position: relative;
 
   @include utils.mobile {
     padding: 20px 20px 0 20px;
+  }
+  
+  .minimize-button {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-size: 1.1rem;
+    
+    &:hover {
+      background: #f8f9fa;
+      color: #495057;
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
   }
 
   .result-title {
@@ -481,6 +535,29 @@
     }
     &.btn-secondary { @include utils.button-secondary; }
     &.btn-info { @include utils.button-info; }
+    
+    &.btn-primary { 
+      @include utils.button-base;
+      background: #007bff;
+      color: white;
+      
+      &:hover:not(:disabled) {
+        background: #0056b3;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+      }
+    }
+    
+    &.btn-outline-secondary {
+      background-color: transparent;
+      color: #6c757d;
+      border: 2px solid #6c757d;
+      
+      &:hover:not(:disabled) {
+        background-color: #6c757d;
+        color: white;
+      }
+    }
     
     &.disabled {
       opacity: 0.5;

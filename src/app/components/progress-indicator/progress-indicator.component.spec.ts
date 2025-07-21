@@ -25,7 +25,8 @@ describe('ProgressIndicatorComponent', () => {
     mockTestService = {
       correctAnswers: {
         total: { correct: 0, incorrect: 0, blank: 0 }
-      }
+      },
+      modalMinimized: new BehaviorSubject<boolean>(false)
     };
 
     mockRouter = {

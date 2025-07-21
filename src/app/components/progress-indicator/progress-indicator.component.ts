@@ -24,6 +24,7 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
   currentSession: CurrentSessionProgress | null = null;
   isVisible = false;
   isCollapsed = false;
+  isModalMinimized = false;
   
   // FontAwesome icons
   faCheck = faCheck;
@@ -44,6 +45,7 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
     this.setupProgressListener();
     this.setupTestServiceListener();
     this.setupRouteListener();
+    this.setupModalMinimizedListener();
     this.updateVisibility();
   }
 
@@ -89,6 +91,25 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         this.updateVisibility();
+      });
+  }
+
+  /**
+   * Setup modal minimized listener to pause time updates
+   */
+  private setupModalMinimizedListener(): void {
+    this.testService.modalMinimized
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isMinimized => {
+        this.isModalMinimized = isMinimized;
+        
+        if (isMinimized) {
+          // Pause time updates
+          this.clearTimeUpdateInterval();
+        } else if (this.isVisible) {
+          // Resume time updates
+          this.startTimeUpdateInterval();
+        }
       });
   }
 
@@ -147,7 +168,7 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
   get elapsedTimeText(): string {
     if (!this.currentSession) return '0:00';
     
-    const elapsed = Date.now() - this.currentSession.startTime;
+    const elapsed = this.progressService.getElapsedTime(this.currentSession.startTime);
     const minutes = Math.floor(elapsed / 60000);
     const seconds = Math.floor((elapsed % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;

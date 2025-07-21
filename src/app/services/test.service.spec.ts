@@ -28,6 +28,24 @@ describe('TestService', () => {
     expect(service.correctAnswers.total.incorrect).toBe(0);
   });
 
+  it('should provide initial empty test status', (done) => {
+    service.testStatus.subscribe(status => {
+      expect(status).toBe('');
+      done();
+    });
+  });
+
+  it('should update test status when test starts and ends', () => {
+    const statusChanges: string[] = [];
+    service.testStatus.subscribe(status => statusChanges.push(status));
+    
+    service.handleTestStart();
+    expect(statusChanges).toContain('started');
+    
+    service.handleTestEnd();
+    expect(statusChanges).toContain('ended');
+  });
+
   it('should update counts when answer is clicked', () => {
     const mockQuestion = {
       id: 'q1',

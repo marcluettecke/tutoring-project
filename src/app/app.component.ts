@@ -8,6 +8,7 @@ import { InactivityWarningModalComponent } from './components/inactivity-warning
 import { NavigationWarningModalComponent } from './components/navigation-warning-modal/navigation-warning-modal.component';
 import { ProgressService } from './services/progress.service';
 import { NavigationGuardService } from './services/navigation-guard.service';
+import { TestService } from './services/test.service';
 
 @Component({
   selector: 'app-root',
@@ -39,7 +40,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private progressService: ProgressService,
-    private navigationGuard: NavigationGuardService
+    private navigationGuard: NavigationGuardService,
+    private testService: TestService
   ) {}
 
   ngOnInit(): void {
@@ -92,5 +94,12 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   onCancelNavigation(): void {
     this.navigationGuard.handleCancelNavigation();
+  }
+
+  /**
+   * Handle modal minimized state change
+   */
+  onModalMinimizedChange(isMinimized: boolean): void {
+    this.testService.setModalMinimized(isMinimized);
   }
 }

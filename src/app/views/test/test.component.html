@@ -6,7 +6,8 @@
     [isProgressTracking]="false"
     (onCloseClick)="onModalClose()"
     (onRetryClick)="onRetryTest()"
-    (onContinueClick)="onContinueTest()">
+    (onContinueClick)="onContinueTest()"
+    (onMinimizeChange)="onModalMinimizedChange($event)">
   </app-result-modal>
 }
 <div class="wrapper">
@@ -18,14 +19,6 @@
       </app-test-card>
     }
 </div>
-@if (testStatus === 'ended') {
-  <button
-    type="button"
-    class="button"
-    (click)="openModal()">
-    Resultado abierto
-  </button>
-}
 <app-timer></app-timer>
 @if (errorMessage) {
   <app-error-snackbar [errorText]="errorMessage"></app-error-snackbar>

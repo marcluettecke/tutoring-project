@@ -29,6 +29,8 @@ export class ProgressService {
   private warningTimer: number | null = null;
   private lastActivityTime: number = 0;
   private lastAnswerTimestamp: number | null = null;
+  private pausedAt: number | null = null;
+  private totalPausedTime: number = 0;
 
   private readonly INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
   private readonly WARNING_TIMEOUT = 60 * 1000; // 60 seconds in milliseconds
@@ -60,6 +62,9 @@ export class ProgressService {
     if ((existingSession && existingSession.isActive) || (restoredSession && restoredSession.isActive)) {
       // Resume existing session
       if (restoredSession && !existingSession) {
+        // Reset pause tracking when resuming
+        this.pausedAt = null;
+        this.totalPausedTime = 0;
         this.currentSessionSubject.next(restoredSession);
         this.lastAnswerTimestamp = restoredSession.lastAnswerTimestamp || null;
       }
@@ -84,6 +89,10 @@ export class ProgressService {
    */
   private startBasicSession(userId: string): void {
     const sessionId = `${userId}_${Date.now()}`;
+    
+    // Reset pause tracking for new session
+    this.pausedAt = null;
+    this.totalPausedTime = 0;
     
     const currentProgress: CurrentSessionProgress = {
       sessionId,
@@ -115,6 +124,9 @@ export class ProgressService {
     this.isTrackingEnabledSubject.next(false);
     this.inactivityWarningSubject.next(false);
     
+    // Pause the timer when stopping tracking
+    this.pauseSessionTimer();
+    
     // Save current session state but keep it active for potential resume
     this.saveSessionState();
     
@@ -140,11 +152,15 @@ export class ProgressService {
     const restoredSession = this.restoreSessionState();
     if (restoredSession && restoredSession.isActive) {
       // Restore the session and continue
+      // Resume the timer properly (accumulating paused time)
+      this.resumeSessionTimer();
       this.currentSessionSubject.next(restoredSession);
       this.lastAnswerTimestamp = restoredSession.lastAnswerTimestamp || null;
     }
     
     // Resume with existing session - don't create a new one
+    // Make sure timer is resumed if not already
+    this.resumeSessionTimer();
     this.startInactivityMonitoring();
   }
 
@@ -192,6 +208,9 @@ export class ProgressService {
       if (restoredSession && restoredSession.isActive) {
         // Continue the existing active session
         this.isTrackingEnabledSubject.next(true);
+        // Reset pause tracking when resuming
+        this.pausedAt = null;
+        this.totalPausedTime = 0;
         this.currentSessionSubject.next(restoredSession);
         this.lastAnswerTimestamp = restoredSession.lastAnswerTimestamp || null;
         this.startInactivityMonitoring();
@@ -318,7 +337,7 @@ export class ProgressService {
       const endedSession: CurrentSessionProgress = {
         ...currentSession,
         isActive: false,
-        timeElapsed: Date.now() - currentSession.startTime
+        timeElapsed: this.getElapsedTime(currentSession.startTime)
       };
       
       this.currentSessionSubject.next(endedSession);
@@ -378,6 +397,10 @@ export class ProgressService {
     }
 
     const sessionId = `${userId}_${Date.now()}`;
+    
+    // Reset pause tracking for new session
+    this.pausedAt = null;
+    this.totalPausedTime = 0;
     
     const session: TestSession = {
       id: sessionId,
@@ -576,6 +599,33 @@ export class ProgressService {
   }
 
   /**
+   * Pause the session timer
+   */
+  pauseSessionTimer(): void {
+    if (!this.pausedAt) {
+      this.pausedAt = Date.now();
+    }
+  }
+
+  /**
+   * Resume the session timer
+   */
+  resumeSessionTimer(): void {
+    if (this.pausedAt) {
+      this.totalPausedTime += Date.now() - this.pausedAt;
+      this.pausedAt = null;
+    }
+  }
+
+  /**
+   * Get elapsed time accounting for pauses
+   */
+  getElapsedTime(startTime: number): number {
+    const now = this.pausedAt || Date.now();
+    return now - startTime - this.totalPausedTime;
+  }
+
+  /**
    * Update progress from TestService data
    * @param testServiceAnswers - Current answers from TestService
    */
@@ -612,7 +662,7 @@ export class ProgressService {
       questionsAnswered: testServiceAnswers.total.correct + testServiceAnswers.total.incorrect,
       correctAnswers: testServiceAnswers.total.correct,
       incorrectAnswers: testServiceAnswers.total.incorrect,
-      timeElapsed: Date.now() - currentSession.startTime,
+      timeElapsed: this.getElapsedTime(currentSession.startTime),
       sectionBreakdown: sectionBreakdown
     };
 
@@ -1061,7 +1111,7 @@ export class ProgressService {
         // Update time elapsed based on saved timestamp
         const session = parsed.session;
         if (session && session.isActive) {
-          session.timeElapsed = Date.now() - session.startTime;
+          session.timeElapsed = this.getElapsedTime(session.startTime);
           session.lastAnswerTimestamp = parsed.lastAnswerTimestamp;
           this.lastAnswerTimestamp = parsed.lastAnswerTimestamp || null;
           return session;

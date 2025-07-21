@@ -24,6 +24,7 @@ import { ResultModalComponent } from '../result-modal/result-modal.component';
 })
 export class ProgressToggleComponent implements OnInit, OnDestroy {
   @Output() sessionEnded = new EventEmitter<CurrentSessionProgress>();
+  @Output() modalMinimizedChange = new EventEmitter<boolean>();
   
   isTrackingEnabled = false;
   isVisible = true;
@@ -31,6 +32,7 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
   showSessionSummary = false;
   lastSession: CurrentSessionProgress | null = null;
   isPausedForModal = false; // Track if we're paused just for showing the modal
+  isModalMinimized = false;
   
   // FontAwesome icons
   faChartLine = faChartLine;
@@ -111,7 +113,7 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
    * Toggle progress tracking on/off
    */
   async toggleTracking(): Promise<void> {
-    if (!this.currentUserId) return;
+    if (!this.currentUserId || this.isModalMinimized) return;
 
     if (this.isTrackingEnabled) {
       const currentSession = this.progressService.getCurrentSessionProgress();
@@ -128,6 +130,8 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
       }
     } else {
       this.showSessionSummary = false;
+      // End any existing session before starting new one
+      this.progressService.endTrackingSession();
       // When starting fresh tracking, always reset to ensure clean state
       this.testService.resetAllAnswers();
       this.progressService.startTracking(this.currentUserId, false); // false = don't preserve answers (already reset)
@@ -142,6 +146,8 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
     this.showSessionSummary = false;
     this.lastSession = null;
     this.isPausedForModal = false;
+    this.isModalMinimized = false;
+    this.modalMinimizedChange.emit(false);
     
     // End the session completely and clear all state
     if (this.currentUserId) {
@@ -159,6 +165,8 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
     this.showSessionSummary = false;
     this.lastSession = null;
     this.isPausedForModal = false;
+    this.isModalMinimized = false;
+    this.modalMinimizedChange.emit(false);
     
     if (this.currentUserId) {
       // End the current session completely
@@ -177,6 +185,8 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
   handleModalContinue(): void {
     this.showSessionSummary = false;
     this.isPausedForModal = false;
+    this.isModalMinimized = false;
+    this.modalMinimizedChange.emit(false);
     
     if (this.currentUserId) {
       // Just resume tracking - don't start a new session
@@ -192,12 +202,12 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
    * Reset all answered questions to unanswered state
    */
   resetAllAnswers(): void {
-    this.testService.resetAllAnswers();
-    
-    // If tracking is enabled, also reset the current session
-    if (this.isTrackingEnabled && this.currentUserId) {
-      this.progressService.startTracking(this.currentUserId, false); // false = don't preserve answers (already reset)
+    // Don't allow reset during active tracking or when modal is minimized
+    if (this.isTrackingEnabled || this.isPausedForModal || this.isModalMinimized) {
+      return;
     }
+    
+    this.testService.resetAllAnswers();
   }
 
   /**
@@ -223,5 +233,28 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
     const minutes = Math.floor(milliseconds / 60000);
     const seconds = Math.floor((milliseconds % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  /**
+   * Handle modal minimize state change
+   */
+  handleModalMinimizeChange(isMinimized: boolean): void {
+    this.isModalMinimized = isMinimized;
+    this.modalMinimizedChange.emit(isMinimized);
+    
+    // Pause/resume session timer and inactivity monitoring
+    // Check if we're in paused modal state (isPausedForModal) instead of isTrackingEnabled
+    // because stopTracking() sets isTrackingEnabled to false
+    if (isMinimized && this.isPausedForModal) {
+      // Pause session timer
+      this.progressService.pauseSessionTimer();
+      // Clear inactivity timers while paused
+      this.progressService['clearInactivityTimers']();
+    } else if (!isMinimized && this.isPausedForModal) {
+      // Resume session timer
+      this.progressService.resumeSessionTimer();
+      // Resume inactivity monitoring
+      this.progressService['startInactivityMonitoring']();
+    }
   }
 }

@@ -1,11 +1,18 @@
-<div class="backdrop"></div>
+<div class="backdrop" [class.minimized]="isMinimized" (click)="!isMinimized && handleCloseClick()"></div>
 
-<div class="result-modal">
+<div class="result-modal" [class.minimized]="isMinimized">
   <div class="modal-header">
     <h2 class="result-title">Resultados de tu prueba</h2>
+    <button 
+      class="minimize-button"
+      (click)="toggleMinimize()"
+      [title]="isMinimized ? 'Maximizar' : 'Minimizar'">
+      <fa-icon [icon]="isMinimized ? faExpand : faMinus"></fa-icon>
+    </button>
   </div>
 
-  <div class="modal-content">
+  @if (!isMinimized) {
+    <div class="modal-content">
     <div class="tab-navigation">
       <button 
         class="tab-button"
@@ -325,9 +332,9 @@
         }
       </button>
     } @else {
-      <button class="btn btn-secondary" (click)="handleRetryClick()">
-        <fa-icon [icon]="faArrowRight" transform="rotate-180"></fa-icon>
-        <span>Repetir examen</span>
+      <button class="btn btn-primary" (click)="reviewAnswers()">
+        <fa-icon [icon]="faEye"></fa-icon>
+        <span>Comprobar respuestas</span>
       </button>
       <button class="btn btn-secondary" (click)="handleCloseClick()">
         <fa-icon [icon]="faTimes"></fa-icon>
@@ -335,12 +342,9 @@
       </button>
       <button class="btn btn-success" (click)="saveTestAndClose()">
         <fa-icon [icon]="faCheck"></fa-icon>
-        @if (selectedSession && selectedSessionId !== 'current') {
-          <span>Guardar examen actual y finalizar</span>
-        } @else {
-          <span>Guardar y finalizar</span>
-        }
+        <span>Guardar y finalizar</span>
       </button>
     }
   </div>
+  }
 </div>
