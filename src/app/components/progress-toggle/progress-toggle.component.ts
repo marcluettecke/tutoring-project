@@ -125,8 +125,8 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
         // The UI will update based on user's choice in the modal
         await this.progressService.stopTracking();
       } else {
-        // No session data, just stop tracking
-        await this.progressService.stopTracking();
+        // No session data, end the session properly
+        await this.progressService.endTrackingSession();
       }
     } else {
       this.showSessionSummary = false;

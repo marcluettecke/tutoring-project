@@ -125,7 +125,7 @@ describe('ProgressToggleComponent', () => {
       expect(mockProgressService.stopTracking).toHaveBeenCalled();
     });
 
-    it('should stop tracking without modal when no session data', async () => {
+    it('should end tracking session when no session data', async () => {
       component.isTrackingEnabled = true;
       mockProgressService.getCurrentSessionProgress.mockReturnValue(null);
       
@@ -133,7 +133,36 @@ describe('ProgressToggleComponent', () => {
       
       expect(component.showSessionSummary).toBe(false);
       expect(component.isPausedForModal).toBe(false);
-      expect(mockProgressService.stopTracking).toHaveBeenCalled();
+      expect(mockProgressService.endTrackingSession).toHaveBeenCalled();
+      expect(mockProgressService.stopTracking).not.toHaveBeenCalled();
+    });
+
+    it('should end tracking session when toggling off with zero questions answered', async () => {
+      component.isTrackingEnabled = true;
+      const mockSession: CurrentSessionProgress = {
+        sessionId: 'test-session',
+        questionsAnswered: 0, // No questions answered
+        correctAnswers: 0,
+        incorrectAnswers: 0,
+        timeElapsed: 1000,
+        startTime: Date.now(),
+        isActive: true,
+        mainSection: 'test',
+        currentStreak: 0,
+        longestStreak: 0,
+        totalQuestions: 10,
+        mode: 'practice',
+        currentQuestionIndex: 0,
+        sectionBreakdown: []
+      };
+      mockProgressService.getCurrentSessionProgress.mockReturnValue(mockSession);
+      
+      await component.toggleTracking();
+      
+      expect(component.showSessionSummary).toBe(false);
+      expect(component.isPausedForModal).toBe(false);
+      expect(mockProgressService.endTrackingSession).toHaveBeenCalled();
+      expect(mockProgressService.stopTracking).not.toHaveBeenCalled();
     });
   });
 
