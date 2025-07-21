@@ -8,6 +8,11 @@
   gap: 12px;
   align-items: center;
   
+  .button-wrapper {
+    pointer-events: auto;
+    display: inline-flex;
+  }
+  
   .refresh-btn {
     width: 48px;
     height: 48px;
@@ -24,12 +29,24 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(8px);
     
-    &:hover {
+    &:hover:not(:disabled) {
       background: rgba(255, 255, 255, 1);
       border-color: var(--primary-500);
       color: var(--primary-600);
       transform: translateY(-2px) rotate(180deg);
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      
+      &:hover {
+        transform: none;
+        background: rgba(255, 255, 255, 0.95);
+        border-color: var(--gray-300);
+        color: var(--gray-600);
+      }
     }
     
     fa-icon {
@@ -56,11 +73,40 @@
     backdrop-filter: blur(8px);
     color: var(--gray-700);
     
-    &:hover {
+    &:hover:not(:disabled) {
       background: rgba(255, 255, 255, 1);
       border-color: var(--gray-400);
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      
+      &:hover {
+        transform: none;
+      }
+    }
+    
+    &.paused {
+      background: rgba(255, 193, 7, 0.1);
+      border-color: #ffc107;
+      color: #f57c00;
+      
+      &:hover {
+        background: rgba(255, 193, 7, 0.15);
+        border-color: #ffa000;
+      }
+      
+      .recording-indicator .recording-dot {
+        background: #ffc107;
+        animation: blink 1.5s ease-in-out infinite;
+      }
+      
+      .toggle-icon {
+        color: #f57c00;
+      }
     }
     
     &.recording {
@@ -129,6 +175,16 @@
   100% {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+// Blink animation for paused state
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
   }
 }
 

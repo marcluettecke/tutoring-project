@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, MockedObject } from 'vitest';
 import { TestComponent } from './test.component';
-import { of, Subject } from 'rxjs';
+import { of, Subject, BehaviorSubject } from 'rxjs';
 import { QUESTIONWEIGHTS } from './constants';
 import { QuestionsService } from '../../services/questions.service';
 import { TestService } from '../../services/test.service';
@@ -18,38 +18,70 @@ describe('TestComponent', () => {
     // Administrativo questions (25 total)
     ...Array(25).fill(0).map((_, i) => ({
       id: `admin-${i}`,
-      question: `Admin question ${i}`,
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 'A',
+      questionText: `Admin question ${i}`,
+      questionIndex: i,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'a',
+      explanation: 'Test explanation',
       mainSection: 'administrativo',
-      questionIndex: i
+      subSection: 'general',
+      subSectionIndex: 0
     })),
     // Medio ambiente questions (30 total)
     ...Array(30).fill(0).map((_, i) => ({
       id: `medio-${i}`,
-      question: `Medio ambiente question ${i}`,
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 'B',
+      questionText: `Medio ambiente question ${i}`,
+      questionIndex: i,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'b',
+      explanation: 'Test explanation',
       mainSection: 'medio ambiente',
-      questionIndex: i
+      subSection: 'general',
+      subSectionIndex: 0
     })),
     // Costas questions (25 total)
     ...Array(25).fill(0).map((_, i) => ({
       id: `costas-${i}`,
-      question: `Costas question ${i}`,
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 'C',
+      questionText: `Costas question ${i}`,
+      questionIndex: i,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'c',
+      explanation: 'Test explanation',
       mainSection: 'costas',
-      questionIndex: i
+      subSection: 'general',
+      subSectionIndex: 0
     })),
     // Aguas questions (40 total)
     ...Array(40).fill(0).map((_, i) => ({
       id: `aguas-${i}`,
-      question: `Aguas question ${i}`,
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 'D',
+      questionText: `Aguas question ${i}`,
+      questionIndex: i,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'd',
+      explanation: 'Test explanation',
       mainSection: 'aguas',
-      questionIndex: i
+      subSection: 'general',
+      subSectionIndex: 0
     }))
   ];
 
@@ -59,7 +91,7 @@ describe('TestComponent', () => {
     } as unknown as MockedObject<QuestionsService>;
 
     mockTestService = {
-      testStatus: of('idle'),
+      testStatus: new BehaviorSubject<string>('idle'),
       resetAllAnswers: vi.fn(),
       handleTestStart: vi.fn(),
       getCustomConfiguration: vi.fn().mockReturnValue(null),
@@ -134,20 +166,36 @@ describe('TestComponent', () => {
         // Only 10 administrativo questions (weight requires 20)
         ...Array(10).fill(0).map((_, i) => ({
           id: `admin-${i}`,
-          question: `Admin question ${i}`,
-          options: ['A', 'B', 'C', 'D'],
-          correctAnswer: 'A',
+          questionText: `Admin question ${i}`,
+          questionIndex: i,
+          answers: [
+            { id: 'a', text: 'A' },
+            { id: 'b', text: 'B' },
+            { id: 'c', text: 'C' },
+            { id: 'd', text: 'D' }
+          ],
+          correctAnswer: 'a',
+          explanation: 'Test explanation',
           mainSection: 'administrativo',
-          questionIndex: i
+          subSection: 'general',
+          subSectionIndex: 0
         })),
         // Sufficient questions for other sections
         ...Array(30).fill(0).map((_, i) => ({
           id: `medio-${i}`,
-          question: `Medio ambiente question ${i}`,
-          options: ['A', 'B', 'C', 'D'],
-          correctAnswer: 'B',
+          questionText: `Medio ambiente question ${i}`,
+          questionIndex: i,
+          answers: [
+            { id: 'a', text: 'A' },
+            { id: 'b', text: 'B' },
+            { id: 'c', text: 'C' },
+            { id: 'd', text: 'D' }
+          ],
+          correctAnswer: 'b',
+          explanation: 'Test explanation',
           mainSection: 'medio ambiente',
-          questionIndex: i
+          subSection: 'general',
+          subSectionIndex: 0
         }))
       ];
 
@@ -259,8 +307,8 @@ describe('TestComponent', () => {
     });
 
     it('should open modal when test ends', async () => {
-      const testStatusSubject = new Subject();
-      mockTestService.testStatus = testStatusSubject.asObservable();
+      const testStatusSubject = new BehaviorSubject<string>('idle');
+      mockTestService.testStatus = testStatusSubject;
       
       component = new TestComponent(
         mockQuestionsService as unknown as QuestionsService,

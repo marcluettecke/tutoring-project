@@ -16,7 +16,7 @@
       Terminar prueba
     </button>
     <p [ngClass]="testStatus === 'ended' ? 'timer-finished': ''">
-      {{transform(this.remainingTime)}}
+      {{displayTime || transform(remainingTime)}}
     </p>
   </div>
 }

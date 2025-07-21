@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTable, faCheck, faTimes, faArrowUp, faArrowDown, faArrowRight, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { TestSession } from '../../models/progress.model';
+import { formatSpanishNumber, formatSpanishPercentage, formatTime } from '../../utils/number-format.utils';
 
 export interface SessionComparisonMetrics {
   questionsAnswered: {
@@ -43,6 +44,9 @@ export class SessionComparisonTableComponent {
   faArrowDown = faArrowDown;
   faArrowRight = faArrowRight;
   faChartLine = faChartLine;
+  
+  // Expose Math to template
+  Math = Math;
 
   // Inputs
   @Input() session1: TestSession | null = null;
@@ -103,9 +107,21 @@ export class SessionComparisonTableComponent {
    * Format time in milliseconds to readable format
    */
   formatTime(timeInMs: number): string {
-    const minutes = Math.floor(timeInMs / 60000);
-    const seconds = Math.floor((timeInMs % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return formatTime(timeInMs);
+  }
+  
+  /**
+   * Format number to Spanish locale
+   */
+  formatSpanishNumber(value: number, decimals: number = 2): string {
+    return formatSpanishNumber(value, decimals);
+  }
+  
+  /**
+   * Format percentage to Spanish locale
+   */
+  formatSpanishPercentage(value: number, decimals: number = 1): string {
+    return formatSpanishPercentage(value, decimals);
   }
 
   /**
@@ -121,5 +137,24 @@ export class SessionComparisonTableComponent {
   getScoreDifference(): number {
     if (!this.session1 || !this.session2) return 0;
     return this.getSessionScore(this.session1) - this.getSessionScore(this.session2);
+  }
+
+  /**
+   * Format time from seconds to mm:ss format
+   */
+  formatTimeFromSeconds(seconds: number): string {
+    if (!seconds || seconds === 0) return '0:00';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
+  /**
+   * Format average time per question
+   */
+  formatAverageTimePerQuestion(session: TestSession): string {
+    if (!session.questionsAnswered || session.questionsAnswered === 0) return '0:00';
+    const avgTimeSeconds = (session.timeSpent || 0) / session.questionsAnswered;
+    return this.formatTimeFromSeconds(Math.round(avgTimeSeconds));
   }
 }

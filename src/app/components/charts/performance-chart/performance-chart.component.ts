@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ChartConfiguration } from 'chart.js';
 import { BaseChartComponent } from '../base-chart/base-chart.component';
 import { SectionProgressData } from '../../../models/progress.model';
+import { formatSpanishPercentage } from '../../../utils/number-format.utils';
 
 @Component({
   selector: 'app-performance-chart',
@@ -52,6 +53,7 @@ export class PerformanceChartComponent implements OnChanges {
   @Input() subtitle?: string;
   @Input() height: string = '300px';
   @Input() chartType: string = 'bar';
+  @Input() isProgressTracking: boolean = false;
 
   chartConfig!: ChartConfiguration;
   loading: boolean = false;
@@ -91,33 +93,40 @@ export class PerformanceChartComponent implements OnChanges {
     const incorrectData = this.data.map(item => item.incorrectAnswers);
     const blankData = this.data.map(item => item.blankAnswers || 0);
 
+    // Prepare datasets - exclude blank for practice mode
+    const datasets = [
+      {
+        label: 'Correctas',
+        data: correctData,
+        backgroundColor: 'rgba(40, 167, 69, 0.8)',
+        borderColor: 'rgba(40, 167, 69, 1)',
+        borderWidth: 1
+      },
+      {
+        label: 'Incorrectas',
+        data: incorrectData,
+        backgroundColor: 'rgba(220, 53, 69, 0.8)',
+        borderColor: 'rgba(220, 53, 69, 1)',
+        borderWidth: 1
+      }
+    ];
+
+    // Only add blank data for test mode (not progress tracking)
+    if (!this.isProgressTracking) {
+      datasets.push({
+        label: 'En blanco',
+        data: blankData,
+        backgroundColor: 'rgba(108, 117, 125, 0.8)',
+        borderColor: 'rgba(108, 117, 125, 1)',
+        borderWidth: 1
+      });
+    }
+
     this.chartConfig = {
       type: 'bar',
       data: {
         labels,
-        datasets: [
-          {
-            label: 'Correctas',
-            data: correctData,
-            backgroundColor: 'rgba(40, 167, 69, 0.8)',
-            borderColor: 'rgba(40, 167, 69, 1)',
-            borderWidth: 1
-          },
-          {
-            label: 'Incorrectas',
-            data: incorrectData,
-            backgroundColor: 'rgba(220, 53, 69, 0.8)',
-            borderColor: 'rgba(220, 53, 69, 1)',
-            borderWidth: 1
-          },
-          {
-            label: 'En blanco',
-            data: blankData,
-            backgroundColor: 'rgba(108, 117, 125, 0.8)',
-            borderColor: 'rgba(108, 117, 125, 1)',
-            borderWidth: 1
-          }
-        ]
+        datasets
       },
       options: {
         responsive: true,
@@ -130,11 +139,13 @@ export class PerformanceChartComponent implements OnChanges {
           tooltip: {
             callbacks: {
               label: (context) => {
-                const total = correctData[context.dataIndex] + 
-                            incorrectData[context.dataIndex] + 
-                            blankData[context.dataIndex];
-                const percentage = total > 0 ? ((context.parsed.y / total) * 100).toFixed(1) : '0.0';
-                return `${context.dataset.label}: ${context.parsed.y} (${percentage}%)`;
+                const dataIndex = context.dataIndex;
+                const correct = correctData[dataIndex];
+                const incorrect = incorrectData[dataIndex];
+                const blank = !this.isProgressTracking ? blankData[dataIndex] : 0;
+                const total = correct + incorrect + blank;
+                const percentage = total > 0 ? formatSpanishPercentage((context.parsed.y / total) * 100, 1) : formatSpanishPercentage(0, 1);
+                return `${context.dataset.label}: ${context.parsed.y} (${percentage})`;
               }
             }
           }
@@ -171,23 +182,35 @@ export class PerformanceChartComponent implements OnChanges {
       { correct: 0, incorrect: 0, blank: 0 }
     );
 
+    // Prepare data and labels based on mode
+    const labels: string[] = ['Correctas', 'Incorrectas'];
+    const data: number[] = [totals.correct, totals.incorrect];
+    const backgroundColor: string[] = [
+      'rgba(40, 167, 69, 0.8)',
+      'rgba(220, 53, 69, 0.8)'
+    ];
+    const borderColor: string[] = [
+      'rgba(40, 167, 69, 1)',
+      'rgba(220, 53, 69, 1)'
+    ];
+
+    // Only include blank data for test mode (not progress tracking)
+    if (!this.isProgressTracking) {
+      labels.push('En blanco');
+      data.push(totals.blank);
+      backgroundColor.push('rgba(108, 117, 125, 0.8)');
+      borderColor.push('rgba(108, 117, 125, 1)');
+    }
+
     this.chartConfig = {
       type: 'pie',
       data: {
-        labels: ['Correctas', 'Incorrectas', 'En blanco'],
+        labels,
         datasets: [
           {
-            data: [totals.correct, totals.incorrect, totals.blank],
-            backgroundColor: [
-              'rgba(40, 167, 69, 0.8)',
-              'rgba(220, 53, 69, 0.8)',
-              'rgba(108, 117, 125, 0.8)'
-            ],
-            borderColor: [
-              'rgba(40, 167, 69, 1)',
-              'rgba(220, 53, 69, 1)',
-              'rgba(108, 117, 125, 1)'
-            ],
+            data,
+            backgroundColor,
+            borderColor,
             borderWidth: 2
           }
         ]
@@ -203,9 +226,11 @@ export class PerformanceChartComponent implements OnChanges {
           tooltip: {
             callbacks: {
               label: (context) => {
-                const total = totals.correct + totals.incorrect + totals.blank;
-                const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : '0.0';
-                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                const total = !this.isProgressTracking 
+                  ? totals.correct + totals.incorrect + totals.blank
+                  : totals.correct + totals.incorrect;
+                const percentage = total > 0 ? formatSpanishPercentage((context.parsed / total) * 100, 1) : formatSpanishPercentage(0, 1);
+                return `${context.label}: ${context.parsed} (${percentage})`;
               }
             }
           }

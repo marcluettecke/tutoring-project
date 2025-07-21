@@ -28,6 +28,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
   
   private destroy$ = new Subject<void>();
+  private readonly ACTIVE_SECTION_KEY = 'homeActiveSection';
 
   constructor(
     private questionService: QuestionsService,
@@ -37,9 +38,17 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    // Reset test service state when entering practice mode
-    this.testService.resetAllAnswers();
-    // Auto-selection is now handled by the SideNavComponent
+    // Restore active section from localStorage if available
+    const savedSection = this.restoreActiveSection();
+    if (savedSection) {
+      this.activeSection = savedSection;
+      // Load questions for the restored section
+      setTimeout(() => {
+        this.updateData();
+      }, 100);
+    }
+    // TestService will restore its own state from localStorage
+    // Auto-selection is now handled by the SideNavComponent (only if no saved section)
   }
 
   toggleSidebarExpanded(value: boolean) {
@@ -64,6 +73,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       mainSectionNumber: event.mainSectionNumber,
       subSectionNumber: event.subSectionNumber
     }
+    this.saveActiveSection();
     this.updateData()
   }
 
@@ -71,6 +81,32 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /**
+   * Save active section to localStorage
+   */
+  private saveActiveSection(): void {
+    try {
+      localStorage.setItem(this.ACTIVE_SECTION_KEY, JSON.stringify(this.activeSection));
+    } catch {
+      // Error saving active section
+    }
+  }
+
+  /**
+   * Restore active section from localStorage
+   */
+  private restoreActiveSection(): { mainSection: string, subSection: string, mainSectionNumber: number, subSectionNumber: number } | null {
+    try {
+      const saved = localStorage.getItem(this.ACTIVE_SECTION_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch {
+      // Error restoring active section
+    }
+    return null;
   }
 
 }

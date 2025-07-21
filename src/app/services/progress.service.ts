@@ -29,9 +29,13 @@ export class ProgressService {
   private warningTimer: number | null = null;
   private lastActivityTime: number = 0;
   private lastAnswerTimestamp: number | null = null;
+  private pausedAt: number | null = null;
+  private totalPausedTime: number = 0;
 
   private readonly INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
   private readonly WARNING_TIMEOUT = 60 * 1000; // 60 seconds in milliseconds
+  private readonly SESSION_STATE_KEY = 'progressSessionState';
+  private readonly SESSION_STATE_MAX_AGE = 12 * 60 * 60 * 1000; // 12 hours
 
   constructor(
     private firestore: Firestore,
@@ -39,21 +43,43 @@ export class ProgressService {
   ) {}
 
   /**
-   * Enables progress tracking for a user and initializes a new session
+   * Enables progress tracking for a user and initializes or resumes a session
    * Stores preferences in localStorage and starts inactivity monitoring
    * @param userId The unique identifier for the user
+   * @param preserveExistingAnswers Whether to preserve existing answered questions
    */
-  startTracking(userId: string): void {
+  startTracking(userId: string, preserveExistingAnswers: boolean = false): void {
     this.currentUserId = userId;
     this.isTrackingEnabledSubject.next(true);
     
     localStorage.setItem('progressTrackingEnabled', 'true');
     localStorage.setItem('progressTrackingUserId', userId);
     
-    this.testService.resetAllAnswers();
-    this.lastAnswerTimestamp = null;
+    // Check if there's an existing session to resume
+    const existingSession = this.currentSessionSubject.value;
+    const restoredSession = this.restoreSessionState();
     
-    this.startBasicSession(userId);
+    if ((existingSession && existingSession.isActive) || (restoredSession && restoredSession.isActive)) {
+      // Resume existing session
+      if (restoredSession && !existingSession) {
+        // Reset pause tracking when resuming
+        this.pausedAt = null;
+        this.totalPausedTime = 0;
+        this.currentSessionSubject.next(restoredSession);
+        this.lastAnswerTimestamp = restoredSession.lastAnswerTimestamp || null;
+      }
+    } else {
+      // Start new session
+      if (!preserveExistingAnswers) {
+        this.testService.resetAllAnswers();
+      }
+      this.lastAnswerTimestamp = null;
+      // Clear any existing session state before starting fresh
+      this.currentSessionSubject.next(null);
+      this.clearSessionState();
+      this.startBasicSession(userId);
+    }
+    
     this.startInactivityMonitoring();
   }
 
@@ -64,6 +90,10 @@ export class ProgressService {
   private startBasicSession(userId: string): void {
     const sessionId = `${userId}_${Date.now()}`;
     
+    // Reset pause tracking for new session
+    this.pausedAt = null;
+    this.totalPausedTime = 0;
+    
     const currentProgress: CurrentSessionProgress = {
       sessionId,
       startTime: Date.now(),
@@ -72,7 +102,7 @@ export class ProgressService {
       incorrectAnswers: 0,
       timeElapsed: 0,
       isActive: true,
-      mainSection: 'mixed', // Use 'mixed' to indicate multiple sections will be tracked
+      mainSection: 'Varias', // Use 'Varias' to indicate multiple sections will be tracked
       subSection: undefined,
       currentStreak: 0,
       longestStreak: 0,
@@ -83,26 +113,75 @@ export class ProgressService {
     };
 
     this.currentSessionSubject.next(currentProgress);
+    this.saveSessionState();
   }
 
   /**
-   * Disables progress tracking and cleans up active sessions
-   * Ends current session if active and clears all stored preferences
+   * Disables progress tracking but keeps session data for potential resume
+   * Pauses the current session without ending it
    */
   async stopTracking(): Promise<void> {
     this.isTrackingEnabledSubject.next(false);
     this.inactivityWarningSubject.next(false);
     
-    const currentSession = this.currentSessionSubject.value;
-    if (currentSession && currentSession.isActive) {
-      await this.endCurrentSession('user_stopped_tracking');
+    // Pause the timer when stopping tracking
+    this.pauseSessionTimer();
+    
+    // Save current session state but keep it active for potential resume
+    this.saveSessionState();
+    
+    this.clearInactivityTimers();
+    
+    // Update localStorage to indicate tracking is paused, not ended
+    localStorage.setItem('progressTrackingEnabled', 'false');
+    // Keep the userId so we can resume later
+    // Don't clear session state - we want to resume it later
+  }
+
+  /**
+   * Resume a paused tracking session
+   * Used when user clicks "continue" after pausing
+   */
+  resumeTracking(): void {
+    if (!this.currentUserId) return;
+    
+    this.isTrackingEnabledSubject.next(true);
+    localStorage.setItem('progressTrackingEnabled', 'true');
+    
+    // Try to restore the session state
+    const restoredSession = this.restoreSessionState();
+    if (restoredSession && restoredSession.isActive) {
+      // Restore the session and continue
+      // Resume the timer properly (accumulating paused time)
+      this.resumeSessionTimer();
+      this.currentSessionSubject.next(restoredSession);
+      this.lastAnswerTimestamp = restoredSession.lastAnswerTimestamp || null;
     }
     
+    // Resume with existing session - don't create a new one
+    // Make sure timer is resumed if not already
+    this.resumeSessionTimer();
+    this.startInactivityMonitoring();
+  }
+
+  /**
+   * Completely ends the current tracking session and clears all data
+   * Used when user explicitly wants to end the session (e.g., saving results)
+   */
+  async endTrackingSession(): Promise<void> {
+    const currentSession = this.currentSessionSubject.value;
+    if (currentSession && currentSession.isActive) {
+      await this.endCurrentSession('user_ended_session');
+    }
+    
+    this.isTrackingEnabledSubject.next(false);
+    this.inactivityWarningSubject.next(false);
     this.clearInactivityTimers();
     this.lastAnswerTimestamp = null;
     
     localStorage.removeItem('progressTrackingEnabled');
     localStorage.removeItem('progressTrackingUserId');
+    this.clearSessionState();
   }
 
   /**
@@ -123,8 +202,24 @@ export class ProgressService {
     
     if (isEnabled && userId) {
       this.currentUserId = userId;
-      this.isTrackingEnabledSubject.next(true);
-      this.startInactivityMonitoring();
+      
+      // Restore session state if available
+      const restoredSession = this.restoreSessionState();
+      if (restoredSession && restoredSession.isActive) {
+        // Continue the existing active session
+        this.isTrackingEnabledSubject.next(true);
+        // Reset pause tracking when resuming
+        this.pausedAt = null;
+        this.totalPausedTime = 0;
+        this.currentSessionSubject.next(restoredSession);
+        this.lastAnswerTimestamp = restoredSession.lastAnswerTimestamp || null;
+        this.startInactivityMonitoring();
+      } else {
+        // No active session, don't auto-start a new one
+        // User should explicitly start tracking when they want to
+        this.isTrackingEnabledSubject.next(false);
+        localStorage.setItem('progressTrackingEnabled', 'false');
+      }
     }
   }
 
@@ -242,10 +337,11 @@ export class ProgressService {
       const endedSession: CurrentSessionProgress = {
         ...currentSession,
         isActive: false,
-        timeElapsed: Date.now() - currentSession.startTime
+        timeElapsed: this.getElapsedTime(currentSession.startTime)
       };
       
       this.currentSessionSubject.next(endedSession);
+      this.saveSessionState();
       
       // Don't automatically save sessions - only save when user explicitly clicks save
       // Session ended without auto-saving: User can manually save if desired
@@ -301,6 +397,10 @@ export class ProgressService {
     }
 
     const sessionId = `${userId}_${Date.now()}`;
+    
+    // Reset pause tracking for new session
+    this.pausedAt = null;
+    this.totalPausedTime = 0;
     
     const session: TestSession = {
       id: sessionId,
@@ -379,6 +479,7 @@ export class ProgressService {
     };
 
     this.currentSessionSubject.next(updatedProgress);
+    this.saveSessionState();
 
     // Update Firebase session document
     const sessionRef = doc(this.firestore, 'userProgress', userId, 'sessions', sessionId);
@@ -466,6 +567,7 @@ export class ProgressService {
 
     // Clear current session
     this.currentSessionSubject.next(null);
+    this.clearSessionState();
 
     return summary;
   }
@@ -494,6 +596,33 @@ export class ProgressService {
    */
   getCurrentSessionProgress(): CurrentSessionProgress | null {
     return this.currentSessionSubject.value;
+  }
+
+  /**
+   * Pause the session timer
+   */
+  pauseSessionTimer(): void {
+    if (!this.pausedAt) {
+      this.pausedAt = Date.now();
+    }
+  }
+
+  /**
+   * Resume the session timer
+   */
+  resumeSessionTimer(): void {
+    if (this.pausedAt) {
+      this.totalPausedTime += Date.now() - this.pausedAt;
+      this.pausedAt = null;
+    }
+  }
+
+  /**
+   * Get elapsed time accounting for pauses
+   */
+  getElapsedTime(startTime: number): number {
+    const now = this.pausedAt || Date.now();
+    return now - startTime - this.totalPausedTime;
   }
 
   /**
@@ -533,11 +662,12 @@ export class ProgressService {
       questionsAnswered: testServiceAnswers.total.correct + testServiceAnswers.total.incorrect,
       correctAnswers: testServiceAnswers.total.correct,
       incorrectAnswers: testServiceAnswers.total.incorrect,
-      timeElapsed: Date.now() - currentSession.startTime,
+      timeElapsed: this.getElapsedTime(currentSession.startTime),
       sectionBreakdown: sectionBreakdown
     };
 
     this.currentSessionSubject.next(updatedProgress);
+    this.saveSessionState();
     this.resetInactivityTimer();
   }
 
@@ -598,6 +728,7 @@ export class ProgressService {
     };
 
     this.currentSessionSubject.next(updatedProgress);
+    this.saveSessionState();
     this.resetInactivityTimer();
   }
 
@@ -848,6 +979,7 @@ export class ProgressService {
    */
   updateSessionProgress(sessionProgress: CurrentSessionProgress): void {
     this.currentSessionSubject.next(sessionProgress);
+    this.saveSessionState();
   }
 
   /**
@@ -940,5 +1072,65 @@ export class ProgressService {
     }
 
     return recommendations;
+  }
+
+  /**
+   * Save current session state to localStorage
+   */
+  private saveSessionState(): void {
+    const currentSession = this.currentSessionSubject.value;
+    if (!currentSession) return;
+    
+    try {
+      const stateToSave = {
+        session: currentSession,
+        lastAnswerTimestamp: this.lastAnswerTimestamp,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(this.SESSION_STATE_KEY, JSON.stringify(stateToSave));
+    } catch {
+      // Error saving session state
+    }
+  }
+
+  /**
+   * Restore session state from localStorage
+   */
+  private restoreSessionState(): CurrentSessionProgress | null {
+    try {
+      const savedState = localStorage.getItem(this.SESSION_STATE_KEY);
+      if (savedState) {
+        const parsed = JSON.parse(savedState);
+        
+        // Check if state is too old
+        if (Date.now() - parsed.timestamp > this.SESSION_STATE_MAX_AGE) {
+          localStorage.removeItem(this.SESSION_STATE_KEY);
+          return null;
+        }
+        
+        // Update time elapsed based on saved timestamp
+        const session = parsed.session;
+        if (session && session.isActive) {
+          session.timeElapsed = this.getElapsedTime(session.startTime);
+          session.lastAnswerTimestamp = parsed.lastAnswerTimestamp;
+          this.lastAnswerTimestamp = parsed.lastAnswerTimestamp || null;
+          return session;
+        }
+      }
+    } catch {
+      // Error restoring session state
+    }
+    return null;
+  }
+
+  /**
+   * Clear saved session state from localStorage
+   */
+  private clearSessionState(): void {
+    try {
+      localStorage.removeItem(this.SESSION_STATE_KEY);
+    } catch {
+      // Error clearing session state
+    }
   }
 }

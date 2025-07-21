@@ -102,18 +102,72 @@
               <fa-icon [icon]="faChartLine" class="metric-icon"></fa-icon>
               Precisión
             </td>
-            <td class="current-value">{{ getSessionAccuracy(session1!).toFixed(2) }}%</td>
-            <td class="historical-value">{{ getSessionAccuracy(session2!).toFixed(2) }}%</td>
+            <td class="current-value">{{ formatSpanishPercentage(getSessionAccuracy(session1!), 2) }}</td>
+            <td class="historical-value">{{ formatSpanishPercentage(getSessionAccuracy(session2!), 2) }}</td>
             <td class="difference-value">
               @if (getAccuracyDifference() > 0) {
                 <span class="diff improvement">
                   <fa-icon [icon]="faArrowUp"></fa-icon>
-                  +{{ getAccuracyDifference().toFixed(1) }}%
+                  +{{ formatSpanishPercentage(Math.abs(getAccuracyDifference()), 1) }}
                 </span>
               } @else if (getAccuracyDifference() < 0) {
                 <span class="diff decline">
                   <fa-icon [icon]="faArrowDown"></fa-icon>
-                  {{ getAccuracyDifference().toFixed(1) }}%
+                  {{ formatSpanishPercentage(Math.abs(getAccuracyDifference()), 1) }}
+                </span>
+              } @else {
+                <span class="diff neutral">
+                  <fa-icon [icon]="faArrowRight"></fa-icon>
+                  Sin cambio
+                </span>
+              }
+            </td>
+          </tr>
+
+          <tr class="comparison-row">
+            <td class="metric-label">
+              <fa-icon [icon]="faTable" class="metric-icon"></fa-icon>
+              Tiempo Total
+            </td>
+            <td class="current-value">{{ formatTimeFromSeconds(session1!.timeSpent || 0) }}</td>
+            <td class="historical-value">{{ formatTimeFromSeconds(session2!.timeSpent || 0) }}</td>
+            <td class="difference-value">
+              @if ((session1!.timeSpent || 0) - (session2!.timeSpent || 0) < 0) {
+                <span class="diff improvement">
+                  <fa-icon [icon]="faArrowDown"></fa-icon>
+                  -{{ formatTimeFromSeconds(Math.abs((session1!.timeSpent || 0) - (session2!.timeSpent || 0))) }}
+                </span>
+              } @else if ((session1!.timeSpent || 0) - (session2!.timeSpent || 0) > 0) {
+                <span class="diff decline">
+                  <fa-icon [icon]="faArrowUp"></fa-icon>
+                  +{{ formatTimeFromSeconds(Math.abs((session1!.timeSpent || 0) - (session2!.timeSpent || 0))) }}
+                </span>
+              } @else {
+                <span class="diff neutral">
+                  <fa-icon [icon]="faArrowRight"></fa-icon>
+                  Sin cambio
+                </span>
+              }
+            </td>
+          </tr>
+          
+          <tr class="comparison-row">
+            <td class="metric-label">
+              <fa-icon [icon]="faTable" class="metric-icon"></fa-icon>
+              Tiempo por Pregunta
+            </td>
+            <td class="current-value">{{ formatAverageTimePerQuestion(session1!) }}</td>
+            <td class="historical-value">{{ formatAverageTimePerQuestion(session2!) }}</td>
+            <td class="difference-value">
+              @if (getComparisonMetrics()!.avgTimePerQuestion.diff < 0) {
+                <span class="diff improvement">
+                  <fa-icon [icon]="faArrowDown"></fa-icon>
+                  -{{ formatTimeFromSeconds(Math.abs(getComparisonMetrics()!.avgTimePerQuestion.diff / 1000)) }}
+                </span>
+              } @else if (getComparisonMetrics()!.avgTimePerQuestion.diff > 0) {
+                <span class="diff decline">
+                  <fa-icon [icon]="faArrowUp"></fa-icon>
+                  +{{ formatTimeFromSeconds(Math.abs(getComparisonMetrics()!.avgTimePerQuestion.diff / 1000)) }}
                 </span>
               } @else {
                 <span class="diff neutral">
@@ -130,18 +184,18 @@
                 <fa-icon [icon]="faChartLine" class="metric-icon"></fa-icon>
                 Puntuación Final
               </td>
-              <td class="current-value">{{ getSessionScore(session1!).toFixed(2) }}</td>
-              <td class="historical-value">{{ getSessionScore(session2!).toFixed(2) }}</td>
+              <td class="current-value">{{ formatSpanishNumber(getSessionScore(session1!), 2) }}</td>
+              <td class="historical-value">{{ formatSpanishNumber(getSessionScore(session2!), 2) }}</td>
               <td class="difference-value">
                 @if (getScoreDifference() > 0) {
                   <span class="diff improvement">
                     <fa-icon [icon]="faArrowUp"></fa-icon>
-                    +{{ getScoreDifference().toFixed(2) }}
+                    +{{ formatSpanishNumber(Math.abs(getScoreDifference()), 2) }}
                   </span>
                 } @else if (getScoreDifference() < 0) {
                   <span class="diff decline">
                     <fa-icon [icon]="faArrowDown"></fa-icon>
-                    {{ getScoreDifference().toFixed(2) }}
+                    -{{ formatSpanishNumber(Math.abs(getScoreDifference()), 2) }}
                   </span>
                 } @else {
                   <span class="diff neutral">

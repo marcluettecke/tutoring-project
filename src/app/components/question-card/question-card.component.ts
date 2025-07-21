@@ -29,6 +29,7 @@ export class QuestionCardComponent implements OnInit, OnDestroy {
   wrongAnswerClicked = false
   selectedAnswer: string = ''
   explanationShown = false
+  isModalMinimized = false
   private firstClick = true
   private destroy$ = new Subject<void>();
 
@@ -64,6 +65,13 @@ export class QuestionCardComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.resetComponentState();
+      });
+    
+    // Listen for modal minimized state
+    this.testService.modalMinimized
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isMinimized => {
+        this.isModalMinimized = isMinimized;
       });
     
     // Check if this question has a saved answer

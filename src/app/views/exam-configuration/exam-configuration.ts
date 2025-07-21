@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray } f
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faTrash, faPlay, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrash, faPlay, faInfoCircle, faClock } from '@fortawesome/free-solid-svg-icons';
 
 import { QuestionsService } from '../../services/questions.service';
 import { TestService } from '../../services/test.service';
@@ -15,6 +15,23 @@ import {
   ExamQuestionOption 
 } from '../../models/exam-configuration.model';
 import { Question } from '../../models/question.model';
+
+// Type definitions for better type safety
+interface Subsection {
+  name: string;
+  index: number;
+}
+
+interface SubsectionMap {
+  [key: string]: Subsection[];
+}
+
+interface SectionSelectionFormValue {
+  mainSection: string;
+  includeAllSubsections: boolean;
+  selectedSubsections: string[];
+  questionCount: ExamQuestionOption;
+}
 
 @Component({
   selector: 'app-exam-configuration',
@@ -34,13 +51,14 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
   faTrash = faTrash;
   faPlay = faPlay;
   faInfoCircle = faInfoCircle;
+  faClock = faClock;
 
   // Form
   examForm!: FormGroup;
 
   // Data
   mainSections = MAINSECTIONS;
-  subsections: { [key: string]: { name: string; index: number }[] } = SUBSECTIONS;
+  subsections: SubsectionMap = SUBSECTIONS;
   questionOptions: ExamQuestionOption[] = ['full', 100, 50, 35, 25, 20];
   standardExamWeights: { [key: string]: number } = {
     'administrativo': 20,
@@ -57,6 +75,10 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
   // Component state
   isLoading = true;
   validationErrors: string[] = [];
+  
+  // Time configuration
+  selectedTimeOption: 'unlimited' | 'oneMinutePerQuestion' | 'standard' | 'custom' = 'oneMinutePerQuestion';
+  customTimeMinutes: number = 60;
   
   // Subscriptions
   private destroy$ = new Subject<void>();
@@ -161,7 +183,7 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
       
       // Count questions per subsection
       if (this.subsections[section]) {
-        this.subsections[section].forEach((subsection: any) => {
+        this.subsections[section].forEach((subsection: Subsection) => {
           const key = `${section}_${subsection.name}`;
           const subsectionQuestions = sectionQuestions.filter(
             q => q.subSection === subsection.name
@@ -216,11 +238,11 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
     return selectedSubsections.includes(subsectionName);
   }
 
-  private calculateTotalQuestions(): void {
+  calculateTotalQuestions(): void {
     const selections = this.selectionsArray.value;
     let total = 0;
 
-    selections.forEach((selection: any) => {
+    selections.forEach((selection: SectionSelectionFormValue) => {
       if (!selection.mainSection) return;
       
       const questionCount = selection.questionCount;
@@ -240,7 +262,7 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
     this.totalSelectedQuestions = total;
   }
 
-  calculateMaxQuestionsForSelections(selections: any[]): number {
+  calculateMaxQuestionsForSelections(selections: SectionSelectionFormValue[]): number {
     let total = 0;
     const countedSections = new Set<string>();
 
@@ -268,12 +290,12 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
     return total;
   }
 
-  private validateConfiguration(): void {
+  validateConfiguration(): void {
     this.validationErrors = [];
     const selections = this.selectionsArray.value;
 
     // Check if at least one section is selected
-    const hasValidSelection = selections.some((s: any) => 
+    const hasValidSelection = selections.some((s: SectionSelectionFormValue) => 
       s.mainSection && (s.includeAllSubsections || s.selectedSubsections.length > 0)
     );
 
@@ -282,7 +304,7 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
     }
 
     // Check each selection for validity
-    selections.forEach((selection: any, index: number) => {
+    selections.forEach((selection: SectionSelectionFormValue, index: number) => {
       if (!selection.mainSection) return;
 
       const questionCount = selection.questionCount;
@@ -325,7 +347,7 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
     const selections = this.selectionsArray.value;
     const info: SectionQuestionInfo[] = [];
 
-    selections.forEach((selection: any) => {
+    selections.forEach((selection: SectionSelectionFormValue) => {
       if (!selection.mainSection) return;
 
       const questionCount = selection.questionCount;
@@ -362,7 +384,7 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Apply standard exam preset with official distribution
+   * Apply standard exam preset with most frequent distribution
    */
   applyStandardExamPreset(): void {
     // Clear existing selections
@@ -468,19 +490,45 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get total number of selected questions
+   */
+  getTotalSelectedQuestions(): number {
+    return this.totalSelectedQuestions;
+  }
+
+  /**
    * Update the exam configuration for submission
    */
   startExam(): void {
     if (this.validationErrors.length > 0) return;
 
+    // Calculate exam time based on selection
+    let examTimeInMinutes: number | undefined;
+    
+    switch (this.selectedTimeOption) {
+      case 'unlimited':
+        examTimeInMinutes = undefined; // No time limit
+        break;
+      case 'oneMinutePerQuestion':
+        examTimeInMinutes = this.totalSelectedQuestions;
+        break;
+      case 'standard':
+        examTimeInMinutes = 120; // Standard exam time
+        break;
+      case 'custom':
+        examTimeInMinutes = this.customTimeMinutes || 60;
+        break;
+    }
+
     const configuration: ExamConfiguration = {
-      selections: this.selectionsArray.value.map((s: any) => ({
+      selections: this.selectionsArray.value.map((s: SectionSelectionFormValue) => ({
         mainSection: s.mainSection,
         subsections: s.includeAllSubsections ? [] : s.selectedSubsections,
         questionCount: s.questionCount === 'full' ? undefined : s.questionCount
       })),
       totalQuestions: this.totalSelectedQuestions,
-      questionDistribution: 'custom'
+      questionDistribution: 'custom',
+      timeInMinutes: examTimeInMinutes
     };
 
     // Store configuration in test service

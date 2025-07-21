@@ -1,19 +1,31 @@
 import {Injectable} from '@angular/core';
 import {Question} from "../models/question.model";
-import {Subject} from "rxjs";
+import {Subject, BehaviorSubject} from "rxjs";
 import {QUESTIONWEIGHTS} from "../views/test/constants";
 import {ExamConfiguration} from "../models/exam-configuration.model";
+
+// Define types for better type safety
+interface SectionCounts {
+  blank: number;
+  correct: number;
+  incorrect: number;
+}
+
+interface CorrectAnswersState {
+  [key: string]: SectionCounts;
+}
 
 @Injectable({
               providedIn: 'root'
             })
 export class TestService {
-  testStatus: Subject<string> = new Subject<string>()
+  testStatus: BehaviorSubject<string> = new BehaviorSubject<string>('')
   resetAnswers: Subject<void> = new Subject<void>()
+  modalMinimized: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
   private readonly TEST_STATE_KEY = 'testServiceState';
   private readonly ANSWERED_QUESTIONS_KEY = 'answeredQuestions';
   private readonly CUSTOM_CONFIG_KEY = 'customExamConfiguration';
-  correctAnswers: { [key: string]: { blank: number, correct: number, incorrect: number } }
+  correctAnswers: CorrectAnswersState
   private answeredQuestions: Map<string, string> = new Map(); // questionId -> selectedAnswer
   private customConfiguration: ExamConfiguration | null = null;
 
@@ -29,7 +41,7 @@ export class TestService {
   /**
    * Get the default state for correct answers
    */
-  private getDefaultState() {
+  private getDefaultState(): CorrectAnswersState {
     return {
       total: {
         blank: 100,
@@ -117,6 +129,13 @@ export class TestService {
    */
   handleTestEnd(): void {
     this.testStatus.next('ended');
+  }
+
+  /**
+   * Updates modal minimized state
+   */
+  setModalMinimized(isMinimized: boolean): void {
+    this.modalMinimized.next(isMinimized);
   }
 
   /**
@@ -363,9 +382,9 @@ export class TestService {
   /**
    * Get default state based on custom configuration or standard weights
    */
-  private getDefaultStateForConfiguration(totalQuestions?: number): any {
+  private getDefaultStateForConfiguration(totalQuestions?: number): CorrectAnswersState {
     if (this.customConfiguration) {
-      const state: any = {
+      const state: CorrectAnswersState = {
         total: {
           blank: totalQuestions || 0,
           correct: 0,

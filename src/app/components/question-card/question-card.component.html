@@ -21,7 +21,7 @@
         [name]="questionIndex"
         [selectedAnswer]="selectedAnswer"
         (answerWasclickedEvent)="clickHandler(questionItem.correctAnswer === option.id, option.id)"
-        [disabled]="false">
+        [disabled]="isModalMinimized">
       </app-answer-option>
     }
   </div>

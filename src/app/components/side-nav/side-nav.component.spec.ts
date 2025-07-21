@@ -41,22 +41,34 @@ describe('SideNavComponent', () => {
     {
       id: '1',
       questionText: 'Test Question 1',
+      questionIndex: 0,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'a',
+      explanation: 'Test explanation',
       mainSection: 'administrativo',
       subSection: 'subsection 1',
-      subSectionIndex: 0,
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 0,
-      correctAnswerDescription: 'Test'
+      subSectionIndex: 0
     },
     {
       id: '2',
       questionText: 'Test Question 2',
+      questionIndex: 1,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'b',
+      explanation: 'Test explanation',
       mainSection: 'medio ambiente',
       subSection: 'subsection 2',
-      subSectionIndex: 0,
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 1,
-      correctAnswerDescription: 'Test'
+      subSectionIndex: 0
     }
   ];
 
@@ -192,22 +204,34 @@ describe('SideNavComponent', () => {
         {
           id: '1',
           questionText: 'Test 1',
+          questionIndex: 0,
+          answers: [
+            { id: 'a', text: 'A' },
+            { id: 'b', text: 'B' },
+            { id: 'c', text: 'C' },
+            { id: 'd', text: 'D' }
+          ],
+          correctAnswer: 'a',
+          explanation: 'Test explanation',
           mainSection: 'administrativo',
           subSection: 'subsection B',
-          subSectionIndex: 1,
-          options: ['A', 'B', 'C', 'D'],
-          correctAnswer: 0,
-          correctAnswerDescription: 'Test'
+          subSectionIndex: 1
         },
         {
           id: '2',
           questionText: 'Test 2',
+          questionIndex: 1,
+          answers: [
+            { id: 'a', text: 'A' },
+            { id: 'b', text: 'B' },
+            { id: 'c', text: 'C' },
+            { id: 'd', text: 'D' }
+          ],
+          correctAnswer: 'a',
+          explanation: 'Test explanation',
           mainSection: 'administrativo',
           subSection: 'subsection A',
-          subSectionIndex: 0,
-          options: ['A', 'B', 'C', 'D'],
-          correctAnswer: 0,
-          correctAnswerDescription: 'Test'
+          subSectionIndex: 0
         }
       ];
       
@@ -262,22 +286,24 @@ describe('SideNavComponent', () => {
         {
           id: '',
           questionText: 'Invalid - empty id',
+          questionIndex: 0,
+          answers: [{ id: 'a', text: 'A' }],
+          correctAnswer: 'a',
+          explanation: 'Test explanation',
           mainSection: 'test',
           subSection: 'test',
-          subSectionIndex: 0,
-          options: ['A'],
-          correctAnswer: 0,
-          correctAnswerDescription: 'Test'
+          subSectionIndex: 0
         },
         {
           id: '3',
           questionText: '',
+          questionIndex: 2,
+          answers: [{ id: 'a', text: 'A' }],
+          correctAnswer: 'a',
+          explanation: 'Test explanation',
           mainSection: 'test',
           subSection: 'test',
-          subSectionIndex: 0,
-          options: ['A'],
-          correctAnswer: 0,
-          correctAnswerDescription: 'Test'
+          subSectionIndex: 0
         }
       ];
       

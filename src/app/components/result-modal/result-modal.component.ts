@@ -7,9 +7,10 @@ import { ProgressService } from "../../services/progress.service";
 import { ChartDataService } from "../../services/chart-data.service";
 import { TestSession, TestServiceAnswers, CurrentSessionProgress, SectionProgressData, SectionProgressDataWithComparison } from '../../models/progress.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChartBar, faTable, faArrowUp, faArrowDown, faArrowRight, faCheck, faTimes, faChartLine, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faTable, faArrowUp, faArrowDown, faArrowRight, faCheck, faTimes, faChartLine, faPlay, faEye, faMinus, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { SessionComparisonTableComponent } from '../session-comparison-table/session-comparison-table.component';
 import { ChartsContainerComponent } from '../charts/charts-container/charts-container.component';
+import { formatSpanishNumber, formatSpanishPercentage } from '../../utils/number-format.utils';
 
 /**
  * Enhanced result modal component with modern styling and session comparison
@@ -26,6 +27,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
   @Output() onCloseClick: EventEmitter<void> = new EventEmitter();
   @Output() onRetryClick: EventEmitter<void> = new EventEmitter();
   @Output() onContinueClick: EventEmitter<void> = new EventEmitter();
+  @Output() onMinimizeChange: EventEmitter<boolean> = new EventEmitter();
 
   @Input() currentSection: string = '';
   @Input() currentSubsection: string = '';
@@ -40,6 +42,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
   showComparison = false;
   comparisonMode: 'individual' | 'compare' = 'individual';
   activeTab: 'data' | 'charts' = 'data';
+  isMinimized = false;
 
   faChartBar = faChartBar;
   faTable = faTable;
@@ -47,9 +50,12 @@ export class ResultModalComponent implements OnInit, OnDestroy {
   faArrowDown = faArrowDown;
   faArrowRight = faArrowRight;
   faCheck = faCheck;
+  faEye = faEye;
   faTimes = faTimes;
   faChartLine = faChartLine;
   faPlay = faPlay;
+  faMinus = faMinus;
+  faExpand = faExpand;
 
   private destroy$ = new Subject<void>();
 
@@ -99,7 +105,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
     if (this.progressSession.questionsAnswered > 0 &&
       (!this.progressSession.sectionBreakdown || this.progressSession.sectionBreakdown.length === 0)) {
       this.progressSession.sectionBreakdown = [{
-        sectionName: this.progressSession.mainSection || 'mixed',
+        sectionName: this.progressSession.mainSection || 'Varias',
         subSection: this.progressSession.subSection,
         questionsAnswered: this.progressSession.questionsAnswered,
         correctAnswers: this.progressSession.correctAnswers,
@@ -153,7 +159,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
         userId: this.userId,
         timestamp: Date.now(),
         mode: this.isProgressTracking ? 'practice' : 'test',
-        mainSection: this.currentSection || 'mixed',
+        mainSection: this.isProgressTracking ? (this.currentSection || 'Varias') : this.determineMainSection(),
         subSection: this.currentSubsection,
         questionsAnswered: this.correctAnswers.total.correct + this.correctAnswers.total.incorrect,
         correctAnswers: this.correctAnswers.total.correct,
@@ -241,7 +247,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * @returns Formatted session duration
    */
   get sessionDuration(): string {
-    if (!this.progressSession) return '0:00';
+    if (!this.progressSession) return '-';
     const totalSeconds = Math.floor(this.progressSession.timeElapsed / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -300,7 +306,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * Closes the modal and allows user to continue with their tracking session
    */
   continueSession(): void {
-    this.onCloseClick.emit();
+    this.onContinueClick.emit();
   }
 
   /**
@@ -820,7 +826,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
         userId: this.userId || '',
         timestamp: Date.now(),
         mode: 'test',
-        mainSection: this.currentSection || 'mixed',
+        mainSection: this.determineMainSection(),
         subSection: this.currentSubsection,
         questionsAnswered: total.correct + total.incorrect,
         correctAnswers: total.correct,
@@ -890,7 +896,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * @returns Formatted time string
    */
   formatTimeSpent(timeMs: number): string {
-    if (timeMs === 0) return '0s';
+    if (timeMs === 0) return '-';
     const totalSeconds = Math.floor(timeMs / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -907,7 +913,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * @returns Formatted average time string
    */
   formatAverageTimePerQuestion(section: SectionProgressData): string {
-    if (section.questionsAnswered === 0) return '0s';
+    if (section.questionsAnswered === 0) return '-';
     const averageMs = section.timeSpent / section.questionsAnswered;
     const averageSeconds = Math.floor(averageMs / 1000);
     return `${averageSeconds}s`;
@@ -956,7 +962,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    * @returns Formatted time string
    */
   formatTime(timeMs: number): string {
-    if (timeMs === 0) return '0s';
+    if (timeMs === 0) return '-';
     const totalSeconds = Math.floor(timeMs / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -972,6 +978,44 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    */
   get Math() {
     return Math;
+  }
+
+  /**
+   * Format number to Spanish locale
+   */
+  formatSpanishNumber(value: number, decimals: number = 2): string {
+    return formatSpanishNumber(value, decimals);
+  }
+
+  /**
+   * Format percentage to Spanish locale
+   */
+  formatSpanishPercentage(value: number, decimals: number = 1): string {
+    return formatSpanishPercentage(value, decimals);
+  }
+
+  /**
+   * Determine the main section based on answers
+   * Returns the section name if all answers are from one section, or 'Varias' if mixed
+   */
+  private determineMainSection(): string {
+    if (!this.correctAnswers) return 'Varias';
+    
+    // Get all sections that have questions answered (excluding 'total')
+    const sectionsWithAnswers = Object.keys(this.correctAnswers)
+      .filter(section => section !== 'total' && this.correctAnswers[section])
+      .filter(section => {
+        const sectionData = this.correctAnswers[section];
+        return (sectionData.correct + sectionData.incorrect) > 0;
+      });
+    
+    // If answers come from exactly one section, return that section name
+    if (sectionsWithAnswers.length === 1) {
+      return sectionsWithAnswers[0];
+    }
+    
+    // If answers come from multiple sections or no sections, return 'Varias'
+    return 'Varias';
   }
 
   /**
@@ -1054,7 +1098,8 @@ export class ResultModalComponent implements OnInit, OnDestroy {
       this._chartData = null;
       this._lastProgressSession = this.progressSession;
       
-      this._chartData = this.chartDataService.buildSectionDataFromProgressSession(this.progressSession);
+      const rawData = this.chartDataService.buildSectionDataFromProgressSession(this.progressSession);
+      this._chartData = this.aggregateByMainSection(rawData);
       return this._chartData;
     } else if (!this.isProgressTracking && this.correctAnswers) {
       // Cache the current correctAnswers reference
@@ -1070,6 +1115,52 @@ export class ResultModalComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Aggregate section data by main section to avoid duplicate sections in charts
+   */
+  private aggregateByMainSection(data: SectionProgressData[]): SectionProgressData[] {
+    const aggregated = new Map<string, SectionProgressData>();
+    
+    for (const item of data) {
+      const mainSection = item.sectionName;
+      
+      if (aggregated.has(mainSection)) {
+        // Merge with existing section data
+        const existing = aggregated.get(mainSection)!;
+        aggregated.set(mainSection, {
+          sectionName: mainSection,
+          subSection: undefined, // Don't show subsection in aggregated data
+          questionsAnswered: existing.questionsAnswered + item.questionsAnswered,
+          correctAnswers: existing.correctAnswers + item.correctAnswers,
+          incorrectAnswers: existing.incorrectAnswers + item.incorrectAnswers,
+          blankAnswers: (existing.blankAnswers || 0) + (item.blankAnswers || 0),
+          timeSpent: existing.timeSpent + item.timeSpent,
+          accuracy: 0, // Will be recalculated
+          avgTimePerQuestion: 0 // Will be recalculated
+        });
+      } else {
+        // Add new section
+        aggregated.set(mainSection, {
+          ...item,
+          subSection: undefined // Don't show subsection in aggregated data
+        });
+      }
+    }
+    
+    // Recalculate accuracy and avg time for aggregated data
+    const result = Array.from(aggregated.values());
+    for (const section of result) {
+      section.accuracy = section.questionsAnswered > 0 
+        ? (section.correctAnswers / section.questionsAnswered) * 100 
+        : 0;
+      section.avgTimePerQuestion = section.questionsAnswered > 0 
+        ? section.timeSpent / section.questionsAnswered 
+        : 0;
+    }
+    
+    return result;
+  }
+
+  /**
    * Save test exam and close modal
    */
   async saveTestAndClose(): Promise<void> {
@@ -1082,6 +1173,24 @@ export class ResultModalComponent implements OnInit, OnDestroy {
       }
     }
     this.handleCloseClick();
+  }
+
+  /**
+   * Review answers - allows users to check their answers
+   * Minimizes modal to show test with answers revealed
+   */
+  reviewAnswers(): void {
+    // Minimize the modal instead of closing it
+    this.isMinimized = true;
+    this.onMinimizeChange.emit(true);
+  }
+
+  /**
+   * Toggle minimize/maximize state of the modal
+   */
+  toggleMinimize(): void {
+    this.isMinimized = !this.isMinimized;
+    this.onMinimizeChange.emit(this.isMinimized);
   }
 
   /**

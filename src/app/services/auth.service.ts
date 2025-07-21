@@ -22,12 +22,12 @@ export class AuthService implements OnDestroy {
   errorStatusChanged = new Subject<AuthError>()
   sessionExpiryWarning$ = new BehaviorSubject<boolean>(false);
   
-  private sessionCheckInterval: number | null = null;
+  private sessionCheckInterval: ReturnType<typeof setInterval> | null = null;
   private authStateUnsubscribe: (() => void) | null = null;
-  private activityMonitorInterval: number | null = null;
+  private activityMonitorInterval: ReturnType<typeof setInterval> | null = null;
   private lastActivityTime: number = Date.now();
-  private inactivityTimer: number | null = null;
-  private warningTimer: number | null = null;
+  private inactivityTimer: ReturnType<typeof setTimeout> | null = null;
+  private warningTimer: ReturnType<typeof setTimeout> | null = null;
   private warningShown = false;
   
   // Inactivity timeouts (30 minutes before warning, 60 seconds warning)
@@ -244,7 +244,7 @@ export class AuthService implements OnDestroy {
     if (!this.loginChanged.value) return;
     
     // Set 30-minute inactivity timer
-    this.inactivityTimer = window.setTimeout(() => {
+    this.inactivityTimer = setTimeout(() => {
       this.showInactivityWarning();
     }, this.INACTIVITY_TIMEOUT);
   }
@@ -257,7 +257,7 @@ export class AuthService implements OnDestroy {
     this.sessionExpiryWarning$.next(true);
     
     // Set 60-second warning timer
-    this.warningTimer = window.setTimeout(() => {
+    this.warningTimer = setTimeout(() => {
       this.handleInactivityTimeout();
     }, this.WARNING_TIMEOUT);
   }

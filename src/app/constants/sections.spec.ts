@@ -75,7 +75,7 @@ describe('Sections Constants', () => {
           'Ley 40/2015',
           'LCSP',
           'EBEP',
-          'Igualdad, Violencia de Género y Dependencia',
+          'Leyes de Derechos Sociales',
           'Unión Europea',
           'Otros',
         ];
@@ -103,12 +103,12 @@ describe('Sections Constants', () => {
 
       it('should have expected medio ambiente subsection names', () => {
         const expectedNames = [
-          'PNyB, Parques Nacionales y Montes',
+          'PNyB, parques nacionales y montes',
           'Convenio Aarhus',
-          'Medio Marino',
-          'Evaluación Ambiental',
-          'Residuos y Economía Circular',
-          'Cambio Climático',
+          'Medio marino',
+          'Evaluación ambiental',
+          'Residuos y economía circular',
+          'Cambio climático',
           'Responsabilidad MA',
           'Otros',
         ];
@@ -142,7 +142,7 @@ describe('Sections Constants', () => {
           'LC Título IV',
           'LC Título V',
           'LC Título VI',
-          'LC Régimen Transitorio',
+          'LC régimen transitorio',
           'Técnicas',
           'Otros',
         ];
@@ -184,10 +184,10 @@ describe('Sections Constants', () => {
           'RD 1514/2009',
           'RD Nitratos',
           'Protocolos',
-          'Depuración y Reutilización',
-          'Inundaciones y Sequías',
-          'Calidad Aguas de Baño y de Consumo',
-          'Hidrología y Técnicas',
+          'Depuración y reutilización',
+          'Inundaciones y sequías',
+          'Calidad aguas de baño y de consumo',
+          'Hidrología y técnicas',
           'Otros',
         ];
 

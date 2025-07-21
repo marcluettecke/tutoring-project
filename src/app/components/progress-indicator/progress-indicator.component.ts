@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, filter } from 'rxjs';
+import { Router, NavigationEnd } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faTimes, faQuestionCircle, faClock } from '@fortawesome/free-solid-svg-icons';
 import { ProgressService } from '../../services/progress.service';
@@ -23,6 +24,7 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
   currentSession: CurrentSessionProgress | null = null;
   isVisible = false;
   isCollapsed = false;
+  isModalMinimized = false;
   
   // FontAwesome icons
   faCheck = faCheck;
@@ -31,16 +33,20 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
   faClock = faClock;
   
   private destroy$ = new Subject<void>();
-  private timeUpdateInterval: number | null = null;
+  private timeUpdateInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(
     private progressService: ProgressService,
-    private testService: TestService
+    private testService: TestService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.setupProgressListener();
     this.setupTestServiceListener();
+    this.setupRouteListener();
+    this.setupModalMinimizedListener();
+    this.updateVisibility();
   }
 
   ngOnDestroy(): void {
@@ -57,7 +63,7 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(session => {
         this.currentSession = session;
-        this.isVisible = !!(session && session.isActive && this.progressService.isTrackingEnabled);
+        this.updateVisibility();
         
         if (this.isVisible) {
           this.startTimeUpdateInterval();
@@ -72,6 +78,55 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
    */
   private setupTestServiceListener(): void {
     // Method placeholder - functionality moved to ngOnInit
+  }
+
+  /**
+   * Setup route listener to update visibility on navigation
+   */
+  private setupRouteListener(): void {
+    this.router.events
+      .pipe(
+        takeUntil(this.destroy$),
+        filter(event => event instanceof NavigationEnd)
+      )
+      .subscribe(() => {
+        this.updateVisibility();
+      });
+  }
+
+  /**
+   * Setup modal minimized listener to pause time updates
+   */
+  private setupModalMinimizedListener(): void {
+    this.testService.modalMinimized
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isMinimized => {
+        this.isModalMinimized = isMinimized;
+        
+        if (isMinimized) {
+          // Pause time updates
+          this.clearTimeUpdateInterval();
+        } else if (this.isVisible) {
+          // Resume time updates
+          this.startTimeUpdateInterval();
+        }
+      });
+  }
+
+  /**
+   * Update component visibility based on route and session state
+   */
+  private updateVisibility(): void {
+    const currentUrl = this.router.url;
+    const hiddenRoutes = ['/login', '/addQuestion', '/test', '/results', '/exam-configuration'];
+    
+    // Hide on certain routes
+    const isHiddenRoute = hiddenRoutes.some(route => currentUrl.includes(route));
+    
+    // Also need active tracking session
+    const hasActiveSession = !!(this.currentSession && this.currentSession.isActive && this.progressService.isTrackingEnabled);
+    
+    this.isVisible = !isHiddenRoute && hasActiveSession;
   }
 
   /**
@@ -113,7 +168,7 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
   get elapsedTimeText(): string {
     if (!this.currentSession) return '0:00';
     
-    const elapsed = Date.now() - this.currentSession.startTime;
+    const elapsed = this.progressService.getElapsedTime(this.currentSession.startTime);
     const minutes = Math.floor(elapsed / 60000);
     const seconds = Math.floor((elapsed % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;

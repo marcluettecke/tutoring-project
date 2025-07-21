@@ -58,11 +58,6 @@ export class TestCardComponent implements OnInit, OnDestroy {
     }
     
     this.firstTimeClicked = false;
-    
-    // Also update with TestService data for backward compatibility
-    if (this.progressService.isTrackingEnabled && this.testService.correctAnswers) {
-      this.progressService.updateFromTestService(this.testService.correctAnswers);
-    }
   }
 
   /**

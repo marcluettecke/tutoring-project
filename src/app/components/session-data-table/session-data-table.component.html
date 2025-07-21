@@ -15,6 +15,7 @@
             <th>Preguntas</th>
             <th>Correctas</th>
             <th>Incorrectas</th>
+            <th>En blanco</th>
             <th>Precisión</th>
             <th>Tiempo total</th>
             <th>Tiempo/pregunta</th>
@@ -32,9 +33,12 @@
               <td class="incorrect-count">
                 <span class="count-badge wrong">{{ section.incorrectAnswers }}</span>
               </td>
+              <td class="blank-count">
+                <span class="count-badge blank">{{ formatBlankCount(section.blankAnswers) }}</span>
+              </td>
               <td class="accuracy-rate">
                 <span class="accuracy-badge" [class]="getSectionAccuracyLevel(section)">
-                  {{ getSectionAccuracy(section).toFixed(1) }}%
+                  {{ formatSpanishPercentage(getSectionAccuracy(section), 1) }}
                 </span>
               </td>
               <td class="time-total">{{ formatTimeSpent(section.timeSpent) }}</td>

@@ -1,14 +1,18 @@
-<div class="backdrop" (click)="handleCloseClick()"></div>
+<div class="backdrop" [class.minimized]="isMinimized" (click)="!isMinimized && handleCloseClick()"></div>
 
-<div class="result-modal">
+<div class="result-modal" [class.minimized]="isMinimized">
   <div class="modal-header">
     <h2 class="result-title">Resultados de tu prueba</h2>
-    <button class="close-button" (click)="handleCloseClick()" aria-label="Cerrar">
-      <fa-icon [icon]="faTimes"></fa-icon>
+    <button 
+      class="minimize-button"
+      (click)="toggleMinimize()"
+      [title]="isMinimized ? 'Maximizar' : 'Minimizar'">
+      <fa-icon [icon]="isMinimized ? faExpand : faMinus"></fa-icon>
     </button>
   </div>
 
-  <div class="modal-content">
+  @if (!isMinimized) {
+    <div class="modal-content">
     <div class="tab-navigation">
       <button 
         class="tab-button"
@@ -34,22 +38,22 @@
             <div class="overall-score" [class]="getSectionPerformanceLevel('total')">
               <div class="score-circle">
                 @if (selectedSession && selectedSessionId !== 'current' && comparisonMode === 'individual') {
-                  <div class="score-value">{{ (selectedSession.testScore || selectedSession.score || 0).toFixed(2) }}</div>
+                  <div class="score-value">{{ formatSpanishNumber(selectedSession.testScore || selectedSession.score || 0, 2) }}</div>
                   <div class="score-label">Puntuación del examen</div>
                   <div class="score-explanation">({{ formatSessionForDropdown(selectedSession) }})</div>
                 } @else {
-                  <div class="score-value">{{ overallScore.toFixed(2) }}</div>
+                  <div class="score-value">{{ formatSpanishNumber(overallScore, 2) }}</div>
                   <div class="score-label">Puntuación del examen</div>
-                  <div class="score-explanation">(Correcto: +1, Incorrecto: -0.33)</div>
+                  <div class="score-explanation">(Correcto: +1, Incorrecto: -0,33)</div>
                 }
               </div>
               <div class="accuracy-display">
                 @if (selectedSession && selectedSessionId !== 'current' && comparisonMode === 'individual') {
-                  <div class="accuracy-value">{{ getHistoricalAccuracy().toFixed(2) }}%</div>
+                  <div class="accuracy-value">{{ formatSpanishPercentage(getHistoricalAccuracy(), 2) }}</div>
                   <div class="accuracy-label">Precisión</div>
                   <div class="accuracy-explanation">({{ selectedSession.correctAnswers }}/{{ selectedSession.questionsAnswered }} correctas)</div>
                 } @else {
-                  <div class="accuracy-value">{{ overallAccuracy.toFixed(2) }}%</div>
+                  <div class="accuracy-value">{{ formatSpanishPercentage(overallAccuracy, 2) }}</div>
                   <div class="accuracy-label">Precisión</div>
                   <div class="accuracy-explanation">({{ correctAnswers.total.correct || 0 }}/{{ (correctAnswers.total.correct || 0) + (correctAnswers.total.incorrect || 0) }} correctas)</div>
                 }
@@ -132,7 +136,7 @@
                         </td>
                         <td class="accuracy-rate">
                           <span class="accuracy-badge" [class]="getSectionAccuracyLevel(section)">
-                            {{ getSectionAccuracy(section).toFixed(1) }}%
+                            {{ formatSpanishPercentage(getSectionAccuracy(section), 1) }}
                           </span>
                         </td>
                         <td class="time-total">{{ formatTimeSpent(section.timeSpent) }}</td>
@@ -235,7 +239,7 @@
                 <span class="count-badge blank">{{ selectedSession.blankAnswers || 0 }}</span>
               </td>
               <td class="score-value">
-                <strong>{{ (selectedSession.testScore || selectedSession.score || 0).toFixed(2) }}</strong>
+                <strong>{{ formatSpanishNumber(selectedSession.testScore || selectedSession.score || 0, 2) }}</strong>
               </td>
               <td class="status-indicator">
                 @if (getHistoricalAccuracy() >= 85) {
@@ -264,7 +268,7 @@
                   <span class="count-badge blank">{{ correctAnswers[section].blank }}</span>
                 </td>
                 <td class="score-value">
-                  <strong>{{ (correctAnswers[section].correct - (0.33 * correctAnswers[section].incorrect)).toFixed(2) }}</strong>
+                  <strong>{{ formatSpanishNumber(correctAnswers[section].correct - (0.33 * correctAnswers[section].incorrect), 2) }}</strong>
                 </td>
                 <td class="status-indicator">
                   @if (getSectionPerformanceLevel(section) === 'excellent') {
@@ -322,28 +326,25 @@
         (click)="saveAndClose()">
         <fa-icon [icon]="faCheck"></fa-icon>
         @if (selectedSession && selectedSessionId !== 'current') {
-          <span>Guardar sesión actual y continuar</span>
+          <span>Guardar sesión actual y finalizar</span>
         } @else {
-          <span>Guardar y continuar</span>
+          <span>Guardar y finalizar</span>
         }
       </button>
     } @else {
-      <button class="btn btn-secondary" (click)="handleRetryClick()">
-        <fa-icon [icon]="faArrowRight" transform="rotate-180"></fa-icon>
-        <span>Repetir examen</span>
+      <button class="btn btn-primary" (click)="reviewAnswers()">
+        <fa-icon [icon]="faEye"></fa-icon>
+        <span>Comprobar respuestas</span>
       </button>
       <button class="btn btn-secondary" (click)="handleCloseClick()">
         <fa-icon [icon]="faTimes"></fa-icon>
-        <span>Ir a inicio</span>
+        <span>Salir sin guardar</span>
       </button>
       <button class="btn btn-success" (click)="saveTestAndClose()">
         <fa-icon [icon]="faCheck"></fa-icon>
-        @if (selectedSession && selectedSessionId !== 'current') {
-          <span>Guardar examen actual y continuar</span>
-        } @else {
-          <span>Guardar y continuar</span>
-        }
+        <span>Guardar y finalizar</span>
       </button>
     }
   </div>
+  }
 </div>

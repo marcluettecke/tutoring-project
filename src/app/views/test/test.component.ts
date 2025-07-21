@@ -179,10 +179,6 @@ export class TestComponent implements OnInit, OnDestroy {
     });
   }
 
-  openModal() {
-    this.modalOpen = true
-  }
-
   closeModal() {
     this.modalOpen = false;
   }
@@ -220,6 +216,16 @@ export class TestComponent implements OnInit, OnDestroy {
     // Navigate to exam configuration to select new test
     this.router.navigate(['/exam-configuration']);
   }
+
+  /**
+   * Handle modal minimized state change
+   */
+  onModalMinimizedChange(isMinimized: boolean) {
+    // For test exams, questions are already disabled when test ends
+    // But we still update the state for consistency
+    this.testService.setModalMinimized(isMinimized);
+  }
+
 
   ngOnDestroy() {
     if (this.questionSubscription) {

@@ -35,6 +35,11 @@ export class ChartDataService {
    * Convert TestSession to SectionProgressData format for charts
    */
   convertSessionToChartData(session: TestSession): SectionProgressData[] {
+    // If session has sectionBreakdown, use it directly
+    if (session.sectionBreakdown && session.sectionBreakdown.length > 0) {
+      return session.sectionBreakdown;
+    }
+    
     // For test exams, create section data based on typical distribution
     if (session.mode === 'test') {
       return this.createTestExamSectionData(session);

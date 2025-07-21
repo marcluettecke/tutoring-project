@@ -18,38 +18,70 @@ describe('ExamConfigurationComponent', () => {
     // Create 20 administrativo questions
     ...Array.from({ length: 20 }, (_, i) => ({
       id: `admin-${i}`,
-      question: `Admin Question ${i}`,
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 'A',
+      questionText: `Admin Question ${i}`,
+      questionIndex: i,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'a',
+      explanation: 'Test explanation',
       mainSection: 'administrativo',
-      subSection: 'general'
+      subSection: 'general',
+      subSectionIndex: 0
     })),
     // Create 25 medio ambiente questions
     ...Array.from({ length: 25 }, (_, i) => ({
       id: `medio-${i}`,
-      question: `Medio Question ${i}`,
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 'B',
+      questionText: `Medio Question ${i}`,
+      questionIndex: i,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'b',
+      explanation: 'Test explanation',
       mainSection: 'medio ambiente',
-      subSection: 'general'
+      subSection: 'general',
+      subSectionIndex: 0
     })),
     // Create 20 costas questions
     ...Array.from({ length: 20 }, (_, i) => ({
       id: `costas-${i}`,
-      question: `Costas Question ${i}`,
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 'C',
+      questionText: `Costas Question ${i}`,
+      questionIndex: i,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'c',
+      explanation: 'Test explanation',
       mainSection: 'costas',
-      subSection: 'general'
+      subSection: 'general',
+      subSectionIndex: 0
     })),
     // Create 35 aguas questions
     ...Array.from({ length: 35 }, (_, i) => ({
       id: `aguas-${i}`,
-      question: `Aguas Question ${i}`,
-      options: ['A', 'B', 'C', 'D'],
-      correctAnswer: 'D',
+      questionText: `Aguas Question ${i}`,
+      questionIndex: i,
+      answers: [
+        { id: 'a', text: 'A' },
+        { id: 'b', text: 'B' },
+        { id: 'c', text: 'C' },
+        { id: 'd', text: 'D' }
+      ],
+      correctAnswer: 'd',
+      explanation: 'Test explanation',
       mainSection: 'aguas',
-      subSection: 'general'
+      subSection: 'general',
+      subSectionIndex: 0
     }))
   ];
 
@@ -228,10 +260,98 @@ describe('ExamConfigurationComponent', () => {
           { mainSection: 'aguas', subsections: [], questionCount: 35 }
         ],
         totalQuestions: 100,
-        questionDistribution: 'custom'
+        questionDistribution: 'custom',
+        timeInMinutes: 100
       });
       
       expect(router.navigate).toHaveBeenCalledWith(['/test']);
+    });
+  });
+
+  describe('Timer Configuration', () => {
+    beforeEach(() => {
+      component.ngOnInit();
+    });
+
+    it('should initialize with one minute per question as default', () => {
+      expect(component.selectedTimeOption).toBe('oneMinutePerQuestion');
+    });
+
+    it('should set unlimited time when unlimited option is selected', async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      component.applyStandardExamPreset();
+      component.calculateTotalQuestions();
+      component.selectedTimeOption = 'unlimited';
+      component.startExam();
+      
+      expect(testService.setCustomConfiguration).toHaveBeenCalledWith(
+        expect.objectContaining({
+          timeInMinutes: undefined
+        })
+      );
+    });
+
+    it('should set time based on question count for one minute per question', async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      component.applyStandardExamPreset();
+      component.calculateTotalQuestions();
+      component.selectedTimeOption = 'oneMinutePerQuestion';
+      component.startExam();
+      
+      expect(testService.setCustomConfiguration).toHaveBeenCalledWith(
+        expect.objectContaining({
+          timeInMinutes: 100 // Total questions = 100
+        })
+      );
+    });
+
+    it('should set 120 minutes for standard exam option', async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      component.applyStandardExamPreset();
+      component.calculateTotalQuestions();
+      component.selectedTimeOption = 'standard';
+      component.startExam();
+      
+      expect(testService.setCustomConfiguration).toHaveBeenCalledWith(
+        expect.objectContaining({
+          timeInMinutes: 120
+        })
+      );
+    });
+
+    it('should set custom time when custom option is selected', async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      component.applyStandardExamPreset();
+      component.calculateTotalQuestions();
+      component.selectedTimeOption = 'custom';
+      component.customTimeMinutes = 90;
+      component.startExam();
+      
+      expect(testService.setCustomConfiguration).toHaveBeenCalledWith(
+        expect.objectContaining({
+          timeInMinutes: 90
+        })
+      );
+    });
+
+    it('should use default 60 minutes if custom time is not set', async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      component.applyStandardExamPreset();
+      component.calculateTotalQuestions();
+      component.selectedTimeOption = 'custom';
+      component.customTimeMinutes = 0; // Invalid value
+      component.startExam();
+      
+      expect(testService.setCustomConfiguration).toHaveBeenCalledWith(
+        expect.objectContaining({
+          timeInMinutes: 60
+        })
+      );
     });
   });
 });

@@ -34,7 +34,7 @@ export class InactivityWarningModalComponent implements OnInit, OnDestroy {
   faSignOut = faSignOutAlt;
   
   private destroy$ = new Subject<void>();
-  private countdownInterval: number | null = null;
+  private countdownInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(
     private progressService: ProgressService,
