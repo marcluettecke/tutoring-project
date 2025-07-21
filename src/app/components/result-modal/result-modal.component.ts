@@ -1098,7 +1098,8 @@ export class ResultModalComponent implements OnInit, OnDestroy {
       this._chartData = null;
       this._lastProgressSession = this.progressSession;
       
-      this._chartData = this.chartDataService.buildSectionDataFromProgressSession(this.progressSession);
+      const rawData = this.chartDataService.buildSectionDataFromProgressSession(this.progressSession);
+      this._chartData = this.aggregateByMainSection(rawData);
       return this._chartData;
     } else if (!this.isProgressTracking && this.correctAnswers) {
       // Cache the current correctAnswers reference
@@ -1111,6 +1112,52 @@ export class ResultModalComponent implements OnInit, OnDestroy {
     }
     
     return [];
+  }
+
+  /**
+   * Aggregate section data by main section to avoid duplicate sections in charts
+   */
+  private aggregateByMainSection(data: SectionProgressData[]): SectionProgressData[] {
+    const aggregated = new Map<string, SectionProgressData>();
+    
+    for (const item of data) {
+      const mainSection = item.sectionName;
+      
+      if (aggregated.has(mainSection)) {
+        // Merge with existing section data
+        const existing = aggregated.get(mainSection)!;
+        aggregated.set(mainSection, {
+          sectionName: mainSection,
+          subSection: undefined, // Don't show subsection in aggregated data
+          questionsAnswered: existing.questionsAnswered + item.questionsAnswered,
+          correctAnswers: existing.correctAnswers + item.correctAnswers,
+          incorrectAnswers: existing.incorrectAnswers + item.incorrectAnswers,
+          blankAnswers: (existing.blankAnswers || 0) + (item.blankAnswers || 0),
+          timeSpent: existing.timeSpent + item.timeSpent,
+          accuracy: 0, // Will be recalculated
+          avgTimePerQuestion: 0 // Will be recalculated
+        });
+      } else {
+        // Add new section
+        aggregated.set(mainSection, {
+          ...item,
+          subSection: undefined // Don't show subsection in aggregated data
+        });
+      }
+    }
+    
+    // Recalculate accuracy and avg time for aggregated data
+    const result = Array.from(aggregated.values());
+    for (const section of result) {
+      section.accuracy = section.questionsAnswered > 0 
+        ? (section.correctAnswers / section.questionsAnswered) * 100 
+        : 0;
+      section.avgTimePerQuestion = section.questionsAnswered > 0 
+        ? section.timeSpent / section.questionsAnswered 
+        : 0;
+    }
+    
+    return result;
   }
 
   /**

@@ -10,7 +10,7 @@ import {
   faList
 } from '@fortawesome/free-solid-svg-icons';
 
-export type StatisticType = 'accuracy' | 'performance' | 'time';
+export type StatisticType = 'accuracy' | 'performance';
 export type VisualizationType = 'bar' | 'pie';
 
 export interface ChartSelection {
@@ -168,8 +168,7 @@ export class ChartControlsComponent {
 
   statisticOptions = [
     { value: 'accuracy' as StatisticType, label: 'Resultados en %' },
-    { value: 'performance' as StatisticType, label: 'Resultados en respuestas totales' },
-    { value: 'time' as StatisticType, label: 'Tiempo por sección' }
+    { value: 'performance' as StatisticType, label: 'Resultados en respuestas totales' }
   ];
 
   visualizationOptions = [

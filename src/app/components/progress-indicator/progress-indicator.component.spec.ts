@@ -19,7 +19,8 @@ describe('ProgressIndicatorComponent', () => {
     mockProgressService = {
       currentSession$: currentSessionSubject,
       isTrackingEnabled: true,
-      updateSessionProgress: vi.fn()
+      updateSessionProgress: vi.fn(),
+      getElapsedTime: vi.fn().mockReturnValue(0)
     };
 
     mockTestService = {
@@ -202,6 +203,9 @@ describe('ProgressIndicatorComponent', () => {
         sectionBreakdown: []
       };
 
+      // Mock getElapsedTime to return 125000ms (2:05)
+      mockProgressService.getElapsedTime.mockReturnValue(125000);
+      
       component.currentSession = session;
       expect(component.elapsedTimeText).toBe('2:05');
     });

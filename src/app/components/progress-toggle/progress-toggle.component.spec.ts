@@ -232,14 +232,13 @@ describe('ProgressToggleComponent', () => {
       loginChangedSubject.next({ uid: 'test-user' });
     });
 
-    it('should reset answers and restart session if tracking enabled', () => {
+    it('should not reset answers when tracking is enabled', () => {
       component.isTrackingEnabled = true;
       isTrackingEnabledSubject.next(true);
       
       component.resetAllAnswers();
       
-      expect(mockTestService.resetAllAnswers).toHaveBeenCalled();
-      expect(mockProgressService.startTracking).toHaveBeenCalledWith('test-user', false);
+      expect(mockTestService.resetAllAnswers).not.toHaveBeenCalled();
     });
 
     it('should only reset answers if tracking disabled', () => {

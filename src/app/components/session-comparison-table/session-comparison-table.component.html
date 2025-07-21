@@ -124,6 +124,60 @@
             </td>
           </tr>
 
+          <tr class="comparison-row">
+            <td class="metric-label">
+              <fa-icon [icon]="faTable" class="metric-icon"></fa-icon>
+              Tiempo Total
+            </td>
+            <td class="current-value">{{ formatTimeFromSeconds(session1!.timeSpent || 0) }}</td>
+            <td class="historical-value">{{ formatTimeFromSeconds(session2!.timeSpent || 0) }}</td>
+            <td class="difference-value">
+              @if ((session1!.timeSpent || 0) - (session2!.timeSpent || 0) < 0) {
+                <span class="diff improvement">
+                  <fa-icon [icon]="faArrowDown"></fa-icon>
+                  -{{ formatTimeFromSeconds(Math.abs((session1!.timeSpent || 0) - (session2!.timeSpent || 0))) }}
+                </span>
+              } @else if ((session1!.timeSpent || 0) - (session2!.timeSpent || 0) > 0) {
+                <span class="diff decline">
+                  <fa-icon [icon]="faArrowUp"></fa-icon>
+                  +{{ formatTimeFromSeconds(Math.abs((session1!.timeSpent || 0) - (session2!.timeSpent || 0))) }}
+                </span>
+              } @else {
+                <span class="diff neutral">
+                  <fa-icon [icon]="faArrowRight"></fa-icon>
+                  Sin cambio
+                </span>
+              }
+            </td>
+          </tr>
+          
+          <tr class="comparison-row">
+            <td class="metric-label">
+              <fa-icon [icon]="faTable" class="metric-icon"></fa-icon>
+              Tiempo por Pregunta
+            </td>
+            <td class="current-value">{{ formatAverageTimePerQuestion(session1!) }}</td>
+            <td class="historical-value">{{ formatAverageTimePerQuestion(session2!) }}</td>
+            <td class="difference-value">
+              @if (getComparisonMetrics()!.avgTimePerQuestion.diff < 0) {
+                <span class="diff improvement">
+                  <fa-icon [icon]="faArrowDown"></fa-icon>
+                  -{{ formatTimeFromSeconds(Math.abs(getComparisonMetrics()!.avgTimePerQuestion.diff / 1000)) }}
+                </span>
+              } @else if (getComparisonMetrics()!.avgTimePerQuestion.diff > 0) {
+                <span class="diff decline">
+                  <fa-icon [icon]="faArrowUp"></fa-icon>
+                  +{{ formatTimeFromSeconds(Math.abs(getComparisonMetrics()!.avgTimePerQuestion.diff / 1000)) }}
+                </span>
+              } @else {
+                <span class="diff neutral">
+                  <fa-icon [icon]="faArrowRight"></fa-icon>
+                  Sin cambio
+                </span>
+              }
+            </td>
+          </tr>
+
           @if (session1!.testScore !== undefined || session2!.testScore !== undefined) {
             <tr class="comparison-row">
               <td class="metric-label">

@@ -6,7 +6,6 @@ import { faExchangeAlt, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { ChartControlsComponent, StatisticType, VisualizationType, ChartSelection } from '../chart-controls/chart-controls.component';
 import { AccuracyChartComponent } from '../accuracy-chart/accuracy-chart.component';
 import { PerformanceChartComponent } from '../performance-chart/performance-chart.component';
-import { TimeChartComponent } from '../time-chart/time-chart.component';
 import { SectionProgressData, TestSession } from '../../../models/progress.model';
 import { ChartDataService } from '../../../services/chart-data.service';
 
@@ -19,8 +18,7 @@ import { ChartDataService } from '../../../services/chart-data.service';
     FontAwesomeModule,
     ChartControlsComponent,
     AccuracyChartComponent,
-    PerformanceChartComponent,
-    TimeChartComponent
+    PerformanceChartComponent
   ],
   template: `
     <div class="charts-container">
@@ -54,13 +52,6 @@ import { ChartDataService } from '../../../services/chart-data.service';
                     [height]="'400px'"
                     [isProgressTracking]="isProgressTracking">
                   </app-performance-chart>
-                } @else if (selectedStatistic === 'time') {
-                  <app-time-chart
-                    [data]="currentData"
-                    [title]="'Tiempo por sección'"
-                    [chartType]="selectedVisualization"
-                    [height]="'400px'">
-                  </app-time-chart>
                 }
               </div>
             </div>
@@ -83,13 +74,6 @@ import { ChartDataService } from '../../../services/chart-data.service';
                     [height]="'400px'"
                     [isProgressTracking]="isProgressTracking">
                   </app-performance-chart>
-                } @else if (selectedStatistic === 'time') {
-                  <app-time-chart
-                    [data]="selectedData"
-                    [title]="'Tiempo por sección'"
-                    [chartType]="selectedVisualization"
-                    [height]="'400px'">
-                  </app-time-chart>
                 }
               </div>
             </div>
@@ -114,14 +98,6 @@ import { ChartDataService } from '../../../services/chart-data.service';
                 [height]="'500px'"
                 [isProgressTracking]="isProgressTracking">
               </app-performance-chart>
-            } @else if (selectedStatistic === 'time') {
-              <app-time-chart
-                [data]="displayData"
-                [title]="'Tiempo por Sección'"
-                [subtitle]="getChartSubtitle()"
-                [chartType]="selectedVisualization"
-                [height]="'500px'">
-              </app-time-chart>
             }
           </div>
         }

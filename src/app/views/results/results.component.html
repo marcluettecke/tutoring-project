@@ -85,6 +85,8 @@
                         <th>En blanco</th>
                       }
                       <th>Precisión</th>
+                      <th>Tiempo total</th>
+                      <th>Tiempo/pregunta</th>
                       @if (selectedSession1.testScore !== undefined) {
                         <th>Puntuación</th>
                       }
@@ -115,6 +117,8 @@
                           {{ formatSpanishPercentage(getSessionAccuracy(selectedSession1), 1) }}
                         </span>
                       </td>
+                      <td>{{ formatTimeFromSeconds(selectedSession1.timeSpent || 0) }}</td>
+                      <td>{{ formatAverageTimePerQuestion(selectedSession1) }}</td>
                       @if (selectedSession1.testScore !== undefined) {
                         <td>
                           <strong>{{ formatSpanishNumber(selectedSession1.testScore, 2) }}</strong>

@@ -138,4 +138,23 @@ export class SessionComparisonTableComponent {
     if (!this.session1 || !this.session2) return 0;
     return this.getSessionScore(this.session1) - this.getSessionScore(this.session2);
   }
+
+  /**
+   * Format time from seconds to mm:ss format
+   */
+  formatTimeFromSeconds(seconds: number): string {
+    if (!seconds || seconds === 0) return '0:00';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
+  /**
+   * Format average time per question
+   */
+  formatAverageTimePerQuestion(session: TestSession): string {
+    if (!session.questionsAnswered || session.questionsAnswered === 0) return '0:00';
+    const avgTimeSeconds = (session.timeSpent || 0) / session.questionsAnswered;
+    return this.formatTimeFromSeconds(Math.round(avgTimeSeconds));
+  }
 }

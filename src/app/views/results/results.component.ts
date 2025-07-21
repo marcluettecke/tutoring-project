@@ -161,7 +161,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
   private updateSession1Breakdown(): void {
     if (this.selectedSession1) {
       this.session1SectionBreakdown = this.extractSectionBreakdown(this.selectedSession1);
-      this.chartData1 = this.chartDataService.convertSessionToChartData(this.selectedSession1);
+      const rawChartData = this.chartDataService.convertSessionToChartData(this.selectedSession1);
+      this.chartData1 = this.aggregateByMainSection(rawChartData);
       this.currentChartData = this.chartData1;
       this.updateChartComparison();
     } else {
@@ -178,7 +179,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
   private updateSession2Breakdown(): void {
     if (this.selectedSession2) {
       this.session2SectionBreakdown = this.extractSectionBreakdown(this.selectedSession2);
-      this.chartData2 = this.chartDataService.convertSessionToChartData(this.selectedSession2);
+      const rawChartData = this.chartDataService.convertSessionToChartData(this.selectedSession2);
+      this.chartData2 = this.aggregateByMainSection(rawChartData);
       this.updateChartComparison();
     } else {
       this.session2SectionBreakdown = [];
@@ -350,5 +352,70 @@ export class ResultsComponent implements OnInit, OnDestroy {
    */
   formatSpanishPercentage(value: number, decimals: number = 1): string {
     return formatSpanishPercentage(value, decimals);
+  }
+
+  /**
+   * Format time from seconds to mm:ss format
+   */
+  formatTimeFromSeconds(seconds: number): string {
+    if (!seconds || seconds === 0) return '0:00';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
+  /**
+   * Format average time per question
+   */
+  formatAverageTimePerQuestion(session: TestSession): string {
+    if (!session.questionsAnswered || session.questionsAnswered === 0) return '0:00';
+    const avgTimeSeconds = (session.timeSpent || 0) / session.questionsAnswered;
+    return this.formatTimeFromSeconds(Math.round(avgTimeSeconds));
+  }
+
+  /**
+   * Aggregate section data by main section to avoid duplicate sections in charts
+   */
+  private aggregateByMainSection(data: SectionProgressData[]): SectionProgressData[] {
+    const aggregated = new Map<string, SectionProgressData>();
+    
+    for (const item of data) {
+      const mainSection = item.sectionName;
+      
+      if (aggregated.has(mainSection)) {
+        // Merge with existing section data
+        const existing = aggregated.get(mainSection)!;
+        aggregated.set(mainSection, {
+          sectionName: mainSection,
+          subSection: undefined, // Don't show subsection in aggregated data
+          questionsAnswered: existing.questionsAnswered + item.questionsAnswered,
+          correctAnswers: existing.correctAnswers + item.correctAnswers,
+          incorrectAnswers: existing.incorrectAnswers + item.incorrectAnswers,
+          blankAnswers: (existing.blankAnswers || 0) + (item.blankAnswers || 0),
+          timeSpent: existing.timeSpent + item.timeSpent,
+          accuracy: 0, // Will be recalculated
+          avgTimePerQuestion: 0 // Will be recalculated
+        });
+      } else {
+        // Add new section
+        aggregated.set(mainSection, {
+          ...item,
+          subSection: undefined // Don't show subsection in aggregated data
+        });
+      }
+    }
+    
+    // Recalculate accuracy and avg time for aggregated data
+    const result = Array.from(aggregated.values());
+    for (const section of result) {
+      section.accuracy = section.questionsAnswered > 0 
+        ? (section.correctAnswers / section.questionsAnswered) * 100 
+        : 0;
+      section.avgTimePerQuestion = section.questionsAnswered > 0 
+        ? section.timeSpent / section.questionsAnswered 
+        : 0;
+    }
+    
+    return result;
   }
 }
