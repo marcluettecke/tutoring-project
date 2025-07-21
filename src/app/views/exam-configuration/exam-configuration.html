@@ -168,6 +168,62 @@
         </div>
       </div>
       
+      <!-- Time Configuration -->
+      @if (getTotalSelectedQuestions() > 0) {
+        <div class="time-configuration-section">
+          <h3>Configuración de Tiempo</h3>
+          <div class="time-options">
+            <label class="radio-option">
+              <input type="radio" 
+                     name="timeOption" 
+                     value="unlimited" 
+                     [(ngModel)]="selectedTimeOption"
+                     [ngModelOptions]="{standalone: true}">
+              <span>Sin límite</span>
+            </label>
+            
+            <label class="radio-option">
+              <input type="radio" 
+                     name="timeOption" 
+                     value="oneMinutePerQuestion" 
+                     [(ngModel)]="selectedTimeOption"
+                     [ngModelOptions]="{standalone: true}">
+              <span>1 minuto por pregunta ({{ getTotalSelectedQuestions() }} minutos)</span>
+            </label>
+            
+            <label class="radio-option standard-weight">
+              <input type="radio" 
+                     name="timeOption" 
+                     value="standard" 
+                     [(ngModel)]="selectedTimeOption"
+                     [ngModelOptions]="{standalone: true}">
+              <span>Examen estándar (120 minutos) <fa-icon [icon]="faClock"></fa-icon></span>
+            </label>
+            
+            <label class="radio-option">
+              <input type="radio" 
+                     name="timeOption" 
+                     value="custom" 
+                     [(ngModel)]="selectedTimeOption"
+                     [ngModelOptions]="{standalone: true}">
+              <span>Personalizado</span>
+            </label>
+            
+            @if (selectedTimeOption === 'custom') {
+              <div class="custom-time-input">
+                <label>Minutos:</label>
+                <input type="number" 
+                       [(ngModel)]="customTimeMinutes"
+                       [ngModelOptions]="{standalone: true}"
+                       min="1" 
+                       max="999"
+                       placeholder="Ingrese minutos">
+              </div>
+            }
+          </div>
+        </div>
+      }
+
       <!-- Validation Errors -->
       @if (validationErrors.length > 0) {
         <div class="validation-errors">

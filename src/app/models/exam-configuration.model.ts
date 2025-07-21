@@ -9,6 +9,7 @@ export interface ExamConfiguration {
   totalQuestions: number | 'full'; // 'full' means all available questions
   questionDistribution: 'proportional' | 'custom'; // proportional distributes based on available questions
   customDistribution?: { [key: string]: number }; // Custom question counts per section/subsection
+  timeInMinutes?: number; // undefined means no time limit (count upwards)
 }
 
 export interface SectionQuestionInfo {
