@@ -22,6 +22,8 @@ export class TimerComponent implements OnInit, OnDestroy {
   isModalMinimized = false
   modalMinimizedSubscription: Subscription
   isCountingUp: boolean = false // For unlimited time mode
+  private startTime: number = 0 // Track when timer started
+  private totalElapsedTime: number = 0 // Track total elapsed time
 
   constructor(private testService: TestService) {
   }
@@ -72,6 +74,8 @@ export class TimerComponent implements OnInit, OnDestroy {
     this.testStatus = 'started'
     // Initialize display time when starting
     this.displayTime = this.transform(this.remainingTime)
+    // Record start time
+    this.startTime = Date.now()
     
     this.timerSubscription = this.obsTimer.subscribe(_timeRun => {
       // Don't update time if modal is minimized or test has ended
@@ -83,11 +87,16 @@ export class TimerComponent implements OnInit, OnDestroy {
         // Count up mode - no time limit
         this.remainingTime += 1
         this.displayTime = this.transform(this.remainingTime)
+        // Update test service with elapsed time
+        this.testService.setElapsedTime(this.remainingTime)
       } else {
         // Count down mode - normal timer
         if (this.remainingTime !== 0) {
           this.remainingTime -= 1
           this.displayTime = this.transform(this.remainingTime)
+          // Calculate elapsed time
+          const elapsedSeconds = Math.floor((Date.now() - this.startTime) / 1000)
+          this.testService.setElapsedTime(elapsedSeconds)
         } else {
           this.testService.handleTestEnd()
           this.timerSubscription.unsubscribe()

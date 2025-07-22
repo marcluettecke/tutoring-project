@@ -135,19 +135,27 @@ export class ResultModalComponent implements OnInit, OnDestroy {
 
       // Build section breakdown from correctAnswers data
       const sectionBreakdown: SectionProgressData[] = [];
+      const totalElapsedTime = this.testService.getElapsedTime();
+      const totalQuestionsAnswered = this.correctAnswers.total.correct + this.correctAnswers.total.incorrect;
+      
       Object.keys(this.correctAnswers).forEach(sectionName => {
         if (sectionName !== 'total' && this.correctAnswers[sectionName]) {
           const sectionData = this.correctAnswers[sectionName];
           const questionsAnswered = sectionData.correct + sectionData.incorrect;
           
           if (questionsAnswered > 0) {
+            // Proportionally distribute time based on questions answered
+            const sectionTimeSpent = totalQuestionsAnswered > 0 
+              ? Math.floor((questionsAnswered / totalQuestionsAnswered) * totalElapsedTime * 1000) // Convert to milliseconds
+              : 0;
+              
             sectionBreakdown.push({
               sectionName: sectionName,
               questionsAnswered: questionsAnswered,
               correctAnswers: sectionData.correct,
               incorrectAnswers: sectionData.incorrect,
               blankAnswers: sectionData.blank,
-              timeSpent: 0, // Test mode doesn't track time per section
+              timeSpent: sectionTimeSpent,
               accuracy: questionsAnswered > 0 ? (sectionData.correct / questionsAnswered) * 100 : 0
             });
           }
@@ -165,7 +173,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
         correctAnswers: this.correctAnswers.total.correct,
         incorrectAnswers: this.correctAnswers.total.incorrect,
         blankAnswers: this.correctAnswers.total.blank,
-        timeSpent: 0,
+        timeSpent: this.testService.getElapsedTime(),
         completed: true,
         score: this.overallAccuracy,
         testScore: this.overallScore,
@@ -832,7 +840,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
         correctAnswers: total.correct,
         incorrectAnswers: total.incorrect,
         blankAnswers: total.blank,
-        timeSpent: 0, // Test service doesn't track time
+        timeSpent: this.testService.getElapsedTime(),
         completed: true,
         testScore: this.overallScore,
         sectionBreakdown: sectionBreakdown // Include section breakdown

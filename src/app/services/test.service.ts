@@ -28,6 +28,7 @@ export class TestService {
   correctAnswers: CorrectAnswersState
   private answeredQuestions: Map<string, string> = new Map(); // questionId -> selectedAnswer
   private customConfiguration: ExamConfiguration | null = null;
+  private elapsedTime: number = 0; // Time in seconds
 
   constructor() {
     // Restore custom configuration first
@@ -157,6 +158,9 @@ export class TestService {
     // Clear answered questions
     this.answeredQuestions.clear();
     this.clearAnsweredQuestionsFromStorage();
+    
+    // Reset elapsed time
+    this.resetElapsedTime();
     
     this.clearRadioButtons();
     this.resetAnswers.next();
@@ -426,5 +430,28 @@ export class TestService {
       this.correctAnswers[mainSection].blank += diff;
       this.correctAnswers.total.blank += diff;
     }
+  }
+
+  /**
+   * Set the elapsed time for the test
+   * @param timeInSeconds Time elapsed in seconds
+   */
+  setElapsedTime(timeInSeconds: number): void {
+    this.elapsedTime = timeInSeconds;
+  }
+
+  /**
+   * Get the elapsed time for the test
+   * @returns Time elapsed in seconds
+   */
+  getElapsedTime(): number {
+    return this.elapsedTime;
+  }
+
+  /**
+   * Reset elapsed time
+   */
+  resetElapsedTime(): void {
+    this.elapsedTime = 0;
   }
 }

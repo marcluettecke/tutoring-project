@@ -3,7 +3,7 @@
   h3 {
     font-size: 1.2rem;
     font-weight: 600;
-    color: var(--secondary-700);
+    color: var(--secondary-color-base);
     margin-bottom: 16px;
     
     .session-indicator {
@@ -26,7 +26,7 @@
     font-size: 0.9rem;
     
     thead {
-      background: var(--secondary-700);
+      background: var(--secondary-color-base);
       color: white;
       
       th {
@@ -65,11 +65,11 @@
           
           &.section-name {
             font-weight: 600;
-            color: var(--secondary-700);
+            color: var(--secondary-color-base);
           }
           
           &.subsection-name {
-            color: var(--secondary-600);
+            color: var(--secondary-color-light);
             font-style: italic;
           }
           
@@ -126,7 +126,7 @@
           &.time-per-question {
             font-family: 'Courier New', monospace;
             font-size: 0.85rem;
-            color: var(--secondary-600);
+            color: var(--secondary-color-light);
           }
         }
       }

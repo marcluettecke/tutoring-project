@@ -13,7 +13,7 @@
   .page-title {
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--secondary-700);
+    color: var(--secondary-color-base);
     margin-bottom: 8px;
   }
 
@@ -45,7 +45,7 @@
       label {
         display: block;
         font-weight: 600;
-        color: var(--secondary-700);
+        color: var(--secondary-color-base);
         margin-bottom: 8px;
         font-size: 0.9rem;
       }
@@ -63,17 +63,17 @@
 
           &:focus {
             outline: none;
-            border-color: var(--secondary-400);
+            border-color: var(--secondary-color-lightest);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
           }
 
           &:hover {
-            border-color: var(--secondary-300);
+            border-color: var(--secondary-color-light);
           }
 
           optgroup {
             font-weight: 600;
-            color: var(--secondary-700);
+            color: var(--secondary-color-base);
           }
 
           option {
@@ -118,12 +118,12 @@
 
     &:hover {
       background: var(--gray-200);
-      color: var(--secondary-700);
+      color: var(--secondary-color-base);
       transform: translateY(-1px);
     }
 
     &.active {
-      background: var(--secondary-600);
+      background: var(--secondary-color-light);
       color: white;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       transform: translateY(-2px);
@@ -154,7 +154,7 @@
       h3 {
         font-size: 1.5rem;
         font-weight: 600;
-        color: var(--secondary-700);
+        color: var(--secondary-color-base);
         margin-bottom: 24px;
         text-align: center;
       }
@@ -165,7 +165,7 @@
         h3 {
           font-size: 1.25rem;
           font-weight: 600;
-          color: var(--secondary-700);
+          color: var(--secondary-color-base);
           margin-bottom: 16px;
         }
         
@@ -178,7 +178,7 @@
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
           
           thead {
-            background: var(--secondary-700);
+            background: var(--secondary-color-base);
             color: white;
             
             th {
@@ -254,7 +254,7 @@
                 }
                 
                 strong {
-                  color: var(--secondary-700);
+                  color: var(--secondary-color-base);
                   font-weight: 600;
                 }
               }
