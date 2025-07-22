@@ -10,7 +10,8 @@ export class ChartDataService {
    * Convert TestServiceAnswers to SectionProgressData format for charts
    */
   convertTestServiceAnswersToChartData(correctAnswers: TestServiceAnswers): SectionProgressData[] {
-    const sectionsInOrder = ['administrativo', 'medio ambiente', 'costas', 'aguas', 'total'];
+    // Exclude 'total' here as it will be calculated by aggregateByMainSection
+    const sectionsInOrder = ['administrativo', 'medio ambiente', 'costas', 'aguas'];
     
     return sectionsInOrder.map(section => {
       const sectionData = correctAnswers[section];
@@ -119,7 +120,7 @@ export class ChartDataService {
   buildSectionDataFromProgressSession(progressSession: CurrentSessionProgress): SectionProgressData[] {
     // If no section breakdown, create it from the session data
     if (!progressSession.sectionBreakdown || progressSession.sectionBreakdown.length === 0) {
-      return [{
+      const sectionData: SectionProgressData[] = [{
         sectionName: progressSession.mainSection || 'total',
         subSection: progressSession.subSection,
         questionsAnswered: progressSession.questionsAnswered,
@@ -132,6 +133,11 @@ export class ChartDataService {
         avgTimePerQuestion: progressSession.questionsAnswered > 0 ? 
           progressSession.timeElapsed / progressSession.questionsAnswered : 0
       }];
+      
+      // Don't add a redundant total entry for single section practice
+      // The aggregateByMainSection method will handle adding total when needed
+      
+      return sectionData;
     } else {
       return progressSession.sectionBreakdown;
     }

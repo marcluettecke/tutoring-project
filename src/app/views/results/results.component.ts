@@ -378,6 +378,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
    */
   private aggregateByMainSection(data: SectionProgressData[]): SectionProgressData[] {
     const aggregated = new Map<string, SectionProgressData>();
+    const hasTotal = data.some(item => item.sectionName === 'total');
     
     for (const item of data) {
       const mainSection = item.sectionName;
@@ -414,6 +415,49 @@ export class ResultsComponent implements OnInit, OnDestroy {
       section.avgTimePerQuestion = section.questionsAnswered > 0 
         ? section.timeSpent / section.questionsAnswered 
         : 0;
+    }
+    
+    // Count sections with actual data (excluding 'total')
+    // Include sections that have blank answers even if no questions answered yet
+    const sectionsWithData = result.filter(s => 
+      s.sectionName !== 'total' && 
+      (s.questionsAnswered > 0 || (s.blankAnswers && s.blankAnswers > 0))
+    );
+    
+    // If there was no total in the original data and we have more than one section with data, calculate and add it
+    if (!hasTotal && sectionsWithData.length > 1) {
+      const total: SectionProgressData = {
+        sectionName: 'total',
+        subSection: undefined,
+        questionsAnswered: 0,
+        correctAnswers: 0,
+        incorrectAnswers: 0,
+        blankAnswers: 0,
+        timeSpent: 0,
+        accuracy: 0,
+        avgTimePerQuestion: 0
+      };
+      
+      // Sum up all sections (excluding 'total' if it somehow exists)
+      for (const section of result) {
+        if (section.sectionName !== 'total') {
+          total.questionsAnswered += section.questionsAnswered;
+          total.correctAnswers += section.correctAnswers;
+          total.incorrectAnswers += section.incorrectAnswers;
+          total.blankAnswers = (total.blankAnswers || 0) + (section.blankAnswers || 0);
+          total.timeSpent += section.timeSpent;
+        }
+      }
+      
+      // Calculate accuracy and avg time for total
+      total.accuracy = total.questionsAnswered > 0 
+        ? (total.correctAnswers / total.questionsAnswered) * 100 
+        : 0;
+      total.avgTimePerQuestion = total.questionsAnswered > 0 
+        ? total.timeSpent / total.questionsAnswered 
+        : 0;
+      
+      result.push(total);
     }
     
     return result;

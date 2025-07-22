@@ -1023,6 +1023,18 @@ export class ResultModalComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get chart data for selected session with aggregation
+   */
+  getSelectedSessionChartData(): SectionProgressData[] {
+    if (!this.selectedSession) {
+      return [];
+    }
+    
+    const rawData = this.chartDataService.convertSessionToChartData(this.selectedSession);
+    return this.aggregateByMainSection(rawData);
+  }
+
+  /**
    * Determine the main section based on answers
    * Returns the section name if all answers are from one section, or 'Varias' if mixed
    */
@@ -1134,7 +1146,8 @@ export class ResultModalComponent implements OnInit, OnDestroy {
       this._lastCorrectAnswers = this.correctAnswers;
       
       // Convert TestServiceAnswers to SectionProgressData format using shared service
-      this._cachedChartData = this.chartDataService.convertTestServiceAnswersToChartData(this.correctAnswers);
+      const rawData = this.chartDataService.convertTestServiceAnswersToChartData(this.correctAnswers);
+      this._cachedChartData = this.aggregateByMainSection(rawData);
       
       return this._cachedChartData;
     }
@@ -1147,6 +1160,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    */
   private aggregateByMainSection(data: SectionProgressData[]): SectionProgressData[] {
     const aggregated = new Map<string, SectionProgressData>();
+    const hasTotal = data.some(item => item.sectionName === 'total');
     
     for (const item of data) {
       const mainSection = item.sectionName;
@@ -1183,6 +1197,49 @@ export class ResultModalComponent implements OnInit, OnDestroy {
       section.avgTimePerQuestion = section.questionsAnswered > 0 
         ? section.timeSpent / section.questionsAnswered 
         : 0;
+    }
+    
+    // Count sections with actual data (excluding 'total')
+    // Include sections that have blank answers even if no questions answered yet
+    const sectionsWithData = result.filter(s => 
+      s.sectionName !== 'total' && 
+      (s.questionsAnswered > 0 || (s.blankAnswers && s.blankAnswers > 0))
+    );
+    
+    // If there was no total in the original data and we have more than one section with data, calculate and add it
+    if (!hasTotal && sectionsWithData.length > 1) {
+      const total: SectionProgressData = {
+        sectionName: 'total',
+        subSection: undefined,
+        questionsAnswered: 0,
+        correctAnswers: 0,
+        incorrectAnswers: 0,
+        blankAnswers: 0,
+        timeSpent: 0,
+        accuracy: 0,
+        avgTimePerQuestion: 0
+      };
+      
+      // Sum up all sections (excluding 'total' if it somehow exists)
+      for (const section of result) {
+        if (section.sectionName !== 'total') {
+          total.questionsAnswered += section.questionsAnswered;
+          total.correctAnswers += section.correctAnswers;
+          total.incorrectAnswers += section.incorrectAnswers;
+          total.blankAnswers = (total.blankAnswers || 0) + (section.blankAnswers || 0);
+          total.timeSpent += section.timeSpent;
+        }
+      }
+      
+      // Calculate accuracy and avg time for total
+      total.accuracy = total.questionsAnswered > 0 
+        ? (total.correctAnswers / total.questionsAnswered) * 100 
+        : 0;
+      total.avgTimePerQuestion = total.questionsAnswered > 0 
+        ? total.timeSpent / total.questionsAnswered 
+        : 0;
+      
+      result.push(total);
     }
     
     return result;

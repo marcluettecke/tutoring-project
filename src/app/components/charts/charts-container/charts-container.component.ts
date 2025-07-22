@@ -187,6 +187,7 @@ export class ChartsContainerComponent implements OnChanges {
   @Input() canCompare: boolean = false;
   @Input() comparisonTooltip: string = '';
   @Input() isProgressTracking: boolean = false;
+  @Input() selectedSessionData: SectionProgressData[] = [];
 
   // Chart configuration
   selectedStatistic: StatisticType = 'accuracy';
@@ -221,13 +222,18 @@ export class ChartsContainerComponent implements OnChanges {
     this.displayData = this.currentData;
     
     // Set selected data for comparison mode
-    if (this.comparisonMode === 'compare' && this.selectedSession) {
-      this.selectedData = this.chartDataService.convertSessionToChartData(this.selectedSession);
+    if (this.comparisonMode === 'compare') {
+      // Use the processed selectedSessionData if provided, otherwise convert from session
+      if (this.selectedSessionData && this.selectedSessionData.length > 0) {
+        this.selectedData = this.selectedSessionData;
+      } else if (this.selectedSession) {
+        this.selectedData = this.chartDataService.convertSessionToChartData(this.selectedSession);
+      } else {
+        this.selectedData = [];
+      }
     } else {
       this.selectedData = [];
     }
-    
-    this.comparisonData = [];
   }
 
 
