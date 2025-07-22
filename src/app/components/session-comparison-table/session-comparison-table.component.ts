@@ -157,4 +157,21 @@ export class SessionComparisonTableComponent {
     const avgTimeSeconds = (session.timeSpent || 0) / session.questionsAnswered;
     return this.formatTimeFromSeconds(Math.round(avgTimeSeconds));
   }
+
+  /**
+   * Get the rounded time difference for comparison
+   */
+  getRoundedTimeDifference(): number {
+    if (!this.session1 || !this.session2) return 0;
+    
+    const avgTime1 = this.session1.questionsAnswered > 0 
+      ? Math.round((this.session1.timeSpent || 0) / this.session1.questionsAnswered)
+      : 0;
+    
+    const avgTime2 = this.session2.questionsAnswered > 0 
+      ? Math.round((this.session2.timeSpent || 0) / this.session2.questionsAnswered)
+      : 0;
+    
+    return avgTime1 - avgTime2;
+  }
 }

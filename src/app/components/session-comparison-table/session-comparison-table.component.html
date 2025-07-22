@@ -159,20 +159,20 @@
             <td class="current-value">{{ formatAverageTimePerQuestion(session1!) }}</td>
             <td class="historical-value">{{ formatAverageTimePerQuestion(session2!) }}</td>
             <td class="difference-value">
-              @if (getComparisonMetrics()!.avgTimePerQuestion.diff < 0) {
+              @if (getRoundedTimeDifference() < 0) {
                 <span class="diff improvement">
                   <fa-icon [icon]="faArrowDown"></fa-icon>
-                  -{{ formatTimeFromSeconds(Math.abs(getComparisonMetrics()!.avgTimePerQuestion.diff / 1000)) }}
+                  -{{ formatTimeFromSeconds(Math.abs(getRoundedTimeDifference())) }}
                 </span>
-              } @else if (getComparisonMetrics()!.avgTimePerQuestion.diff > 0) {
+              } @else if (getRoundedTimeDifference() > 0) {
                 <span class="diff decline">
                   <fa-icon [icon]="faArrowUp"></fa-icon>
-                  +{{ formatTimeFromSeconds(Math.abs(getComparisonMetrics()!.avgTimePerQuestion.diff / 1000)) }}
+                  +{{ formatTimeFromSeconds(Math.abs(getRoundedTimeDifference())) }}
                 </span>
               } @else {
                 <span class="diff neutral">
                   <fa-icon [icon]="faArrowRight"></fa-icon>
-                  Sin cambio
+                  -0:00
                 </span>
               }
             </td>
