@@ -7,6 +7,7 @@ import {AuthGuard, redirectUnauthorizedTo} from '@angular/fire/auth-guard';
 import {TestComponent} from "./views/test/test.component";
 import {ResultsComponent} from "./views/results/results.component";
 import {ExamConfigurationComponent} from "./views/exam-configuration/exam-configuration";
+import {DataMigrationComponent} from "./views/data-migration/data-migration.component";
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
 
@@ -39,6 +40,12 @@ const routes: Routes = [
   {
     path: 'addQuestion',
     component: AddQuestionComponent,
+    canActivate: [AdminGuard, AuthGuard],
+    data: {authGuardPipe: redirectUnauthorizedToLogin}
+  },
+  {
+    path: 'data-migration',
+    component: DataMigrationComponent,
     canActivate: [AdminGuard, AuthGuard],
     data: {authGuardPipe: redirectUnauthorizedToLogin}
   },

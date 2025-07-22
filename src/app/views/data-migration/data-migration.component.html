@@ -1,0 +1,155 @@
+<div class="data-migration-container">
+  <h1>Data Migration Tool</h1>
+  
+  <div class="migration-info">
+    <h2>Subsection Migration</h2>
+    <div class="info-grid">
+      <div class="info-item">
+        <label for="old-subsection">From:</label>
+        <input 
+          id="old-subsection"
+          type="text" 
+          class="value old-value" 
+          [(ngModel)]="OLD_SUBSECTION"
+          placeholder="Enter old subsection name">
+      </div>
+      <div class="info-item">
+        <label for="new-subsection">To:</label>
+        <input 
+          id="new-subsection"
+          type="text" 
+          class="value new-value" 
+          [(ngModel)]="NEW_SUBSECTION"
+          placeholder="Enter new subsection name">
+      </div>
+      <div class="info-item">
+        <label for="main-section">Main Section:</label>
+        <input 
+          id="main-section"
+          type="text" 
+          class="value" 
+          [(ngModel)]="MAIN_SECTION"
+          placeholder="Enter main section">
+      </div>
+    </div>
+  </div>
+
+  <div class="actions-section">
+    <h3>Step 1: Search Affected Questions</h3>
+    <button 
+      class="btn btn-primary"
+      (click)="searchAffectedQuestions()"
+      [disabled]="isLoading">
+      <fa-icon [icon]="faSearch"></fa-icon>
+      {{ isLoading ? 'Searching...' : 'Search Affected Questions' }}
+    </button>
+
+    @if (hasSearched) {
+      <div class="results-summary" [class.no-results]="affectedQuestions.length === 0">
+        <p>{{ summaryText }}</p>
+      </div>
+      
+      @if (affectedQuestions.length === 0 && allSubsections.length > 0) {
+        <div class="subsections-found">
+          <h4>Current subsections in {{ MAIN_SECTION }}:</h4>
+          <ul>
+            @for (subsection of allSubsections; track subsection) {
+              <li>{{ subsection }}</li>
+            }
+          </ul>
+          <p class="info-note">The database appears to have already been migrated. All questions are using the new subsection name.</p>
+        </div>
+      }
+    }
+  </div>
+
+  @if (affectedQuestions.length > 0) {
+    <div class="backup-section">
+      <h3>Step 2: Create Backup</h3>
+      <div class="warning-message">
+        <fa-icon [icon]="faExclamationTriangle"></fa-icon>
+        <p>Important: Download both backup files before proceeding with any migration.</p>
+      </div>
+      
+      <div class="backup-buttons">
+        <button 
+          class="btn btn-success"
+          (click)="exportAsMarkdown()">
+          <fa-icon [icon]="faDownload"></fa-icon>
+          Download as Markdown
+        </button>
+        
+        <button 
+          class="btn btn-success"
+          (click)="exportAsJson()">
+          <fa-icon [icon]="faDownload"></fa-icon>
+          Download as JSON
+        </button>
+      </div>
+
+      @if (backupCreated) {
+        <div class="success-message">
+          ✓ Backup created successfully
+        </div>
+      }
+    </div>
+
+    <div class="preview-section">
+      <h3>Affected Questions Preview</h3>
+      <div class="questions-preview">
+        @for (question of affectedQuestions.slice(0, 3); track question.id) {
+          <div class="question-preview">
+            <p class="question-id">ID: {{ question.id }}</p>
+            <p class="question-text">{{ question.questionText.substring(0, 100) }}{{ question.questionText.length > 100 ? '...' : '' }}</p>
+            <p class="question-meta">
+              <span class="meta-item">Índices: SubSec={{ question.subSectionIndex }}, Q={{ question.questionIndex }}</span>
+            </p>
+          </div>
+        }
+        @if (affectedQuestions.length > 3) {
+          <p class="more-questions">... and {{ affectedQuestions.length - 3 }} more questions</p>
+        }
+      </div>
+    </div>
+
+    <div class="migration-section">
+      <h3>Step 3: Execute Migration</h3>
+      
+      @if (migrationComplete) {
+        <div class="migration-success">
+          <p>✓ Migration completed successfully!</p>
+          <p>All questions have been updated to use the new subsection name.</p>
+          <button class="btn btn-primary" (click)="searchAffectedQuestions()">
+            Search Again
+          </button>
+        </div>
+      } @else if (isMigrating) {
+        <div class="migration-progress">
+          <p>Migration in progress...</p>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="migrationProgress"></div>
+          </div>
+          <p>{{ migrationProgress }}% complete</p>
+        </div>
+      } @else {
+        <button 
+          class="btn btn-danger"
+          (click)="executeMigration()"
+          [disabled]="!backupCreated">
+          <fa-icon [icon]="faExclamationTriangle"></fa-icon>
+          Execute Migration
+        </button>
+        
+        @if (!backupCreated) {
+          <p class="warning-text">Please create a backup before executing the migration.</p>
+        }
+      }
+      
+      @if (migrationError) {
+        <div class="migration-error">
+          <p>{{ migrationError }}</p>
+        </div>
+      }
+    </div>
+  }
+</div>

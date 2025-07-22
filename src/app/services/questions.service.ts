@@ -7,7 +7,9 @@ import {
   collectionData,
   addDoc,
   query,
-  where
+  where,
+  doc,
+  updateDoc
 } from '@angular/fire/firestore';
 
 @Injectable({
@@ -54,6 +56,18 @@ export class QuestionsService {
   addQuestion(newQuestion: Question) {
     const questionsCollection = collection(this.firestore, 'questions');
     return addDoc(questionsCollection, newQuestion);
+  }
+
+  /**
+   * Update a question's subsection
+   * @param questionId The ID of the question to update
+   * @param newSubsection The new subsection name
+   */
+  async updateQuestionSubsection(questionId: string, newSubsection: string): Promise<void> {
+    const questionRef = doc(this.firestore, 'questions', questionId);
+    return updateDoc(questionRef, {
+      subSection: newSubsection
+    });
   }
 
 }

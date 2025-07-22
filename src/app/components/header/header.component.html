@@ -15,6 +15,9 @@
     @if (isLoggedIn && isAdmin) {
       <a (click)="navigateWithGuard('/addQuestion', $event)" class="navigation-link" routerLinkActive="active">Agregar pregunta</a>
     }
+    @if (isLoggedIn && isAdmin) {
+      <a (click)="navigateWithGuard('/data-migration', $event)" class="navigation-link" routerLinkActive="active">Data Migration</a>
+    }
     @if (isLoggedIn) {
       <a class="navigation-link log-button" (click)="logout()">Logout</a>
     }
