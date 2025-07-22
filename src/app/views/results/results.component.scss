@@ -159,8 +159,15 @@
         text-align: center;
       }
 
-      .session-summary-table {
+      .session-summary {
         margin-bottom: 32px;
+        
+        h3 {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: var(--secondary-700);
+          margin-bottom: 16px;
+        }
         
         .summary-table {
           width: 100%;
@@ -382,7 +389,7 @@
   }
 
   .single-session-view {
-    .session-summary-table {
+    .session-summary {
       overflow-x: auto;
       
       .summary-table {

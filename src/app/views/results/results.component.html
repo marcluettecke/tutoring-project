@@ -65,10 +65,9 @@
           @if (selectedSession1 && viewMode === 'single') {
             <!-- Single Session View -->
             <div class="single-session-view">
-              <h3>Detalles de la sesión</h3>
-              
               <!-- Session Summary -->
-              <div class="session-summary-table">
+              <div class="session-summary">
+                <h3>Detalles de la sesión</h3>
                 <table class="summary-table">
                   <thead>
                     <tr>
@@ -128,6 +127,8 @@
                   </tbody>
                 </table>
               </div>
+              
+              <br>
               
               <!-- Session Data Table -->
               <app-session-data-table
