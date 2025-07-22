@@ -50,7 +50,7 @@ import { getSectionBackgroundColors, getSectionBorderColors } from '../../../con
 })
 export class AccuracyChartComponent implements OnChanges {
   @Input() data: SectionProgressData[] = [];
-  @Input() title: string = 'Precisión por Sección';
+  @Input() title: string = 'Resultados en %';
   @Input() subtitle?: string;
   @Input() height: string = '300px';
   @Input() chartType: string = 'bar';

@@ -49,7 +49,7 @@ import { formatSpanishPercentage } from '../../../utils/number-format.utils';
 })
 export class PerformanceChartComponent implements OnChanges {
   @Input() data: SectionProgressData[] = [];
-  @Input() title: string = 'Rendimiento por Sección';
+  @Input() title: string = 'Resultados en respuestas totales';
   @Input() subtitle?: string;
   @Input() height: string = '300px';
   @Input() chartType: string = 'bar';

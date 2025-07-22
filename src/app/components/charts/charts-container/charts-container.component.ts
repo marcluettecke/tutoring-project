@@ -40,14 +40,14 @@ import { ChartDataService } from '../../../services/chart-data.service';
                 @if (selectedStatistic === 'accuracy') {
                   <app-accuracy-chart
                     [data]="currentData"
-                    [title]="'Precisión por sección'"
+                    [title]="'Resultados en %'"
                     [chartType]="selectedVisualization"
                     [height]="'400px'">
                   </app-accuracy-chart>
                 } @else if (selectedStatistic === 'performance') {
                   <app-performance-chart
                     [data]="currentData"
-                    [title]="'Distribución de respuestas'"
+                    [title]="'Resultados en respuestas totales'"
                     [chartType]="selectedVisualization"
                     [height]="'400px'"
                     [isProgressTracking]="isProgressTracking">
@@ -62,14 +62,14 @@ import { ChartDataService } from '../../../services/chart-data.service';
                 @if (selectedStatistic === 'accuracy') {
                   <app-accuracy-chart
                     [data]="selectedData"
-                    [title]="'Precisión por sección'"
+                    [title]="'Resultados en %'"
                     [chartType]="selectedVisualization"
                     [height]="'400px'">
                   </app-accuracy-chart>
                 } @else if (selectedStatistic === 'performance') {
                   <app-performance-chart
                     [data]="selectedData"
-                    [title]="'Distribución de respuestas'"
+                    [title]="'Resultados en respuestas totales'"
                     [chartType]="selectedVisualization"
                     [height]="'400px'"
                     [isProgressTracking]="isProgressTracking">
@@ -84,7 +84,7 @@ import { ChartDataService } from '../../../services/chart-data.service';
             @if (selectedStatistic === 'accuracy') {
               <app-accuracy-chart
                 [data]="displayData"
-                [title]="'Precisión por Sección'"
+                [title]="'Resultados en %'"
                 [subtitle]="getChartSubtitle()"
                 [chartType]="selectedVisualization"
                 [height]="'500px'">
@@ -92,7 +92,7 @@ import { ChartDataService } from '../../../services/chart-data.service';
             } @else if (selectedStatistic === 'performance') {
               <app-performance-chart
                 [data]="displayData"
-                [title]="'Distribución de Respuestas'"
+                [title]="'Resultados en respuestas totales'"
                 [subtitle]="getChartSubtitle()"
                 [chartType]="selectedVisualization"
                 [height]="'500px'"

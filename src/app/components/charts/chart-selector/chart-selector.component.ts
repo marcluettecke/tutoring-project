@@ -149,7 +149,7 @@ export class ChartSelectorComponent {
   chartOptions: ChartOption[] = [
     {
       type: 'accuracy',
-      name: 'Precisión por sección',
+      name: 'Resultados en %',
       icon: faBullseye,
       description: 'Porcentaje de respuestas correctas por sección',
       enabled: true
