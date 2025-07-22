@@ -60,7 +60,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private testService: TestService,
+    public testService: TestService,
     private progressService: ProgressService,
     private chartDataService: ChartDataService
   ) { }
@@ -986,6 +986,26 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    */
   get Math() {
     return Math;
+  }
+
+  /**
+   * Access to Date for template use
+   */
+  get Date() {
+    return Date;
+  }
+
+  /**
+   * Format date timestamp to readable string
+   */
+  formatDate(timestamp: number): string {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
   }
 
   /**

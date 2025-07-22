@@ -100,6 +100,58 @@
 
           @if (comparisonMode === 'individual') {
             @if (displaySectionBreakdown && displaySectionBreakdown.length > 0) {
+              <!-- Session Summary for Practice Mode -->
+              <div class="session-summary">
+                <h3>Detalles de la sesión</h3>
+                <table class="summary-table">
+                  <tbody>
+                    @if (selectedSession && selectedSessionId !== 'current') {
+                      <tr>
+                        <td class="label">Tipo</td>
+                        <td class="value">{{ selectedSession.mode === 'test' ? 'Examen' : 'Práctica' }}</td>
+                      </tr>
+                      <tr>
+                        <td class="label">Fecha</td>
+                        <td class="value">{{ formatDate(selectedSession.timestamp) }}</td>
+                      </tr>
+                      <tr>
+                        <td class="label">Preguntas respondidas</td>
+                        <td class="value">{{ selectedSession.questionsAnswered }}</td>
+                      </tr>
+                      <tr>
+                        <td class="label">Tiempo total</td>
+                        <td class="value">{{ formatTime(selectedSession.timeSpent * 1000) }}</td>
+                      </tr>
+                      <tr>
+                        <td class="label">Puntuación</td>
+                        <td class="value">{{ formatSpanishNumber(selectedSession.score || 0, 2) }}</td>
+                      </tr>
+                    } @else if (progressSession) {
+                      <tr>
+                        <td class="label">Tipo</td>
+                        <td class="value">Práctica</td>
+                      </tr>
+                      <tr>
+                        <td class="label">Fecha</td>
+                        <td class="value">{{ formatDate(Date.now()) }}</td>
+                      </tr>
+                      <tr>
+                        <td class="label">Preguntas respondidas</td>
+                        <td class="value">{{ progressSession.questionsAnswered }}</td>
+                      </tr>
+                      <tr>
+                        <td class="label">Tiempo total</td>
+                        <td class="value">{{ formatTime(progressSession.timeElapsed * 1000) }}</td>
+                      </tr>
+                      <tr>
+                        <td class="label">Precisión</td>
+                        <td class="value">{{ formatSpanishPercentage(progressSession.questionsAnswered > 0 ? (progressSession.correctAnswers / progressSession.questionsAnswered) * 100 : 0, 1) }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
               <div class="section-breakdown">
                 <h3>Desglose por secciones 
                   @if (selectedSessionId === 'current' || !selectedSession) {
@@ -211,7 +263,60 @@
       </app-session-comparison-table>
     }
 
+    <!-- Session Summary for Exam Mode -->
+    <div class="session-summary">
+      <h3>Detalles de la sesión</h3>
+      <table class="summary-table">
+        <tbody>
+          @if (selectedSession && selectedSessionId !== 'current' && comparisonMode === 'individual') {
+            <tr>
+              <td class="label">Tipo</td>
+              <td class="value">{{ selectedSession.mode === 'test' ? 'Examen' : 'Práctica' }}</td>
+            </tr>
+            <tr>
+              <td class="label">Fecha</td>
+              <td class="value">{{ formatDate(selectedSession.timestamp) }}</td>
+            </tr>
+            <tr>
+              <td class="label">Preguntas respondidas</td>
+              <td class="value">{{ selectedSession.questionsAnswered }}</td>
+            </tr>
+            <tr>
+              <td class="label">Tiempo total</td>
+              <td class="value">{{ formatTime(selectedSession.timeSpent * 1000) }}</td>
+            </tr>
+            <tr>
+              <td class="label">Puntuación</td>
+              <td class="value">{{ formatSpanishNumber(selectedSession.testScore || selectedSession.score || 0, 2) }}</td>
+            </tr>
+          } @else {
+            <tr>
+              <td class="label">Tipo</td>
+              <td class="value">Examen</td>
+            </tr>
+            <tr>
+              <td class="label">Fecha</td>
+              <td class="value">{{ formatDate(Date.now()) }}</td>
+            </tr>
+            <tr>
+              <td class="label">Preguntas respondidas</td>
+              <td class="value">{{ correctAnswers.total.correct + correctAnswers.total.incorrect }}</td>
+            </tr>
+            <tr>
+              <td class="label">Tiempo total</td>
+              <td class="value">{{ formatTime(testService.getElapsedTime() * 1000) }}</td>
+            </tr>
+            <tr>
+              <td class="label">Puntuación</td>
+              <td class="value">{{ formatSpanishNumber(overallScore, 2) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
     <div class="results-table-container">
+      <h3>Resultados por sección</h3>
       <table class="results-table">
         <thead>
           <tr>
