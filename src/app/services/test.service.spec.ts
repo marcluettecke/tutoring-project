@@ -243,7 +243,13 @@ describe('TestService', () => {
   describe('Navigation and Status', () => {
     it('should emit test started status', () => {
       return new Promise<void>((resolve) => {
+        // Skip the initial empty value from BehaviorSubject
+        let isFirstEmission = true;
         service.testStatus.subscribe(status => {
+          if (isFirstEmission) {
+            isFirstEmission = false;
+            return;
+          }
           expect(status).toBe('started');
           resolve();
         });
@@ -254,7 +260,13 @@ describe('TestService', () => {
 
     it('should emit test ended status', () => {
       return new Promise<void>((resolve) => {
+        // Skip the initial empty value from BehaviorSubject
+        let isFirstEmission = true;
         service.testStatus.subscribe(status => {
+          if (isFirstEmission) {
+            isFirstEmission = false;
+            return;
+          }
           expect(status).toBe('ended');
           resolve();
         });
