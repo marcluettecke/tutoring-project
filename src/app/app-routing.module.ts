@@ -43,6 +43,8 @@ const routes: Routes = [
     data: {authGuardPipe: redirectUnauthorizedToLogin}
   },
   {path: '', redirectTo: 'login', pathMatch: 'full'},
+  // Catch-all route - redirect to login for any undefined routes
+  {path: '**', redirectTo: 'login'}
 ];
 
 export { routes };

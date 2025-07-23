@@ -30,10 +30,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Initialize with current auth state
     this.isLoggedIn = !!this.authService.loginChanged.value;
     
+    // Double check if we're on login page
+    if (this.router.url === '/login') {
+      this.isLoggedIn = false;
+      this.isAdmin = false;
+    }
+    
     this.authService.loginChanged
       .pipe(takeUntil(this.destroy$))
       .subscribe(user => {
         this.isLoggedIn = !!user;
+        // Hide navigation immediately when logged out
+        if (!user) {
+          this.isAdmin = false;
+        }
       });
       
     this.accountsService.isAdmin

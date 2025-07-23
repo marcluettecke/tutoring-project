@@ -62,9 +62,7 @@ export class ProgressService {
     if ((existingSession && existingSession.isActive) || (restoredSession && restoredSession.isActive)) {
       // Resume existing session
       if (restoredSession && !existingSession) {
-        // Reset pause tracking when resuming
-        this.pausedAt = null;
-        this.totalPausedTime = 0;
+        // Note: pausedAt and totalPausedTime are already restored by restoreSessionState()
         this.currentSessionSubject.next(restoredSession);
         this.lastAnswerTimestamp = restoredSession.lastAnswerTimestamp || null;
       }
@@ -208,9 +206,7 @@ export class ProgressService {
       if (restoredSession && restoredSession.isActive) {
         // Continue the existing active session
         this.isTrackingEnabledSubject.next(true);
-        // Reset pause tracking when resuming
-        this.pausedAt = null;
-        this.totalPausedTime = 0;
+        // Note: pausedAt and totalPausedTime are already restored by restoreSessionState()
         this.currentSessionSubject.next(restoredSession);
         this.lastAnswerTimestamp = restoredSession.lastAnswerTimestamp || null;
         this.startInactivityMonitoring();
@@ -1085,6 +1081,8 @@ export class ProgressService {
       const stateToSave = {
         session: currentSession,
         lastAnswerTimestamp: this.lastAnswerTimestamp,
+        pausedAt: this.pausedAt,
+        totalPausedTime: this.totalPausedTime,
         timestamp: Date.now()
       };
       localStorage.setItem(this.SESSION_STATE_KEY, JSON.stringify(stateToSave));
@@ -1108,6 +1106,10 @@ export class ProgressService {
           return null;
         }
         
+        // Restore pause tracking state
+        this.pausedAt = parsed.pausedAt || null;
+        this.totalPausedTime = parsed.totalPausedTime || 0;
+        
         // Update time elapsed based on saved timestamp
         const session = parsed.session;
         if (session && session.isActive) {
@@ -1129,6 +1131,9 @@ export class ProgressService {
   private clearSessionState(): void {
     try {
       localStorage.removeItem(this.SESSION_STATE_KEY);
+      // Also reset pause tracking variables when clearing session
+      this.pausedAt = null;
+      this.totalPausedTime = 0;
     } catch {
       // Error clearing session state
     }

@@ -22,6 +22,9 @@ export class AccountsService {
       .subscribe(user => {
         if (user) {
           this.checkIfAdmin(user.email as string)
+        } else {
+          // Clear admin status when logged out
+          this.resetAdminStatus()
         }
       })
   }
