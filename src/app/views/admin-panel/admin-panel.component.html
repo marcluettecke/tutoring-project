@@ -1,0 +1,37 @@
+<div class="admin-panel">
+  <div class="admin-header">
+    <h1>
+      <fa-icon [icon]="faShieldAlt"></fa-icon>
+      Panel de Administración
+    </h1>
+  </div>
+
+  <div class="admin-tabs">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'add-questions'"
+      (click)="setActiveTab('add-questions')">
+      <fa-icon [icon]="faPlus"></fa-icon>
+      Añadir Preguntas
+    </button>
+    
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'database-maintenance'"
+      (click)="setActiveTab('database-maintenance')">
+      <fa-icon [icon]="faDatabase"></fa-icon>
+      Mantenimiento BD
+    </button>
+  </div>
+
+  <div class="admin-content">
+    @switch (activeTab) {
+      @case ('add-questions') {
+        <app-add-question></app-add-question>
+      }
+      @case ('database-maintenance') {
+        <app-database-maintenance></app-database-maintenance>
+      }
+    }
+  </div>
+</div>

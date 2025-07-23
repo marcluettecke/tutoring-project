@@ -238,7 +238,7 @@ describe('ProgressToggleComponent', () => {
     it('should be hidden on admin and non-practice routes', () => {
       loginChangedSubject.next({ uid: 'test-user' });
       
-      const hiddenRoutes = ['/login', '/addQuestion', '/test', '/results', '/exam-configuration'];
+      const hiddenRoutes = ['/login', '/admin', '/test', '/results', '/exam-configuration', '/data-migration'];
       hiddenRoutes.forEach(route => {
         mockRouter.url = route;
         routerEventsSubject.next({});

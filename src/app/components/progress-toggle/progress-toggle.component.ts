@@ -97,7 +97,7 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
    */
   private updateVisibility(): void {
     const currentUrl = this.router.url;
-    const hiddenRoutes = ['/login', '/addQuestion', '/test', '/results', '/exam-configuration', '/data-migration'];
+    const hiddenRoutes = ['/login', '/admin', '/test', '/results', '/exam-configuration', '/data-migration'];
     
     // Hide if user is not authenticated
     if (!this.currentUserId) {

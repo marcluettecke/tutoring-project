@@ -83,7 +83,7 @@ describe('ProgressIndicatorComponent', () => {
     });
 
     it('should be hidden on restricted routes even with active session', () => {
-      const hiddenRoutes = ['/login', '/addQuestion', '/test', '/results', '/exam-configuration'];
+      const hiddenRoutes = ['/login', '/admin', '/test', '/results', '/exam-configuration'];
       mockProgressService.isTrackingEnabled = true;
       currentSessionSubject.next(activeSession);
       

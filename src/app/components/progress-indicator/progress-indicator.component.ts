@@ -118,7 +118,7 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
    */
   private updateVisibility(): void {
     const currentUrl = this.router.url;
-    const hiddenRoutes = ['/login', '/addQuestion', '/test', '/results', '/exam-configuration'];
+    const hiddenRoutes = ['/login', '/admin', '/test', '/results', '/exam-configuration'];
     
     // Hide on certain routes
     const isHiddenRoute = hiddenRoutes.some(route => currentUrl.includes(route));

@@ -17,7 +17,11 @@
     "format": "prettier --write \"src/**/*.{ts,html,scss,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,css,json}\"",
     "pre-commit": "npm run lint:check && npm run tsc:check && npm run test:run",
-    "ci": "npm run lint:check && npm run tsc:check && npm run test:coverage && npm run build:prod"
+    "ci": "npm run lint:check && npm run tsc:check && npm run test:coverage && npm run build:prod",
+    "backup:questions": "npx ts-node scripts/backup-questions.ts",
+    "restore:questions": "npx ts-node scripts/restore-questions.ts",
+    "analyze:subsections": "npx ts-node scripts/analyze-subsections.ts",
+    "fix:subsections": "npx ts-node scripts/fix-subsection-duplicates.ts"
   },
   "private": true,
   "dependencies": {
@@ -71,6 +75,7 @@
     "karma-jasmine": "^5.1.0",
     "karma-jasmine-html-reporter": "^2.1.0",
     "prettier": "^3.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   }
