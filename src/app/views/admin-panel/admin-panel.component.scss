@@ -1,0 +1,96 @@
+.admin-panel {
+  min-height: 100vh;
+  padding-left: 300px; /* Account for sidenav */
+
+  .admin-header {
+    background-color: var(--primary-color-dark);
+    color: white;
+    padding: 20px 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    h1 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 28px;
+    }
+  }
+
+  .admin-tabs {
+    background-color: #f8f9fa;
+    padding: 0 30px;
+    border-bottom: 2px solid #dee2e6;
+    display: flex;
+    gap: 0;
+
+    .tab-button {
+      background: none;
+      border: none;
+      padding: 15px 25px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #6c757d;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+
+      &:hover {
+        color: var(--primary-color-base);
+        background-color: rgba(0, 0, 0, 0.03);
+      }
+
+      &.active {
+        color: var(--primary-color-dark);
+        font-weight: 600;
+        border-bottom-color: var(--primary-color-dark);
+        background-color: white;
+      }
+
+      fa-icon {
+        font-size: 18px;
+      }
+    }
+  }
+
+  .admin-content {
+    background-color: white;
+    min-height: calc(100vh - 120px); /* Account for header and tabs */
+    
+    // Remove default padding from child components
+    > * {
+      padding: 0;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .admin-panel {
+    padding-left: 0;
+
+    .admin-header {
+      padding: 15px 20px;
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+
+    .admin-tabs {
+      padding: 0 20px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+
+      .tab-button {
+        padding: 12px 20px;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+    }
+  }
+}
