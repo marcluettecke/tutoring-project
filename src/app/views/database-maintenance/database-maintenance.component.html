@@ -1,0 +1,139 @@
+<div class="database-maintenance">
+  <h1>
+    <fa-icon [icon]="faDatabase"></fa-icon>
+    Mantenimiento de Base de Datos
+  </h1>
+
+  <!-- Message Display -->
+  @if (message) {
+    <div class="message" [class.success]="messageType === 'success'" 
+         [class.error]="messageType === 'error'" 
+         [class.info]="messageType === 'info'">
+      <fa-icon [icon]="messageType === 'success' ? faCheckCircle : messageType === 'error' ? faExclamationTriangle : faInfoCircle"></fa-icon>
+      {{ message }}
+    </div>
+  }
+
+  <!-- Action Buttons -->
+  <div class="actions">
+    <button class="btn btn-primary" (click)="createBackup()" [disabled]="isLoading">
+      <fa-icon [icon]="faDownload"></fa-icon>
+      Crear Copia de Seguridad
+    </button>
+
+    <button class="btn btn-secondary" (click)="analyzeSubsections()" [disabled]="isLoading">
+      <fa-icon [icon]="faSearch"></fa-icon>
+      Analizar Subsecciones
+    </button>
+  </div>
+
+  <!-- Analysis Results -->
+  @if (analysis && !isLoading) {
+    <div class="analysis-results">
+      <h2>Resultados del Análisis</h2>
+      
+      <div class="summary">
+        <div class="stat">
+          <strong>Total de preguntas:</strong> {{ analysis.totalQuestions }}
+        </div>
+        <div class="stat">
+          <strong>Subsecciones únicas:</strong> {{ analysis.uniqueSubsections }}
+        </div>
+        <div class="stat">
+          <strong>Grupos duplicados:</strong> {{ analysis.duplicateGroups.length }}
+        </div>
+        <div class="stat">
+          <strong>Problemas de capitalización:</strong> {{ getUniqueCapitalizationIssues().length }}
+        </div>
+      </div>
+
+      <!-- Duplicate Groups -->
+      @if (analysis.duplicateGroups.length > 0) {
+        <div class="issue-section">
+          <h3>
+            <fa-icon [icon]="faExclamationTriangle"></fa-icon>
+            Subsecciones Duplicadas
+          </h3>
+          
+          @for (group of analysis.duplicateGroups; track group.normalizedKey) {
+            <div class="duplicate-group">
+              <h4>{{ group.mainSection }} - "{{ group.normalizedKey.split('::')[1] }}"</h4>
+              <ul>
+                @for (variation of group.variations; track variation.name) {
+                  <li>
+                    "{{ variation.name }}" 
+                    <span class="meta">({{ variation.count }} preguntas, índice: {{ variation.subSectionIndex }})</span>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Capitalization Issues -->
+      @if (getUniqueCapitalizationIssues().length > 0) {
+        <div class="issue-section">
+          <h3>
+            <fa-icon [icon]="faExclamationTriangle"></fa-icon>
+            Problemas de Capitalización
+          </h3>
+          
+          <table class="issues-table">
+            <thead>
+              <tr>
+                <th>Sección</th>
+                <th>Actual</th>
+                <th>Sugerido</th>
+                <th>Preguntas</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (issue of getUniqueCapitalizationIssues(); track issue.current + issue.suggested) {
+                <tr>
+                  <td>{{ issue.mainSection }}</td>
+                  <td class="current">"{{ issue.current }}"</td>
+                  <td class="suggested">"{{ issue.suggested }}"</td>
+                  <td>{{ issue.questionCount }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- Fix Actions -->
+      @if (analysis.duplicateGroups.length > 0 || analysis.capitalizationIssues.length > 0) {
+        <div class="fix-actions">
+          <h3>
+            <fa-icon [icon]="faWrench"></fa-icon>
+            Acciones de Corrección
+          </h3>
+          
+          <div class="warning">
+            <fa-icon [icon]="faExclamationTriangle"></fa-icon>
+            <strong>¡IMPORTANTE!</strong> Asegúrate de tener una copia de seguridad antes de aplicar correcciones.
+          </div>
+          
+          <div class="button-group">
+            <button class="btn btn-warning" (click)="fixSubsections(true)" [disabled]="isLoading">
+              Simular Correcciones (Sin cambios)
+            </button>
+            
+            <button class="btn btn-danger" (click)="fixSubsections(false)" [disabled]="isLoading">
+              Aplicar Correcciones (¡Modificará la base de datos!)
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Loading Indicator -->
+  @if (isLoading) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Procesando...</p>
+    </div>
+  }
+</div>
