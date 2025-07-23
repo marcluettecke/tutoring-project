@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DatabaseMaintenanceService, SubsectionAnalysis } from '../../services/database-maintenance.service';
+import { DatabaseMaintenanceService, SubsectionAnalysis, BackupQuestion } from '../../services/database-maintenance.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faDatabase, faDownload, faSearch, faWrench, faExclamationTriangle, faCheckCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faDatabase, faDownload, faSearch, faWrench, faExclamationTriangle, faCheckCircle, faInfoCircle, faUpload, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-database-maintenance',
@@ -21,6 +21,8 @@ export class DatabaseMaintenanceComponent implements OnInit {
   faExclamationTriangle = faExclamationTriangle;
   faCheckCircle = faCheckCircle;
   faInfoCircle = faInfoCircle;
+  faUpload = faUpload;
+  faTrash = faTrash;
 
   // State
   isLoading = false;
@@ -33,8 +35,14 @@ export class DatabaseMaintenanceComponent implements OnInit {
   // Backup data
   backupData: Record<string, unknown>[] | null = null;
   backupTimestamp = '';
+  
+  // Simulation results
+  simulationDetails: Array<{from: string, to: string, count: number}> | null = null;
 
-  constructor(private maintenanceService: DatabaseMaintenanceService) {}
+  constructor(
+    private maintenanceService: DatabaseMaintenanceService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     // Initial message
@@ -151,13 +159,16 @@ export class DatabaseMaintenanceComponent implements OnInit {
     this.isLoading = true;
     const action = dryRun ? 'Simulando' : 'Aplicando';
     this.showMessage(`${action} correcciones...`, 'info');
+    this.cdr.detectChanges(); // Force UI update
     
     try {
       const result = await this.maintenanceService.fixSubsections(dryRun);
       
       if (dryRun) {
+        this.simulationDetails = result.details || null;
         this.showMessage(`Simulación completa: ${result.updated} preguntas serían actualizadas`, 'info');
       } else {
+        this.simulationDetails = null;
         this.showMessage(result.message, 'success');
         // Re-run analysis after fix
         await this.analyzeSubsections();
@@ -168,12 +179,14 @@ export class DatabaseMaintenanceComponent implements OnInit {
       this.showMessage(`Error al corregir las subsecciones: ${errorMessage}`, 'error');
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges(); // Force UI update
     }
   }
 
   private showMessage(text: string, type: 'success' | 'error' | 'info'): void {
     this.message = text;
     this.messageType = type;
+    this.cdr.detectChanges(); // Force UI update
   }
 
   getUniqueCapitalizationIssues() {
@@ -187,5 +200,62 @@ export class DatabaseMaintenanceComponent implements OnInit {
       seen.add(key);
       return true;
     });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    
+    const file = input.files[0];
+    if (!file.name.endsWith('.json')) {
+      this.showMessage('Por favor selecciona un archivo JSON de respaldo', 'error');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const backupData = JSON.parse(e.target?.result as string) as BackupQuestion[];
+        this.confirmRestore(backupData);
+      } catch (error) {
+        console.error('Error parsing backup file:', error);
+        this.showMessage('Error al leer el archivo de respaldo', 'error');
+      }
+    };
+    
+    reader.readAsText(file);
+  }
+
+  private confirmRestore(backupData: BackupQuestion[]): void {
+    const confirmMessage = `¿Estás seguro de que quieres restaurar ${backupData.length} preguntas desde el respaldo?\n\n` +
+      `⚠️ ADVERTENCIA: Esto ELIMINARÁ todas las preguntas actuales y las reemplazará con el respaldo.`;
+    
+    if (confirm(confirmMessage)) {
+      this.restoreFromBackup(backupData);
+    } else {
+      this.showMessage('Restauración cancelada', 'info');
+    }
+  }
+
+  private async restoreFromBackup(backupData: BackupQuestion[]): Promise<void> {
+    this.isLoading = true;
+    this.showMessage('Restaurando desde el respaldo...', 'info');
+    this.cdr.detectChanges();
+    
+    try {
+      const result = await this.maintenanceService.restoreFromBackup(backupData);
+      this.showMessage(result.message, 'success');
+      
+      // Clear analysis since we have new data
+      this.analysis = null;
+      this.simulationDetails = null;
+    } catch (error) {
+      console.error('Error restoring backup:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      this.showMessage(`Error al restaurar: ${errorMessage}`, 'error');
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
   }
 }

@@ -30,6 +30,15 @@
       <fa-icon [icon]="faCheckCircle"></fa-icon>
       Verificar Total
     </button>
+    
+    <div class="restore-section">
+      <input type="file" #restoreFileInput accept=".json" (change)="onFileSelected($event)" 
+             style="display: none;" [disabled]="isLoading">
+      <button class="btn btn-danger" (click)="restoreFileInput.click()" [disabled]="isLoading">
+        <fa-icon [icon]="faUpload"></fa-icon>
+        Restaurar desde Respaldo
+      </button>
+    </div>
   </div>
 
   <!-- Analysis Results -->
@@ -128,6 +137,39 @@
             <button class="btn btn-danger" (click)="fixSubsections(false)" [disabled]="isLoading">
               Aplicar Correcciones (¡Modificará la base de datos!)
             </button>
+          </div>
+        </div>
+      }
+      
+      <!-- Simulation Results -->
+      @if (simulationDetails && simulationDetails.length > 0) {
+        <div class="simulation-results">
+          <h3>
+            <fa-icon [icon]="faInfoCircle"></fa-icon>
+            Detalles de la Simulación
+          </h3>
+          <div class="simulation-summary">
+            <p>Los siguientes cambios se aplicarían:</p>
+            <table class="simulation-table">
+              <thead>
+                <tr>
+                  <th>Subsección Actual</th>
+                  <th>→</th>
+                  <th>Subsección Corregida</th>
+                  <th>Preguntas Afectadas</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (detail of simulationDetails; track detail.from + detail.to) {
+                  <tr>
+                    <td class="current">"{{ detail.from }}"</td>
+                    <td>→</td>
+                    <td class="suggested">"{{ detail.to }}"</td>
+                    <td>{{ detail.count }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
         </div>
       }

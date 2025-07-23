@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, getDocs, doc, writeBatch, query, where } from '@angular/fire/firestore';
+import { Firestore, collection, getDocs, doc, writeBatch, query, where, deleteDoc, setDoc } from '@angular/fire/firestore';
 
 // Spanish words that should not be capitalized (articles, prepositions, conjunctions)
 const lowercaseWords = new Set(['y', 'e', 'o', 'u', 'de', 'del', 'a', 'al', 'en', 'el', 'la', 'las', 'los', 'por', 'para', 'con', 'sin', 'sobre']);
@@ -32,6 +32,17 @@ export interface CapitalizationIssue {
   questionCount: number;
 }
 
+export interface BackupQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  mainSection: string;
+  subSection?: string;
+  subSectionIndex?: number;
+  [key: string]: unknown;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -44,44 +55,74 @@ export class DatabaseMaintenanceService {
   private properCapitalize(text: string): string {
     if (!text) return text;
     
-    // Handle special cases and acronyms
-    const specialCases: { [key: string]: string } = {
-      'LCSP': 'LCSP',
-      'EBEP': 'EBEP',
-      'LC': 'LC',
-      'TRLA': 'TRLA',
-      'RPH': 'RPH',
-      'IPH': 'IPH',
-      'PHN': 'PHN',
-      'DMA': 'DMA',
-      'RD': 'RD',
-      'MA': 'MA',
-      'PNyB': 'PNyB',
-    };
+    // Roman numerals pattern
+    const romanNumeralPattern = /^[IVX]+$/i;
     
-    // Split by spaces but preserve special patterns
-    const words = text.split(/\s+/);
+    // Split by spaces
+    const words = text.split(' ');
     
     return words.map((word, index) => {
-      // Check if word contains special cases
-      for (const [key, value] of Object.entries(specialCases)) {
-        if (word.toUpperCase().includes(key)) {
-          return word.replace(new RegExp(key, 'gi'), value);
-        }
+      // Handle special cases that should be preserved exactly
+      // Check for PNyB specifically (with or without punctuation)
+      if (word.toLowerCase() === 'pnyb' || word.toLowerCase().startsWith('pnyb,')) {
+        const punct = word.match(/[,;:.!?]$/)?.[0] || '';
+        return 'PNyB' + punct;
       }
+      
+      // Check for acronyms that should stay uppercase
+      const upperAcronyms = ['LCSP', 'EBEP', 'LC', 'TRLA', 'RPH', 'IPH', 'PHN', 'DMA', 'RD', 'MA'];
+      const wordUpper = word.toUpperCase();
+      if (upperAcronyms.includes(wordUpper)) {
+        return wordUpper;
+      }
+      
+      // Check for Roman numerals
+      if (romanNumeralPattern.test(word)) {
+        return word.toUpperCase();
+      }
+      
+      // Handle "Título" specially to preserve accent
+      if (word.toLowerCase() === 'título') {
+        return 'Título';
+      }
+      
+      // Handle words with special punctuation (like commas)
+      const punctuation = word.match(/[,;:.!?]$/);
+      const cleanWord = punctuation ? word.slice(0, -1) : word;
+      const punct = punctuation ? punctuation[0] : '';
       
       // First word is always capitalized
       if (index === 0) {
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        // Special handling for words with accents
+        if (cleanWord.toLowerCase() === 'título') return 'Título' + punct;
+        return cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1).toLowerCase() + punct;
       }
       
       // Check if it's a lowercase word
-      if (lowercaseWords.has(word.toLowerCase())) {
-        return word.toLowerCase();
+      if (lowercaseWords.has(cleanWord.toLowerCase())) {
+        return cleanWord.toLowerCase() + punct;
+      }
+      
+      // Special words that should maintain their accents
+      const accentWords: { [key: string]: string } = {
+        'título': 'Título',
+        'técnicas': 'Técnicas',
+        'técnico': 'Técnico',
+        'climático': 'Climático',
+        'sequías': 'Sequías',
+        'reutilización': 'Reutilización',
+        'depuración': 'Depuración',
+        'hidrología': 'Hidrología',
+        'marino': 'Marino'
+      };
+      
+      const lowerClean = cleanWord.toLowerCase();
+      if (accentWords[lowerClean]) {
+        return accentWords[lowerClean] + punct;
       }
       
       // Capitalize first letter, rest lowercase
-      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      return cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1).toLowerCase() + punct;
     }).join(' ');
   }
 
@@ -220,7 +261,7 @@ export class DatabaseMaintenanceService {
   /**
    * Fix subsection duplicates and capitalization
    */
-  async fixSubsections(dryRun: boolean = true): Promise<{ updated: number, message: string }> {
+  async fixSubsections(dryRun: boolean = true): Promise<{ updated: number, message: string, details?: Array<{from: string, to: string, count: number}> }> {
     try {
       const subsectionMap = new Map<string, SubsectionInfo>();
       const questionsRef = collection(this.firestore, 'questions');
@@ -325,10 +366,89 @@ export class DatabaseMaintenanceService {
       ? `Simulación completa. Se actualizarían ${totalUpdateCount} preguntas.`
       : `Se actualizaron correctamente ${totalUpdateCount} preguntas.`;
     
-    return { updated: totalUpdateCount, message };
+    return { updated: totalUpdateCount, message, details: updates };
     } catch (error) {
       console.error('Error in fixSubsections:', error);
       throw new Error('Error al procesar las subsecciones: ' + (error as Error).message);
+    }
+  }
+
+  /**
+   * Restore questions from a backup file
+   * WARNING: This will DELETE all existing questions and replace them with the backup
+   */
+  async restoreFromBackup(backupData: BackupQuestion[]): Promise<{ restored: number, message: string }> {
+    try {
+      console.log(`Starting restore of ${backupData.length} questions...`);
+      
+      // First, delete all existing questions
+      console.log('Deleting existing questions...');
+      const questionsRef = collection(this.firestore, 'questions');
+      const snapshot = await getDocs(questionsRef);
+      
+      let deleteCount = 0;
+      const deleteBatch = writeBatch(this.firestore);
+      
+      snapshot.forEach((docSnapshot) => {
+        deleteBatch.delete(docSnapshot.ref);
+        deleteCount++;
+        
+        // Firestore batch limit
+        if (deleteCount % 400 === 0) {
+          console.log(`Deleting batch of ${deleteCount} questions...`);
+        }
+      });
+      
+      if (deleteCount > 0) {
+        await deleteBatch.commit();
+        console.log(`Deleted ${deleteCount} existing questions`);
+      }
+      
+      // Now restore from backup
+      console.log('Restoring questions from backup...');
+      let restoreCount = 0;
+      let batchCount = 0;
+      const restoreBatch = writeBatch(this.firestore);
+      
+      for (const question of backupData) {
+        const { id, ...questionData } = question;
+        const questionRef = doc(this.firestore, 'questions', id);
+        
+        // Ensure required fields are present
+        const dataToStore = {
+          question: questionData.question || '',
+          options: questionData.options || [],
+          correctAnswer: questionData.correctAnswer ?? 0,
+          mainSection: questionData.mainSection || '',
+          ...(questionData.subSection && { subSection: questionData.subSection }),
+          ...(questionData.subSectionIndex !== undefined && { subSectionIndex: questionData.subSectionIndex })
+        };
+        
+        restoreBatch.set(questionRef, dataToStore);
+        restoreCount++;
+        batchCount++;
+        
+        // Commit batch if limit reached
+        if (batchCount >= 400) {
+          await restoreBatch.commit();
+          console.log(`Restored batch of ${batchCount} questions (${restoreCount} total)...`);
+          batchCount = 0;
+        }
+      }
+      
+      // Commit remaining questions
+      if (batchCount > 0) {
+        await restoreBatch.commit();
+        console.log(`Restored final batch of ${batchCount} questions`);
+      }
+      
+      const message = `Restauración completa. Se restauraron ${restoreCount} preguntas desde la copia de seguridad.`;
+      console.log(message);
+      
+      return { restored: restoreCount, message };
+    } catch (error) {
+      console.error('Error restoring from backup:', error);
+      throw new Error('Error al restaurar desde la copia de seguridad: ' + (error as Error).message);
     }
   }
 }

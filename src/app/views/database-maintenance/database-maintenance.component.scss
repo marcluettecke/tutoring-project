@@ -240,6 +240,76 @@
         flex-wrap: wrap;
       }
     }
+    
+    .simulation-results {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #e8f4f8;
+      border-radius: 8px;
+      border: 1px solid #b8daff;
+
+      h3 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #004085;
+        margin-bottom: 15px;
+      }
+
+      .simulation-summary {
+        p {
+          margin-bottom: 15px;
+          color: #004085;
+        }
+
+        .simulation-table {
+          width: 100%;
+          border-collapse: collapse;
+          background-color: white;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+          thead {
+            background-color: #17a2b8;
+            color: white;
+
+            th {
+              padding: 12px;
+              text-align: left;
+              font-weight: 600;
+            }
+          }
+
+          tbody {
+            tr {
+              border-bottom: 1px solid #dee2e6;
+
+              &:last-child {
+                border-bottom: none;
+              }
+
+              &:hover {
+                background-color: #f8f9fa;
+              }
+
+              td {
+                padding: 12px;
+
+                &.current {
+                  color: #dc3545;
+                }
+
+                &.suggested {
+                  color: #28a745;
+                  font-weight: 500;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   .loading {
