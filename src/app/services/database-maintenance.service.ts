@@ -86,9 +86,18 @@ export class DatabaseMaintenanceService {
   }
 
   /**
+   * Get total question count from Firestore
+   */
+  async getTotalQuestionCount(): Promise<number> {
+    const questionsRef = collection(this.firestore, 'questions');
+    const snapshot = await getDocs(questionsRef);
+    return snapshot.size;
+  }
+
+  /**
    * Backup all questions to JSON
    */
-  async backupQuestions(): Promise<{ data: Record<string, unknown>[], timestamp: string }> {
+  async backupQuestions(): Promise<{ data: Record<string, unknown>[], timestamp: string, totalCount: number }> {
     const questionsRef = collection(this.firestore, 'questions');
     const snapshot = await getDocs(questionsRef);
     
@@ -101,8 +110,11 @@ export class DatabaseMaintenanceService {
     });
     
     const timestamp = new Date().toISOString();
+    const totalCount = snapshot.size;
     
-    return { data: questions, timestamp };
+    console.log(`Backup created with ${totalCount} questions`);
+    
+    return { data: questions, timestamp, totalCount };
   }
 
   /**
@@ -209,9 +221,10 @@ export class DatabaseMaintenanceService {
    * Fix subsection duplicates and capitalization
    */
   async fixSubsections(dryRun: boolean = true): Promise<{ updated: number, message: string }> {
-    const subsectionMap = new Map<string, SubsectionInfo>();
-    const questionsRef = collection(this.firestore, 'questions');
-    const snapshot = await getDocs(questionsRef);
+    try {
+      const subsectionMap = new Map<string, SubsectionInfo>();
+      const questionsRef = collection(this.firestore, 'questions');
+      const snapshot = await getDocs(questionsRef);
     
     // Collect all subsections
     snapshot.forEach((questionDoc) => {
@@ -296,9 +309,13 @@ export class DatabaseMaintenanceService {
     }
     
     const message = dryRun 
-      ? `Dry run complete. Would update ${updateCount} questions.`
-      : `Successfully updated ${updateCount} questions.`;
+      ? `Simulación completa. Se actualizarían ${updateCount} preguntas.`
+      : `Se actualizaron correctamente ${updateCount} preguntas.`;
     
     return { updated: updateCount, message };
+    } catch (error) {
+      console.error('Error in fixSubsections:', error);
+      throw new Error('Error al procesar las subsecciones: ' + (error as Error).message);
+    }
   }
 }

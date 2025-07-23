@@ -25,6 +25,11 @@
       <fa-icon [icon]="faSearch"></fa-icon>
       Analizar Subsecciones
     </button>
+
+    <button class="btn btn-info" (click)="verifyTotalCount()" [disabled]="isLoading">
+      <fa-icon [icon]="faCheckCircle"></fa-icon>
+      Verificar Total
+    </button>
   </div>
 
   <!-- Analysis Results -->

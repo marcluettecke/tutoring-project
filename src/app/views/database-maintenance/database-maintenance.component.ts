@@ -41,6 +41,31 @@ export class DatabaseMaintenanceComponent implements OnInit {
     this.showMessage('Utiliza esta página para mantener la base de datos de preguntas.', 'info');
   }
 
+  async verifyTotalCount(): Promise<void> {
+    this.isLoading = true;
+    this.showMessage('Verificando total de preguntas...', 'info');
+    
+    try {
+      const totalCount = await this.maintenanceService.getTotalQuestionCount();
+      this.showMessage(`Total de preguntas en la base de datos: ${totalCount}`, 'info');
+      
+      // If analysis was already run, compare counts
+      if (this.analysis) {
+        if (totalCount !== this.analysis.totalQuestions) {
+          this.showMessage(
+            `ADVERTENCIA: Discrepancia - Total real: ${totalCount}, Análisis muestra: ${this.analysis.totalQuestions}`, 
+            'error'
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error verifying count:', error);
+      this.showMessage('Error al verificar el total de preguntas', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
   async createBackup(): Promise<void> {
     this.isLoading = true;
     this.showMessage('Creando copia de seguridad...', 'info');
@@ -50,7 +75,15 @@ export class DatabaseMaintenanceComponent implements OnInit {
       this.backupData = result.data;
       this.backupTimestamp = result.timestamp;
       
-      this.showMessage(`Copia de seguridad creada con éxito: ${result.data.length} preguntas`, 'success');
+      // Verify the count matches
+      const totalInDb = result.totalCount;
+      const backupCount = result.data.length;
+      
+      if (totalInDb !== backupCount) {
+        this.showMessage(`ADVERTENCIA: Discrepancia en el conteo - DB: ${totalInDb}, Backup: ${backupCount}`, 'error');
+      } else {
+        this.showMessage(`Copia de seguridad creada con éxito: ${backupCount} preguntas`, 'success');
+      }
       
       // Trigger download
       this.downloadBackup();
@@ -131,7 +164,8 @@ export class DatabaseMaintenanceComponent implements OnInit {
       }
     } catch (error) {
       console.error('Error fixing subsections:', error);
-      this.showMessage('Error al corregir las subsecciones', 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      this.showMessage(`Error al corregir las subsecciones: ${errorMessage}`, 'error');
     } finally {
       this.isLoading = false;
     }
