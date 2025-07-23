@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, getDocs, doc, updateDoc, writeBatch } from '@angular/fire/firestore';
-import { Observable, from, map } from 'rxjs';
+import { Firestore, collection, getDocs, doc, writeBatch } from '@angular/fire/firestore';
 
 // Spanish words that should not be capitalized (articles, prepositions, conjunctions)
 const lowercaseWords = new Set(['y', 'e', 'o', 'u', 'de', 'del', 'a', 'al', 'en', 'el', 'la', 'las', 'los', 'por', 'para', 'con', 'sin', 'sobre']);
@@ -89,11 +88,11 @@ export class DatabaseMaintenanceService {
   /**
    * Backup all questions to JSON
    */
-  async backupQuestions(): Promise<{ data: any[], timestamp: string }> {
+  async backupQuestions(): Promise<{ data: Record<string, unknown>[], timestamp: string }> {
     const questionsRef = collection(this.firestore, 'questions');
     const snapshot = await getDocs(questionsRef);
     
-    const questions: any[] = [];
+    const questions: Record<string, unknown>[] = [];
     snapshot.forEach((doc) => {
       questions.push({
         id: doc.id,
@@ -153,11 +152,11 @@ export class DatabaseMaintenanceService {
     const duplicateGroups: DuplicateGroup[] = [];
     const capitalizationIssues: CapitalizationIssue[] = [];
     
-    normalizedGroups.forEach((group, normalizedKey) => {
+    normalizedGroups.forEach((group) => {
       if (group.length > 1) {
-        const [mainSection, normalizedName] = normalizedKey.split('::');
+        const [mainSection] = group[0].mainSection.split('::');
         duplicateGroups.push({
-          normalizedKey,
+          normalizedKey: `${mainSection}::${group[0].name.toLowerCase().trim()}`,
           mainSection,
           variations: group
         });
@@ -231,7 +230,7 @@ export class DatabaseMaintenanceService {
     let updateCount = 0;
     const batch = writeBatch(this.firestore);
     
-    for (const [normalizedKey, group] of normalizedGroups) {
+    for (const [, group] of normalizedGroups) {
       // Determine the correct subsection name and index
       let correctName = '';
       let correctIndex = 0;

@@ -31,7 +31,7 @@ export class DatabaseMaintenanceComponent implements OnInit {
   analysis: SubsectionAnalysis | null = null;
   
   // Backup data
-  backupData: any = null;
+  backupData: Record<string, unknown>[] | null = null;
   backupTimestamp = '';
 
   constructor(private maintenanceService: DatabaseMaintenanceService) {}

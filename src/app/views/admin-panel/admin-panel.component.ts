@@ -21,13 +21,11 @@ export class AdminPanelComponent implements OnInit {
   // Active tab
   activeTab: 'add-questions' | 'database-maintenance' = 'add-questions';
 
-  constructor() {}
-
   ngOnInit(): void {
     // Check if there's a saved tab preference
     const savedTab = localStorage.getItem('adminPanelActiveTab');
     if (savedTab && this.isValidTab(savedTab)) {
-      this.activeTab = savedTab as any;
+      this.activeTab = savedTab as 'add-questions' | 'database-maintenance';
     }
   }
 
