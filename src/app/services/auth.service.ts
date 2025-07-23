@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable, OnDestroy, inject} from '@angular/core';
 import {Router} from "@angular/router";
 import {BehaviorSubject, from, Subject} from "rxjs";
 import {
@@ -43,9 +43,26 @@ export class AuthService implements OnDestroy {
   private getInitialUserState(): UserInfo | null {
     try {
       const userData = this.cookieService.get('userData');
-      return userData ? JSON.parse(userData) : null;
+      if (!userData) return null;
+      
+      // Check if session has expired
+      const sessionExpiration = localStorage.getItem('sessionExpiration');
+      if (sessionExpiration) {
+        const expirationTime = parseInt(sessionExpiration, 10);
+        if (Date.now() > expirationTime) {
+          // Session expired, clear everything
+          this.cookieService.delete('userData');
+          this.cookieService.delete('adminState');
+          localStorage.removeItem('sessionExpiration');
+          return null;
+        }
+      }
+      
+      return JSON.parse(userData);
     } catch {
       this.cookieService.delete('userData');
+      this.cookieService.delete('adminState');
+      localStorage.removeItem('sessionExpiration');
       return null;
     }
   }
@@ -94,14 +111,29 @@ export class AuthService implements OnDestroy {
     })
   }
 
-  logOut() {
-    signOut(this.auth).then()
+  async logOut() {
+    // Clear login state immediately
     this.loginChanged.next(null)
     this.cookieService.delete('userData')
     this.cookieService.delete('adminState')
+    localStorage.removeItem('sessionExpiration');
     this.clearSessionMonitoring();
     this.clearInactivityTimers();
     this.sessionExpiryWarning$.next(false);
+    
+    // End any active progress tracking session
+    await this.endProgressTrackingSession();
+    
+    // Clear all application state
+    this.clearApplicationState();
+    
+    // Sign out from Firebase
+    signOut(this.auth).then(() => {
+      // Ensure we're on login page after logout
+      if (this.router.url !== '/login') {
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
   /**
@@ -192,19 +224,23 @@ export class AuthService implements OnDestroy {
    * Handle session expiration
    */
   private handleSessionExpired(): void {
-    // Save current test/quiz state before redirecting
-    const currentUrl = this.router.url;
-    if (currentUrl.includes('/home') || currentUrl.includes('/test')) {
-      // Store the current URL to return to after re-authentication
-      localStorage.setItem('returnUrl', currentUrl);
-      
-      // TODO: Save current test state to localStorage
-      // This would require coordination with TestService
-    }
-    
+    // Clear login state immediately to hide navigation
     this.loginChanged.next(null);
     this.cookieService.delete('userData');
     this.cookieService.delete('adminState');
+    localStorage.removeItem('sessionExpiration');
+    
+    // Save current test/quiz state before redirecting
+    const currentUrl = this.router.url;
+    if (currentUrl !== '/login' && (currentUrl.includes('/home') || currentUrl.includes('/test'))) {
+      // Store the current URL to return to after re-authentication
+      localStorage.setItem('returnUrl', currentUrl);
+      
+      // NOTE: We don't clear application state here to allow users
+      // to continue where they left off after re-authentication
+    }
+    
+    // Navigate to login page
     this.router.navigate(['/login']);
   }
 
@@ -268,7 +304,8 @@ export class AuthService implements OnDestroy {
   private handleInactivityTimeout(): void {
     this.sessionExpiryWarning$.next(false);
     this.warningShown = false;
-    this.logOut();
+    // Clear auth state and redirect
+    this.handleSessionExpired();
   }
 
   /**
@@ -295,6 +332,37 @@ export class AuthService implements OnDestroy {
       clearTimeout(this.warningTimer);
       this.warningTimer = null;
     }
+  }
+
+  /**
+   * End any active progress tracking session
+   */
+  private async endProgressTrackingSession(): Promise<void> {
+    // Clear progress tracking session state directly
+    // This ensures the session is discarded on logout
+    localStorage.removeItem('progressSessionState');
+    localStorage.removeItem('progressTrackingEnabled');
+    localStorage.removeItem('progressTrackingUserId');
+    localStorage.removeItem('activeProgressSession');
+    
+    // Note: We clear the session state here instead of calling ProgressService
+    // to avoid circular dependencies and ensure clean logout
+  }
+
+  /**
+   * Clear all application state stored in localStorage
+   */
+  private clearApplicationState(): void {
+    // Clear test service state
+    localStorage.removeItem('testServiceState');
+    localStorage.removeItem('answeredQuestions');
+    localStorage.removeItem('customExamConfiguration');
+    
+    // Clear home component active section
+    localStorage.removeItem('homeActiveSection');
+    
+    // Clear any return URL
+    localStorage.removeItem('returnUrl');
   }
 
   ngOnDestroy(): void {
