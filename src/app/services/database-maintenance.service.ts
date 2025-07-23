@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, getDocs, doc, writeBatch, query, where, deleteDoc, setDoc } from '@angular/fire/firestore';
+import { Firestore, collection, getDocs, doc, writeBatch, query, where } from '@angular/fire/firestore';
 
 // Spanish words that should not be capitalized (articles, prepositions, conjunctions)
 const lowercaseWords = new Set(['y', 'e', 'o', 'u', 'de', 'del', 'a', 'al', 'en', 'el', 'la', 'las', 'los', 'por', 'para', 'con', 'sin', 'sobre']);
@@ -153,8 +153,6 @@ export class DatabaseMaintenanceService {
     const timestamp = new Date().toISOString();
     const totalCount = snapshot.size;
     
-    console.log(`Backup created with ${totalCount} questions`);
-    
     return { data: questions, timestamp, totalCount };
   }
 
@@ -307,8 +305,6 @@ export class DatabaseMaintenanceService {
     const batch = writeBatch(this.firestore);
     const updates: Array<{from: string, to: string, count: number}> = [];
     
-    console.log(`Processing ${normalizedGroups.size} groups...`);
-    
     for (const [, group] of normalizedGroups) {
       // Determine the correct subsection name and index
       let correctName = '';
@@ -328,7 +324,6 @@ export class DatabaseMaintenanceService {
       // Update all questions in this group
       for (const info of group) {
         if (info.name !== correctName) {
-          console.log(`Would update "${info.name}" to "${correctName}" (${info.questionIds.length} questions)`);
           updates.push({from: info.name, to: correctName, count: info.questionIds.length});
           
           for (const questionId of info.questionIds) {
@@ -345,7 +340,6 @@ export class DatabaseMaintenanceService {
             // Firestore has a limit of 500 operations per batch
             if (batchUpdateCount >= 400 && !dryRun) {
               await batch.commit();
-              console.log(`Committed batch of ${batchUpdateCount} updates`);
               batchUpdateCount = 0;
             }
           }
@@ -356,11 +350,7 @@ export class DatabaseMaintenanceService {
     // Commit any remaining updates
     if (batchUpdateCount > 0 && !dryRun) {
       await batch.commit();
-      console.log(`Committed final batch of ${batchUpdateCount} updates`);
     }
-    
-    console.log(`Total updates: ${totalUpdateCount}`);
-    console.log('Update summary:', updates);
     
     const message = dryRun 
       ? `Simulación completa. Se actualizarían ${totalUpdateCount} preguntas.`
@@ -379,10 +369,7 @@ export class DatabaseMaintenanceService {
    */
   async restoreFromBackup(backupData: BackupQuestion[]): Promise<{ restored: number, message: string }> {
     try {
-      console.log(`Starting restore of ${backupData.length} questions...`);
-      
       // First, delete all existing questions
-      console.log('Deleting existing questions...');
       const questionsRef = collection(this.firestore, 'questions');
       const snapshot = await getDocs(questionsRef);
       
@@ -394,18 +381,13 @@ export class DatabaseMaintenanceService {
         deleteCount++;
         
         // Firestore batch limit
-        if (deleteCount % 400 === 0) {
-          console.log(`Deleting batch of ${deleteCount} questions...`);
-        }
       });
       
       if (deleteCount > 0) {
         await deleteBatch.commit();
-        console.log(`Deleted ${deleteCount} existing questions`);
       }
       
       // Now restore from backup
-      console.log('Restoring questions from backup...');
       let restoreCount = 0;
       let batchCount = 0;
       const restoreBatch = writeBatch(this.firestore);
@@ -431,7 +413,6 @@ export class DatabaseMaintenanceService {
         // Commit batch if limit reached
         if (batchCount >= 400) {
           await restoreBatch.commit();
-          console.log(`Restored batch of ${batchCount} questions (${restoreCount} total)...`);
           batchCount = 0;
         }
       }
@@ -439,11 +420,9 @@ export class DatabaseMaintenanceService {
       // Commit remaining questions
       if (batchCount > 0) {
         await restoreBatch.commit();
-        console.log(`Restored final batch of ${batchCount} questions`);
       }
       
       const message = `Restauración completa. Se restauraron ${restoreCount} preguntas desde la copia de seguridad.`;
-      console.log(message);
       
       return { restored: restoreCount, message };
     } catch (error) {
