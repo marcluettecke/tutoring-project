@@ -261,8 +261,12 @@ export class DatabaseMaintenanceService {
     });
     
     // Apply fixes
-    let updateCount = 0;
+    let totalUpdateCount = 0;
+    let batchUpdateCount = 0;
     const batch = writeBatch(this.firestore);
+    const updates: Array<{from: string, to: string, count: number}> = [];
+    
+    console.log(`Processing ${normalizedGroups.size} groups...`);
     
     for (const [, group] of normalizedGroups) {
       // Determine the correct subsection name and index
@@ -283,6 +287,9 @@ export class DatabaseMaintenanceService {
       // Update all questions in this group
       for (const info of group) {
         if (info.name !== correctName) {
+          console.log(`Would update "${info.name}" to "${correctName}" (${info.questionIds.length} questions)`);
+          updates.push({from: info.name, to: correctName, count: info.questionIds.length});
+          
           for (const questionId of info.questionIds) {
             if (!dryRun) {
               const questionRef = doc(this.firestore, 'questions', questionId);
@@ -291,12 +298,14 @@ export class DatabaseMaintenanceService {
                 subSectionIndex: correctIndex
               });
             }
-            updateCount++;
+            totalUpdateCount++;
+            batchUpdateCount++;
             
             // Firestore has a limit of 500 operations per batch
-            if (updateCount >= 400 && !dryRun) {
+            if (batchUpdateCount >= 400 && !dryRun) {
               await batch.commit();
-              updateCount = 0;
+              console.log(`Committed batch of ${batchUpdateCount} updates`);
+              batchUpdateCount = 0;
             }
           }
         }
@@ -304,15 +313,19 @@ export class DatabaseMaintenanceService {
     }
     
     // Commit any remaining updates
-    if (updateCount > 0 && !dryRun) {
+    if (batchUpdateCount > 0 && !dryRun) {
       await batch.commit();
+      console.log(`Committed final batch of ${batchUpdateCount} updates`);
     }
     
-    const message = dryRun 
-      ? `Simulación completa. Se actualizarían ${updateCount} preguntas.`
-      : `Se actualizaron correctamente ${updateCount} preguntas.`;
+    console.log(`Total updates: ${totalUpdateCount}`);
+    console.log('Update summary:', updates);
     
-    return { updated: updateCount, message };
+    const message = dryRun 
+      ? `Simulación completa. Se actualizarían ${totalUpdateCount} preguntas.`
+      : `Se actualizaron correctamente ${totalUpdateCount} preguntas.`;
+    
+    return { updated: totalUpdateCount, message };
     } catch (error) {
       console.error('Error in fixSubsections:', error);
       throw new Error('Error al procesar las subsecciones: ' + (error as Error).message);
