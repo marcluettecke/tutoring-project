@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, getDocs, doc, writeBatch } from '@angular/fire/firestore';
+import { Firestore, collection, getDocs, doc, writeBatch, query, where } from '@angular/fire/firestore';
 
 // Spanish words that should not be capitalized (articles, prepositions, conjunctions)
 const lowercaseWords = new Set(['y', 'e', 'o', 'u', 'de', 'del', 'a', 'al', 'en', 'el', 'la', 'las', 'los', 'por', 'para', 'con', 'sin', 'sobre']);
@@ -103,6 +103,27 @@ export class DatabaseMaintenanceService {
     const timestamp = new Date().toISOString();
     
     return { data: questions, timestamp };
+  }
+
+  /**
+   * Backup questions by main section
+   */
+  async backupQuestionsBySection(mainSection: string): Promise<{ data: Record<string, unknown>[], timestamp: string, section: string }> {
+    const questionsRef = collection(this.firestore, 'questions');
+    const q = query(questionsRef, where('mainSection', '==', mainSection));
+    const snapshot = await getDocs(q);
+    
+    const questions: Record<string, unknown>[] = [];
+    snapshot.forEach((doc) => {
+      questions.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    
+    const timestamp = new Date().toISOString();
+    
+    return { data: questions, timestamp, section: mainSection };
   }
 
   /**

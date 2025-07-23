@@ -65,18 +65,32 @@ export class DatabaseMaintenanceComponent implements OnInit {
   downloadBackup(): void {
     if (!this.backupData) return;
     
-    const dataStr = JSON.stringify(this.backupData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `questions-backup-${this.backupTimestamp.replace(/[:.]/g, '-')}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    URL.revokeObjectURL(url);
+    try {
+      // For large datasets, use minimal JSON formatting
+      const dataStr = JSON.stringify(this.backupData);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      
+      // Create download link
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `questions-backup-${this.backupTimestamp.replace(/[:.]/g, '-')}.json`;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      
+      // Use timeout to ensure browser processes the download
+      setTimeout(() => {
+        link.click();
+        document.body.removeChild(link);
+        // Clean up the URL after a delay
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+      }, 0);
+      
+      this.showMessage(`Descargando backup con ${this.backupData.length} preguntas...`, 'info');
+    } catch (error) {
+      console.error('Error downloading backup:', error);
+      this.showMessage('Error al descargar el backup. Por favor, intenta de nuevo.', 'error');
+    }
   }
 
   async analyzeSubsections(): Promise<void> {
