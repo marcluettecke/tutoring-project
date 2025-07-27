@@ -19,7 +19,8 @@ describe('HomeComponent', () => {
     } as unknown as MockedObject<QuestionsService>;
 
     mockTestService = {
-      resetAllAnswers: vi.fn()
+      resetAllAnswers: vi.fn(),
+      setModalMinimized: vi.fn()
     } as unknown as MockedObject<TestService>;
 
     component = new HomeComponent(
@@ -41,6 +42,7 @@ describe('HomeComponent', () => {
 
       expect(component.activeSection).toEqual(newSection);
       expect(mockQuestionService.getSpecificQuestions).toHaveBeenCalledWith('test', 'subtest');
+      expect(mockTestService.setModalMinimized).toHaveBeenCalledWith(false);
     });
 
     it('should not reset test service on init to preserve state', () => {

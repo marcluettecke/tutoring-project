@@ -74,6 +74,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       subSectionNumber: event.subSectionNumber
     }
     this.saveActiveSection();
+    
+    // Reset modal minimized state when switching sections to ensure questions are enabled
+    this.testService.setModalMinimized(false);
+    
+    // Scroll to top when switching sections/subsections
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     this.updateData()
   }
 
