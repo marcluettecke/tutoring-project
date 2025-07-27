@@ -676,36 +676,15 @@ export class ProgressService {
     const currentSession = this.currentSessionSubject.value;
     if (!currentSession || !testServiceAnswers.total) return;
 
-    // Build section breakdown from TestService data
-    const sectionBreakdown: SectionProgressData[] = [];
-    
-    // Iterate through all sections in testServiceAnswers (excluding 'total')
-    Object.keys(testServiceAnswers).forEach(sectionName => {
-      if (sectionName !== 'total' && testServiceAnswers[sectionName]) {
-        const sectionData = testServiceAnswers[sectionName];
-        const questionsAnswered = sectionData.correct + sectionData.incorrect;
-        
-        if (questionsAnswered > 0) {
-          sectionBreakdown.push({
-            sectionName: sectionName,
-            questionsAnswered: questionsAnswered,
-            correctAnswers: sectionData.correct,
-            incorrectAnswers: sectionData.incorrect,
-            blankAnswers: sectionData.blank,
-            timeSpent: 0, // Time tracking would need to be done per-section
-            accuracy: questionsAnswered > 0 ? (sectionData.correct / questionsAnswered) * 100 : 0
-          });
-        }
-      }
-    });
-
+    // Don't rebuild section breakdown - just update totals from TestService
+    // The section breakdown is already being maintained by recordQuestionAnswer with proper subsection tracking
     const updatedProgress: CurrentSessionProgress = {
       ...currentSession,
       questionsAnswered: testServiceAnswers.total.correct + testServiceAnswers.total.incorrect,
       correctAnswers: testServiceAnswers.total.correct,
       incorrectAnswers: testServiceAnswers.total.incorrect,
-      timeElapsed: this.getSessionDuration(),
-      sectionBreakdown: sectionBreakdown
+      timeElapsed: this.getElapsedTime(currentSession.startTime),
+      sectionBreakdown: currentSession.sectionBreakdown // Keep existing breakdown with proper time tracking
     };
 
     this.currentSessionSubject.next(updatedProgress);
@@ -726,10 +705,14 @@ export class ProgressService {
     const now = Date.now();
     
     // Calculate time since last answer (heuristic for time spent on this question)
-    // For the first question, use a reasonable default time (30 seconds) instead of 0
-    const timeSinceLastAnswer = this.lastAnswerTimestamp 
-      ? Math.min(now - this.lastAnswerTimestamp, this.INACTIVITY_TIMEOUT) // Cap at inactivity timeout
-      : 30000; // 30 seconds for first question
+    // For the first question, use time since session start
+    let timeSinceLastAnswer: number;
+    if (this.lastAnswerTimestamp) {
+      timeSinceLastAnswer = Math.min(now - this.lastAnswerTimestamp, this.INACTIVITY_TIMEOUT); // Cap at inactivity timeout
+    } else {
+      // First question - use time since session started
+      timeSinceLastAnswer = Math.min(now - currentSession.startTime, this.INACTIVITY_TIMEOUT);
+    }
     this.lastAnswerTimestamp = now;
 
     // Update section breakdown
@@ -769,7 +752,7 @@ export class ProgressService {
       questionsAnswered: currentSession.questionsAnswered + 1,
       correctAnswers: isCorrect ? currentSession.correctAnswers + 1 : currentSession.correctAnswers,
       incorrectAnswers: !isCorrect ? currentSession.incorrectAnswers + 1 : currentSession.incorrectAnswers,
-      timeElapsed: currentSession.timeElapsed + timeSinceLastAnswer,
+      timeElapsed: this.getElapsedTime(currentSession.startTime),
       sectionBreakdown: currentSession.sectionBreakdown
     };
 

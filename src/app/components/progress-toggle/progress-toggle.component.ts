@@ -119,9 +119,10 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
       const currentSession = this.progressService.getCurrentSessionProgress();
       if (currentSession && currentSession.questionsAnswered > 0) {
         // Create a copy of the session with the correct time elapsed
+        // Use getElapsedTime instead of getSessionDuration to match what the progress indicator shows
         this.lastSession = {
           ...currentSession,
-          timeElapsed: this.progressService.getSessionDuration()
+          timeElapsed: this.progressService.getElapsedTime(currentSession.startTime)
         };
         this.showSessionSummary = true;
         this.isPausedForModal = true; // Remember we're just paused for modal

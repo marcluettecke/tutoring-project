@@ -32,7 +32,8 @@ describe('ProgressToggleComponent', () => {
       getCurrentSessionProgress: vi.fn().mockReturnValue(null),
       initializeTrackingState: vi.fn(),
       resumeTracking: vi.fn(),
-      getSessionDuration: vi.fn().mockReturnValue(1000)
+      getSessionDuration: vi.fn().mockReturnValue(1000),
+      getElapsedTime: vi.fn().mockReturnValue(1000)
     } as unknown as MockedObject<ProgressService>;
 
     mockTestService = {
