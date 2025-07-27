@@ -118,7 +118,11 @@ export class ProgressToggleComponent implements OnInit, OnDestroy {
     if (this.isTrackingEnabled) {
       const currentSession = this.progressService.getCurrentSessionProgress();
       if (currentSession && currentSession.questionsAnswered > 0) {
-        this.lastSession = currentSession;
+        // Create a copy of the session with the correct time elapsed
+        this.lastSession = {
+          ...currentSession,
+          timeElapsed: this.progressService.getSessionDuration()
+        };
         this.showSessionSummary = true;
         this.isPausedForModal = true; // Remember we're just paused for modal
         // Temporarily pause tracking but don't update UI state yet

@@ -31,7 +31,8 @@ describe('ProgressToggleComponent', () => {
       endTrackingSession: vi.fn().mockResolvedValue(undefined),
       getCurrentSessionProgress: vi.fn().mockReturnValue(null),
       initializeTrackingState: vi.fn(),
-      resumeTracking: vi.fn()
+      resumeTracking: vi.fn(),
+      getSessionDuration: vi.fn().mockReturnValue(1000)
     } as unknown as MockedObject<ProgressService>;
 
     mockTestService = {
@@ -120,7 +121,10 @@ describe('ProgressToggleComponent', () => {
       await component.toggleTracking();
       
       expect(component.showSessionSummary).toBe(true);
-      expect(component.lastSession).toEqual(mockSession);
+      expect(component.lastSession).toEqual({
+        ...mockSession,
+        timeElapsed: 1000 // From getSessionDuration mock
+      });
       expect(component.isPausedForModal).toBe(true);
       expect(mockProgressService.stopTracking).toHaveBeenCalled();
     });

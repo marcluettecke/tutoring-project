@@ -72,6 +72,9 @@ export class ProgressService {
         this.testService.resetAllAnswers();
       }
       this.lastAnswerTimestamp = null;
+      // Reset all time tracking variables
+      this.pausedAt = null;
+      this.totalPausedTime = 0;
       // Clear any existing session state before starting fresh
       this.currentSessionSubject.next(null);
       this.clearSessionState();
@@ -191,10 +194,33 @@ export class ProgressService {
   }
 
   /**
+   * Clear expired session state from localStorage
+   */
+  private clearExpiredSessionState(): void {
+    try {
+      const savedState = localStorage.getItem(this.SESSION_STATE_KEY);
+      if (savedState) {
+        const parsed = JSON.parse(savedState);
+        const sessionAge = Date.now() - parsed.timestamp;
+        
+        // If session is older than max age, clear it
+        if (sessionAge > this.SESSION_STATE_MAX_AGE) {
+          localStorage.removeItem(this.SESSION_STATE_KEY);
+        }
+      }
+    } catch {
+      // Error checking session state
+    }
+  }
+
+  /**
    * Restores progress tracking state from localStorage on application startup
    * Automatically resumes tracking if it was previously enabled
    */
   initializeTrackingState(): void {
+    // First clear any expired sessions
+    this.clearExpiredSessionState();
+    
     const isEnabled = localStorage.getItem('progressTrackingEnabled') === 'true';
     const userId = localStorage.getItem('progressTrackingUserId');
     
@@ -622,6 +648,27 @@ export class ProgressService {
   }
 
   /**
+   * Get the actual session duration without recalculating from start time
+   * This prevents showing incorrect times for resumed sessions
+   */
+  getSessionDuration(): number {
+    const currentSession = this.currentSessionSubject.value;
+    if (!currentSession) return 0;
+    
+    // If we have a stored timeElapsed, use it as the base
+    // Only add time since last activity, not since session start
+    if (this.lastAnswerTimestamp && !this.pausedAt) {
+      const timeSinceLastAnswer = Date.now() - this.lastAnswerTimestamp;
+      // Only add reasonable amounts of time (less than inactivity timeout)
+      if (timeSinceLastAnswer < this.INACTIVITY_TIMEOUT) {
+        return currentSession.timeElapsed + timeSinceLastAnswer;
+      }
+    }
+    
+    return currentSession.timeElapsed;
+  }
+
+  /**
    * Update progress from TestService data
    * @param testServiceAnswers - Current answers from TestService
    */
@@ -631,7 +678,6 @@ export class ProgressService {
 
     // Build section breakdown from TestService data
     const sectionBreakdown: SectionProgressData[] = [];
-    const _now = Date.now();
     
     // Iterate through all sections in testServiceAnswers (excluding 'total')
     Object.keys(testServiceAnswers).forEach(sectionName => {
@@ -658,7 +704,7 @@ export class ProgressService {
       questionsAnswered: testServiceAnswers.total.correct + testServiceAnswers.total.incorrect,
       correctAnswers: testServiceAnswers.total.correct,
       incorrectAnswers: testServiceAnswers.total.incorrect,
-      timeElapsed: this.getElapsedTime(currentSession.startTime),
+      timeElapsed: this.getSessionDuration(),
       sectionBreakdown: sectionBreakdown
     };
 
@@ -680,7 +726,10 @@ export class ProgressService {
     const now = Date.now();
     
     // Calculate time since last answer (heuristic for time spent on this question)
-    const timeSinceLastAnswer = this.lastAnswerTimestamp ? now - this.lastAnswerTimestamp : 0;
+    // For the first question, use a reasonable default time (30 seconds) instead of 0
+    const timeSinceLastAnswer = this.lastAnswerTimestamp 
+      ? Math.min(now - this.lastAnswerTimestamp, this.INACTIVITY_TIMEOUT) // Cap at inactivity timeout
+      : 30000; // 30 seconds for first question
     this.lastAnswerTimestamp = now;
 
     // Update section breakdown
@@ -714,12 +763,13 @@ export class ProgressService {
     }
 
     // Update overall session progress
+    // Only add the time since last answer, not the total time since session start
     const updatedProgress: CurrentSessionProgress = {
       ...currentSession,
       questionsAnswered: currentSession.questionsAnswered + 1,
       correctAnswers: isCorrect ? currentSession.correctAnswers + 1 : currentSession.correctAnswers,
       incorrectAnswers: !isCorrect ? currentSession.incorrectAnswers + 1 : currentSession.incorrectAnswers,
-      timeElapsed: now - currentSession.startTime,
+      timeElapsed: currentSession.timeElapsed + timeSinceLastAnswer,
       sectionBreakdown: currentSession.sectionBreakdown
     };
 
@@ -991,7 +1041,7 @@ export class ProgressService {
       const cleanSession = this.sanitizeForFirestore(session);
       
       // Add the session to the user's session collection
-      const _docRef = await addDoc(sessionRef, cleanSession);
+      await addDoc(sessionRef, cleanSession);
       
       // Update aggregated user progress
       await this.updateUserProgress(session.userId, session);
@@ -1110,10 +1160,10 @@ export class ProgressService {
         this.pausedAt = parsed.pausedAt || null;
         this.totalPausedTime = parsed.totalPausedTime || 0;
         
-        // Update time elapsed based on saved timestamp
+        // Don't recalculate time elapsed - use the stored value
         const session = parsed.session;
         if (session && session.isActive) {
-          session.timeElapsed = this.getElapsedTime(session.startTime);
+          // Keep the stored timeElapsed value, don't recalculate from start time
           session.lastAnswerTimestamp = parsed.lastAnswerTimestamp;
           this.lastAnswerTimestamp = parsed.lastAnswerTimestamp || null;
           return session;
