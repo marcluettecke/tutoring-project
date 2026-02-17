@@ -74,12 +74,12 @@ export class AuthService implements OnDestroy {
       const expirationTime = (new Date())
       expirationTime.setHours(expirationTime.getHours() + 8)
       this.cookieService.set('userData', JSON.stringify(user), {expires: expirationTime})
-      
+
       // Store expiration time for session monitoring
       localStorage.setItem('sessionExpiration', expirationTime.getTime().toString())
 
       this.loginChanged.next(user)
-      
+
       // Check if we should return to a previous URL after re-authentication
       const returnUrl = localStorage.getItem('returnUrl');
       if (returnUrl) {
@@ -90,6 +90,26 @@ export class AuthService implements OnDestroy {
       }
     } else {
       this.router.navigate(['/home']).then()
+    }
+  }
+
+  /**
+   * Restore session from Firebase auth without navigation
+   * Used to sync cookies when Firebase auth is valid but cookies are missing/expired
+   */
+  private restoreSessionSilently(): void {
+    const user = this.auth.currentUser;
+    if (user !== null) {
+      // Restore cookies with 8-hour expiration
+      const expirationTime = new Date();
+      expirationTime.setHours(expirationTime.getHours() + 8);
+      this.cookieService.set('userData', JSON.stringify(user), {expires: expirationTime});
+
+      // Store expiration time for session monitoring
+      localStorage.setItem('sessionExpiration', expirationTime.getTime().toString());
+
+      // Update login state to show navigation buttons
+      this.loginChanged.next(user);
     }
   }
 
@@ -142,18 +162,25 @@ export class AuthService implements OnDestroy {
   private initializeAuthStateMonitor(): void {
     this.authStateUnsubscribe = onAuthStateChanged(this.auth, (user) => {
       if (user) {
-        // User is signed in, update login state if needed
+        // User is signed in with Firebase
         const currentUser = this.loginChanged.value;
+
         if (!currentUser || currentUser.uid !== user.uid) {
-          // Only re-establish session if we're on the login page
+          // Firebase auth is valid but local state is missing/expired
+
           if (this.router.url === '/login') {
+            // User is on login page - use full handleLogin with navigation
             this.handleLogin();
+          } else {
+            // User is on a protected page - silently restore session without navigation
+            // This fixes the bug where navigation buttons disappear after cookie expiration
+            this.restoreSessionSilently();
           }
         }
         this.startSessionMonitoring();
         this.resetInactivityTimer();
       } else {
-        // User is signed out
+        // User is signed out from Firebase
         if (this.loginChanged.value) {
           // Session expired - save current state before redirecting
           this.handleSessionExpired();

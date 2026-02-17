@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, doc, addDoc, setDoc, getDoc, updateDoc, query, where, orderBy, limit, getDocs, collectionData } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, map } from 'rxjs';
-import { TestSession, SectionProgress, UserProgress, CurrentSessionProgress, SectionSummary, SectionProgressData, TestServiceAnswers } from '../models/progress.model';
+import { TestSession, SectionProgress, UserProgress, CurrentSessionProgress, SectionSummary, TestServiceAnswers } from '../models/progress.model';
 import { TestService } from './test.service';
 
 /**
