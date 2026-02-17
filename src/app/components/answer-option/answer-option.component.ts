@@ -1,9 +1,11 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import {NgClass} from "@angular/common";
+import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
+import {faCheck, faTimes} from "@fortawesome/free-solid-svg-icons";
 @Component({
   selector: 'app-answer-option',
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, FontAwesomeModule],
   templateUrl: './answer-option.component.html',
   styleUrls: ['./answer-option.component.scss']
 })
@@ -18,6 +20,10 @@ export class AnswerOptionComponent implements OnInit {
   @Input() disabled: boolean;
 
   @Output() answerWasclickedEvent = new EventEmitter<string>()
+
+  // Font Awesome icons
+  faCheck = faCheck;
+  faTimes = faTimes;
 
   constructor() {
     // Constructor for dependency injection

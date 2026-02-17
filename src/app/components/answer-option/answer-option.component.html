@@ -5,9 +5,9 @@
     {{answerOption}}
   </label>
   @if ((selectedAnswer && selectedAnswer.length > 0 || testFinished) && !isCorrect) {
-    <span class="answer-icon wrong">X</span>
+    <fa-icon [icon]="faTimes" class="answer-icon wrong"></fa-icon>
   }
   @if ((selectedAnswer && selectedAnswer.length > 0 || testFinished) && isCorrect) {
-    <span class="answer-icon correct">✓</span>
+    <fa-icon [icon]="faCheck" class="answer-icon correct"></fa-icon>
   }
 </div>
