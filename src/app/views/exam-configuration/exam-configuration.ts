@@ -186,7 +186,7 @@ export class ExamConfigurationComponent implements OnInit, OnDestroy {
         this.subsections[section].forEach((subsection: Subsection) => {
           const key = `${section}_${subsection.name}`;
           const subsectionQuestions = sectionQuestions.filter(
-            q => q.subSection === subsection.name
+            q => q.subSection?.toLowerCase().trim() === subsection.name.toLowerCase().trim()
           );
           this.availableQuestionCounts[key] = subsectionQuestions.length;
         });

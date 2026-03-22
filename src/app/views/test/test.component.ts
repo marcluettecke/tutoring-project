@@ -120,7 +120,7 @@ export class TestComponent implements OnInit, OnDestroy {
         if (q.mainSection !== selection.mainSection) return false;
         
         if (selection.subsections && selection.subsections.length > 0) {
-          return selection.subsections.includes(q.subSection || '');
+          return selection.subsections.some(s => s.toLowerCase().trim() === (q.subSection || '').toLowerCase().trim());
         }
         return true;
       });
@@ -152,7 +152,7 @@ export class TestComponent implements OnInit, OnDestroy {
         if (q.mainSection !== selection.mainSection) return false;
         
         if (selection.subsections && selection.subsections.length > 0) {
-          return selection.subsections.includes(q.subSection || '');
+          return selection.subsections.some(s => s.toLowerCase().trim() === (q.subSection || '').toLowerCase().trim());
         }
         return true;
       });

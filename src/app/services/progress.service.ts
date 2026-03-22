@@ -716,8 +716,9 @@ export class ProgressService {
     this.lastAnswerTimestamp = now;
 
     // Update section breakdown
-    const existingSectionIndex = currentSession.sectionBreakdown.findIndex(s => 
-      s.sectionName === questionSection && s.subSection === questionSubSection
+    const existingSectionIndex = currentSession.sectionBreakdown.findIndex(s =>
+      s.sectionName?.toLowerCase().trim() === questionSection?.toLowerCase().trim() &&
+      s.subSection?.toLowerCase().trim() === questionSubSection?.toLowerCase().trim()
     );
 
     if (existingSectionIndex >= 0) {

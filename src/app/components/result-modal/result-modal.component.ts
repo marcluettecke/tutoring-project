@@ -592,8 +592,8 @@ export class ResultModalComponent implements OnInit, OnDestroy {
 
     return currentBreakdown.map(currentSection => {
       const historicalSection = historicalData.find((h: SectionProgressData) =>
-        h.sectionName === currentSection.sectionName &&
-        h.subSection === currentSection.subSection
+        h.sectionName?.toLowerCase().trim() === currentSection.sectionName?.toLowerCase().trim() &&
+        h.subSection?.toLowerCase().trim() === currentSection.subSection?.toLowerCase().trim()
       );
 
       const currentAccuracy = currentSection.accuracy ??
