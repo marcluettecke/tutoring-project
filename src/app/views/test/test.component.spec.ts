@@ -334,4 +334,50 @@ describe('TestComponent', () => {
       expect(component.currentUserId).toBe('test-user-id');
     });
   });
+
+  describe('Firestore subscription stability (regression: mid-exam question reset)', () => {
+    // `questionsService.getQuestions()` returns a real-time Firestore listener.
+    // The Firestore SDK reconnects and re-emits data every ~30-60 min.
+    // Without take(1), each re-emission called filterQuestions() again,
+    // re-randomizing the question set mid-exam and resetting most answers.
+    // These tests verify that take(1) holds: only the first emission is processed.
+
+    let questionsSubject: Subject<typeof mockQuestions>;
+
+    beforeEach(() => {
+      questionsSubject = new Subject();
+      mockQuestionsService.getQuestions = vi.fn().mockReturnValue(questionsSubject.asObservable());
+
+      mockTestService.getCustomConfiguration = vi.fn().mockReturnValue({
+        selections: [
+          { mainSection: 'administrativo', subsections: [], questionCount: 5 },
+        ],
+        totalQuestions: 5,
+        questionDistribution: 'custom',
+      });
+    });
+
+    it('should not re-randomize questions when Firestore emits a second time', () => {
+      component.ngOnInit();
+
+      questionsSubject.next(mockQuestions);
+      const firstSet = component.filteredQuestions.map(q => q.id);
+
+      // Simulates Firestore reconnect emitting the same data again
+      questionsSubject.next(mockQuestions);
+      const secondSet = component.filteredQuestions.map(q => q.id);
+
+      expect(secondSet).toEqual(firstSet);
+    });
+
+    it('should call handleTestStart exactly once regardless of how many times Firestore emits', () => {
+      component.ngOnInit();
+
+      questionsSubject.next(mockQuestions);
+      questionsSubject.next(mockQuestions);
+      questionsSubject.next(mockQuestions);
+
+      expect(mockTestService.handleTestStart).toHaveBeenCalledTimes(1);
+    });
+  });
 });

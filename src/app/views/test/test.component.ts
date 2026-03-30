@@ -4,7 +4,7 @@ import {QuestionsService} from "../../services/questions.service";
 import {Question} from "../../models/question.model";
 import {TestService} from "../../services/test.service";
 import {AuthService} from "../../services/auth.service";
-import {Subscription} from "rxjs";
+import {Subscription, take} from "rxjs";
 import {QUESTIONWEIGHTS} from './constants';
 import {ResultModalComponent} from '../../components/result-modal/result-modal.component';
 import {TestCardComponent} from '../../components/test-card/test-card.component';
@@ -53,7 +53,7 @@ export class TestComponent implements OnInit, OnDestroy {
     // Get current user ID from auth service
     this.currentUserId = this.authService.loginChanged.value?.uid || null;
     
-    this.questionSubscription = this.questionsService.getQuestions().subscribe(questions => {
+    this.questionSubscription = this.questionsService.getQuestions().pipe(take(1)).subscribe(questions => {
                                                                                  this.questions = questions
                                                                                  this.filterQuestions()
                                                                                  // Automatically start the test after loading questions
