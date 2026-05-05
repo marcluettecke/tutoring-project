@@ -56,6 +56,14 @@ export class TestComponent implements OnInit, OnDestroy {
     this.questionSubscription = this.questionsService.getQuestions().pipe(take(1)).subscribe(questions => {
                                                                                  this.questions = questions
                                                                                  this.filterQuestions()
+                                                                                 console.log('[DEBUG] Filtered questions sample (first 3):',
+                                                                                   this.filteredQuestions.slice(0, 3).map(q => ({
+                                                                                     id: q.id,
+                                                                                     mainSection: q.mainSection,
+                                                                                     correctAnswer: q.correctAnswer,
+                                                                                     correctAnswerType: typeof q.correctAnswer,
+                                                                                     answerIds: q.answers.map(a => ({ id: a.id, type: typeof a.id }))
+                                                                                   })));
                                                                                  // Automatically start the test after loading questions
                                                                                  this.testService.handleTestStart()
                                                                                },

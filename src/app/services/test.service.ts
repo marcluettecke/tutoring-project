@@ -86,7 +86,10 @@ export class TestService {
       this.correctAnswers.total.blank--;
       this.correctAnswers[questionItem.mainSection].blank--;
 
-      if (questionItem.correctAnswer === clickedAnswer) {
+      const isCorrect = String(questionItem.correctAnswer) === String(clickedAnswer);
+      console.log('[DEBUG] Q:', questionItem.id, '| correctAnswer:', questionItem.correctAnswer, '(', typeof questionItem.correctAnswer, ')', '| clicked:', clickedAnswer, '(', typeof clickedAnswer, ')', '| match:', isCorrect);
+
+      if (isCorrect) {
         this.correctAnswers.total.correct++;
         this.correctAnswers[questionItem.mainSection].correct++;
       } else {
@@ -94,19 +97,19 @@ export class TestService {
         this.correctAnswers[questionItem.mainSection].incorrect++;
       }
     } else {
-      if (previousAnswerWasWrong && questionItem.correctAnswer === clickedAnswer) {
+      if (previousAnswerWasWrong && String(questionItem.correctAnswer) === String(clickedAnswer)) {
         this.correctAnswers.total.correct++;
         this.correctAnswers[questionItem.mainSection].correct++;
         this.correctAnswers.total.incorrect--;
         this.correctAnswers[questionItem.mainSection].incorrect--;
       }
-      if (previousAnswerWasWrong && questionItem.correctAnswer !== clickedAnswer) {
+      if (previousAnswerWasWrong && String(questionItem.correctAnswer) !== String(clickedAnswer)) {
         return;
       }
-      if (!previousAnswerWasWrong && questionItem.correctAnswer === clickedAnswer) {
+      if (!previousAnswerWasWrong && String(questionItem.correctAnswer) === String(clickedAnswer)) {
         return;
       }
-      if (!previousAnswerWasWrong && questionItem.correctAnswer !== clickedAnswer) {
+      if (!previousAnswerWasWrong && String(questionItem.correctAnswer) !== String(clickedAnswer)) {
         this.correctAnswers.total.incorrect++;
         this.correctAnswers[questionItem.mainSection].incorrect++;
         this.correctAnswers.total.correct--;
@@ -390,7 +393,7 @@ export class TestService {
     if (this.customConfiguration) {
       const state: CorrectAnswersState = {
         total: {
-          blank: totalQuestions || 0,
+          blank: 0,
           correct: 0,
           incorrect: 0
         }
