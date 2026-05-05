@@ -87,7 +87,6 @@ export class TestService {
       this.correctAnswers[questionItem.mainSection].blank--;
 
       const isCorrect = String(questionItem.correctAnswer) === String(clickedAnswer);
-      console.log('[DEBUG] Q:', questionItem.id, '| correctAnswer:', questionItem.correctAnswer, '(', typeof questionItem.correctAnswer, ')', '| clicked:', clickedAnswer, '(', typeof clickedAnswer, ')', '| match:', isCorrect);
 
       if (isCorrect) {
         this.correctAnswers.total.correct++;
