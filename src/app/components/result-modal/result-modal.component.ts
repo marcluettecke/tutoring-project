@@ -11,6 +11,7 @@ import { faChartBar, faTable, faArrowUp, faArrowDown, faArrowRight, faCheck, faT
 import { SessionComparisonTableComponent } from '../session-comparison-table/session-comparison-table.component';
 import { ChartsContainerComponent } from '../charts/charts-container/charts-container.component';
 import { formatSpanishNumber, formatSpanishPercentage } from '../../utils/number-format.utils';
+import { WRONG_ANSWER_PENALTY } from '../../views/test/constants';
 
 /**
  * Enhanced result modal component with modern styling and session comparison
@@ -228,7 +229,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
    */
   get overallScore(): number {
     if (!this.correctAnswers.total) return 0;
-    return this.correctAnswers.total.correct - (0.33 * this.correctAnswers.total.incorrect);
+    return this.correctAnswers.total.correct - (WRONG_ANSWER_PENALTY * this.correctAnswers.total.incorrect);
   }
 
   /**
@@ -271,7 +272,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
     const sectionData = this.correctAnswers[section];
     if (!sectionData) return 'needs-improvement';
 
-    const score = sectionData.correct - (0.33 * sectionData.incorrect);
+    const score = sectionData.correct - (WRONG_ANSWER_PENALTY * sectionData.incorrect);
     let threshold = 0;
 
     switch (section) {
@@ -293,6 +294,11 @@ export class ResultModalComponent implements OnInit, OnDestroy {
     if (score > threshold) return 'excellent';
     if (score > threshold * 0.7) return 'good';
     return 'needs-improvement';
+  }
+
+  getSectionScore(section: string): number {
+    const d = this.correctAnswers[section];
+    return d ? d.correct - (WRONG_ANSWER_PENALTY * d.incorrect) : 0;
   }
 
   /**
@@ -346,7 +352,7 @@ export class ResultModalComponent implements OnInit, OnDestroy {
           timeSpent: Math.floor(this.progressSession.timeElapsed / 1000),
           completed: true,
           score: this.progressSession.questionsAnswered > 0 ? (this.progressSession.correctAnswers / this.progressSession.questionsAnswered) * 100 : 0,
-          testScore: this.progressSession.correctAnswers - (0.33 * this.progressSession.incorrectAnswers),
+          testScore: this.progressSession.correctAnswers - (WRONG_ANSWER_PENALTY * this.progressSession.incorrectAnswers),
           sectionBreakdown: this.progressSession.sectionBreakdown // Include section breakdown
         };
 

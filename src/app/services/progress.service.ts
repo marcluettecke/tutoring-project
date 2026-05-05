@@ -3,6 +3,7 @@ import { Firestore, collection, doc, addDoc, setDoc, getDoc, updateDoc, query, w
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { TestSession, SectionProgress, UserProgress, CurrentSessionProgress, SectionSummary, TestServiceAnswers } from '../models/progress.model';
 import { TestService } from './test.service';
+import { WRONG_ANSWER_PENALTY } from '../views/test/constants';
 
 /**
  * Service for handling user progress tracking and persistence
@@ -390,7 +391,7 @@ export class ProgressService {
       timeSpent: Math.floor(session.timeElapsed / 1000), // Convert to seconds
       completed: true,
       score: session.questionsAnswered > 0 ? (session.correctAnswers / session.questionsAnswered) * 100 : 0,
-      testScore: session.correctAnswers - (0.33 * session.incorrectAnswers),
+      testScore: session.correctAnswers - (WRONG_ANSWER_PENALTY * session.incorrectAnswers),
       sectionBreakdown: session.sectionBreakdown // Include section breakdown
     };
 
@@ -813,7 +814,7 @@ export class ProgressService {
     if (testResults && testResults.total) {
       const correct = testResults.total.correct || 0;
       const incorrect = testResults.total.incorrect || 0;
-      const penalty = incorrect * 0.33; // TestService penalty logic
+      const penalty = incorrect * WRONG_ANSWER_PENALTY;
       return Math.max(0, correct - penalty);
     }
     return 0;

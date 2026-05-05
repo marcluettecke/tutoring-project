@@ -134,8 +134,8 @@ describe('ResultModalComponent', () => {
       mockTestService.correctAnswers = testAnswers;
       await component.ngOnInit();
 
-      // Score = correct - (0.33 * incorrect) = 10 - (0.33 * 3) = 10 - 0.99 = 9.01
-      expect(component.overallScore).toBeCloseTo(9.01, 2);
+      // Score = correct - (0.25 * incorrect) = 10 - (0.25 * 3) = 10 - 0.75 = 9.25
+      expect(component.overallScore).toBeCloseTo(9.25, 2);
     });
 
     it('should calculate accuracy percentage based on answered questions only', async () => {

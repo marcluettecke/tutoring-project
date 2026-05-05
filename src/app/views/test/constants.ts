@@ -4,3 +4,5 @@ export const QUESTIONWEIGHTS: { [key: string]: number } = {
       'costas': 20,
       'aguas': 35
     }
+
+export const WRONG_ANSWER_PENALTY = 0.25;

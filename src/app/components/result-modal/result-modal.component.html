@@ -44,7 +44,7 @@
                 } @else {
                   <div class="score-value">{{ formatSpanishNumber(overallScore, 2) }}</div>
                   <div class="score-label">Puntuación del examen</div>
-                  <div class="score-explanation">(Correcto: +1, Incorrecto: -0,33)</div>
+                  <div class="score-explanation">(Correcto: +1, Incorrecto: -0,25)</div>
                 }
               </div>
               <div class="accuracy-display">
@@ -373,7 +373,7 @@
                   <span class="count-badge blank">{{ correctAnswers[section].blank }}</span>
                 </td>
                 <td class="score-value">
-                  <strong>{{ formatSpanishNumber(correctAnswers[section].correct - (0.33 * correctAnswers[section].incorrect), 2) }}</strong>
+                  <strong>{{ formatSpanishNumber(getSectionScore(section), 2) }}</strong>
                 </td>
                 <td class="status-indicator">
                   @if (getSectionPerformanceLevel(section) === 'excellent') {
